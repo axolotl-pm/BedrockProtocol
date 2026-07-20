@@ -126,6 +126,9 @@ final class ClientData{
 	public bool $PremiumSkin = false;
 
 	/** @required */
+	public string $ProfileHash;
+
+	/** @required */
 	public string $SelfSignedId;
 
 	/** @required */

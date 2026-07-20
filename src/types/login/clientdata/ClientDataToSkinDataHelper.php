@@ -14,13 +14,22 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 
+use pocketmine\color\Color;
+use pocketmine\network\mcpe\protocol\types\skin\ArmSizeType;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPiece;
+use pocketmine\network\mcpe\protocol\types\skin\PieceType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
+use Ramsey\Uuid\Uuid;
+
 use function array_map;
 use function base64_decode;
+use function ctype_xdigit;
+use function hexdec;
+use function ltrim;
+use function strlen;
 
 final class ClientDataToSkinDataHelper{
 
@@ -65,13 +74,13 @@ final class ClientDataToSkinDataHelper{
 			self::safeB64Decode($clientData->SkinAnimationData, "SkinAnimationData"),
 			$clientData->CapeId,
 			null,
-			$clientData->ArmSize,
-			$clientData->SkinColor,
+			ArmSizeType::fromPacket($clientData->ArmSize),
+			Color::fromARGB(self::hexToARGB($clientData->SkinColor)),
 			array_map(function(ClientDataPersonaSkinPiece $piece) : PersonaSkinPiece{
-				return new PersonaSkinPiece($piece->PieceId, $piece->PieceType, $piece->PackId, $piece->IsDefault, $piece->ProductId);
+				return new PersonaSkinPiece($piece->PieceId, PieceType::fromPacket($piece->PieceType), Uuid::fromString($piece->PackId), $piece->IsDefault, $piece->ProductId);
 			}, $clientData->PersonaPieces),
 			array_map(function(ClientDataPersonaPieceTintColor $tint) : PersonaPieceTintColor{
-				return new PersonaPieceTintColor($tint->PieceType, $tint->Colors);
+				return new PersonaPieceTintColor(PieceType::fromPacket($tint->PieceType), array_map(fn(string $color) => Color::fromARGB(self::hexToARGB($color)), $tint->Colors));
 			}, $clientData->PieceTintColors),
 			true,
 			$clientData->PremiumSkin,
@@ -80,5 +89,19 @@ final class ClientDataToSkinDataHelper{
 			true, //assume this is true? there's no field for it ...
 			$clientData->OverrideSkin ?? true,
 		);
+	}
+
+	private static function hexToARGB(string $hexColor) : int{
+		$hex = ltrim($hexColor, "#");
+
+		if(!ctype_xdigit($hex)){
+			throw new \InvalidArgumentException("Invalid hex color: '$hexColor'");
+		}
+
+		return match(strlen($hex)){
+			1 => 0,
+			8 => (int) hexdec($hex),
+			default => throw new \InvalidArgumentException("Expected #0 or #AARRGGBB, got '$hexColor'"),
+		};
 	}
 }

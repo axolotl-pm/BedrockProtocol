@@ -52,22 +52,24 @@ final class ItemStackResponse{
 		$result = Byte::readUnsigned($in);
 		$requestId = CommonTypes::readItemStackRequestId($in);
 		$containerInfos = [];
-		if($result === self::RESULT_OK){
+		CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
+			$result = [];
 			for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-				$containerInfos[] = ItemStackResponseContainerInfo::read($in);
+				$result[] = ItemStackResponseContainerInfo::read($in);
 			}
-		}
+			return $result;
+		});
 		return new self($result, $requestId, $containerInfos);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		Byte::writeUnsigned($out, $this->result);
 		CommonTypes::writeItemStackRequestId($out, $this->requestId);
-		if($this->result === self::RESULT_OK){
-			VarInt::writeUnsignedInt($out, count($this->containerInfos));
-			foreach($this->containerInfos as $containerInfo){
+		CommonTypes::writeOptional($out, count($this->containerInfos) === 0 ? null : $this->containerInfos, static function(ByteBufferWriter $out, array $containerInfos) : void{
+			VarInt::writeUnsignedInt($out, count($containerInfos));
+			foreach($containerInfos as $containerInfo){
 				$containerInfo->write($out);
 			}
-		}
+		});
 	}
 }

@@ -14,26 +14,31 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\skin;
 
+use pocketmine\color\Color;
+use function count;
+
 final class PersonaPieceTintColor{
 
-	public const PIECE_TYPE_PERSONA_EYES = "persona_eyes";
-	public const PIECE_TYPE_PERSONA_HAIR = "persona_hair";
-	public const PIECE_TYPE_PERSONA_MOUTH = "persona_mouth";
+	public const EXPECTED_COLOR_COUNT = 4;
 
 	/**
-	 * @param string[] $colors
+	 * @param Color[] $colors
 	 */
 	public function __construct(
-		private string $pieceType,
+		private PieceType $pieceType,
 		private array $colors
-	){}
+	){
+		if(count($this->colors) !== self::EXPECTED_COLOR_COUNT){
+			throw new \InvalidArgumentException("Expected exactly " . self::EXPECTED_COLOR_COUNT . " colors");
+		}
+	}
 
-	public function getPieceType() : string{
+	public function getPieceType() : PieceType{
 		return $this->pieceType;
 	}
 
 	/**
-	 * @return string[]
+	 * @return Color[]
 	 */
 	public function getColors() : array{
 		return $this->colors;

@@ -17,7 +17,6 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pmmp\encoding\VarInt;
 
 final class IntGameRule extends GameRule{
 	use GetTypeIdFromConstTrait;
@@ -36,14 +35,10 @@ final class IntGameRule extends GameRule{
 	}
 
 	public function encode(ByteBufferWriter $out, bool $isStartGame) : void{
-		if($isStartGame){
-			VarInt::writeUnsignedInt($out, $this->value);
-		}else{
-			LE::writeUnsignedInt($out, $this->value);
-		}
+		LE::writeSignedInt($out, $this->value);
 	}
 
 	public static function decode(ByteBufferReader $in, bool $isPlayerModifiable, bool $isStartGame) : self{
-		return new self($isStartGame ? VarInt::readUnsignedInt($in) : LE::readUnsignedInt($in), $isPlayerModifiable);
+		return new self(LE::readSignedInt($in), $isPlayerModifiable);
 	}
 }

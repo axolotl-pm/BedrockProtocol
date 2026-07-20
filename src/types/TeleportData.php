@@ -12,31 +12,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\recipe;
+namespace pocketmine\network\mcpe\protocol\types;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
+use pmmp\encoding\LE;
 
-final class ComplexAliasItemDescriptor implements ItemDescriptor{
-	use GetTypeIdFromConstTrait;
-
-	public const ID = ItemDescriptorType::COMPLEX_ALIAS;
-
+/**
+ * @see MovePlayerPacket
+ */
+final class TeleportData{
 	public function __construct(
-		private string $alias
+		private int $cause,
+		private int $item
 	){}
 
-	public function getAlias() : string{ return $this->alias; }
+	public function getCause() : int{ return $this->cause; }
+	public function getItem() : int{ return $this->item; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$alias = CommonTypes::getString($in);
-
-		return new self($alias);
+		$cause = LE::readSignedInt($in);
+		$item = LE::readSignedInt($in);
+		return new self($cause, $item);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::putString($out, $this->alias);
+		LE::writeSignedInt($out, $this->cause);
+		LE::writeSignedInt($out, $this->item);
 	}
 }

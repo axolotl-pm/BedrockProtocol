@@ -45,7 +45,6 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$this->skin = CommonTypes::getSkin($in);
 		$this->newSkinName = CommonTypes::getString($in);
 		$this->oldSkinName = CommonTypes::getString($in);
-		$this->skin->setVerified(CommonTypes::getBool($in));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -53,7 +52,6 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 		CommonTypes::putSkin($out, $this->skin);
 		CommonTypes::putString($out, $this->newSkinName);
 		CommonTypes::putString($out, $this->oldSkinName);
-		CommonTypes::putBool($out, $this->skin->isVerified());
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

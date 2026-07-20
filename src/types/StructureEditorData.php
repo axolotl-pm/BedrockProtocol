@@ -23,7 +23,6 @@ class StructureEditorData{
 	public const TYPE_EXPORT = 5;
 
 	public string $structureName;
-	public string $filteredStructureName;
 	public string $structureDataField;
 	public bool $includePlayers;
 	public bool $showBoundingBox;

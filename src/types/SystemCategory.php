@@ -16,25 +16,32 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
-/**
- * @see ServerPresenceInfoPacket&ServerJoinInformation
- */
-final class PresenceInfo{
+final class SystemCategory{
+
 	public function __construct(
-		private ?string $richPresenceId
+		private string $categoryName,
+		private int $systemIndex,
 	){}
 
-	public function getRichPresenceId() : ?string{ return $this->richPresenceId; }
+	public function getCategoryName() : string{ return $this->categoryName; }
+
+	public function getSystemIndex() : int{ return $this->systemIndex; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$richPresenceId = CommonTypes::readOptional($in, CommonTypes::getString(...));
+		$categoryName = CommonTypes::getString($in);
+		$systemIndex = LE::readUnsignedLong($in);
 
-		return new self($richPresenceId);
+		return new self(
+			$categoryName,
+			$systemIndex
+		);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::writeOptional($out, $this->richPresenceId, CommonTypes::putString(...));
+		CommonTypes::putString($out, $this->categoryName);
+		LE::writeUnsignedLong($out, $this->systemIndex);
 	}
 }

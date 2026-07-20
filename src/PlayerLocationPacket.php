@@ -16,7 +16,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\LE;
+use pmmp\encoding\VarInt;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerLocationType;
@@ -54,8 +54,9 @@ class PlayerLocationPacket extends DataPacket implements ClientboundPacket{
 	public function getPosition() : ?Vector3{ return $this->position; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->type = PlayerLocationType::fromPacket(LE::readUnsignedInt($in));
 		$this->actorUniqueId = CommonTypes::getActorUniqueId($in);
+		$this->type = PlayerLocationType::fromPacket(VarInt::readUnsignedInt($in));
+		VarInt::readSignedInt($in); //WTF mojang???
 
 		if($this->type === PlayerLocationType::PLAYER_LOCATION_COORDINATES){
 			$this->position = CommonTypes::getVector3($in);
@@ -63,8 +64,9 @@ class PlayerLocationPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		LE::writeUnsignedInt($out, $this->type->value);
 		CommonTypes::putActorUniqueId($out, $this->actorUniqueId);
+		VarInt::writeUnsignedInt($out, $this->type->value);
+		VarInt::writeSignedInt($out, 0); //different types but the same value, really mojang???
 
 		if($this->type === PlayerLocationType::PLAYER_LOCATION_COORDINATES){
 			if($this->position === null){ // this should never be the case

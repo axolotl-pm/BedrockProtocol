@@ -16,7 +16,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\LE;
+use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use Ramsey\Uuid\UuidInterface;
@@ -75,7 +75,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->worldTemplateId = CommonTypes::getUUID($in);
 		$this->worldTemplateVersion = CommonTypes::getString($in);
 
-		$resourcePackCount = LE::readUnsignedShort($in);
+		$resourcePackCount = VarInt::readUnsignedInt($in);
 		while($resourcePackCount-- > 0){
 			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($in);
 		}
@@ -88,7 +88,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		CommonTypes::putBool($out, $this->forceDisableVibrantVisuals);
 		CommonTypes::putUUID($out, $this->worldTemplateId);
 		CommonTypes::putString($out, $this->worldTemplateVersion);
-		LE::writeUnsignedShort($out, count($this->resourcePackEntries));
+		VarInt::writeUnsignedInt($out, count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
 			$entry->write($out);
 		}

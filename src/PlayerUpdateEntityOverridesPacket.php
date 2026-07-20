@@ -71,9 +71,13 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 	public function getFloatOverrideValue() : ?float{ return $this->floatOverrideValue; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->actorRuntimeId = CommonTypes::getActorRuntimeId($in);
+		$this->actorRuntimeId = CommonTypes::getActorUniqueId($in);
 		$this->propertyIndex = VarInt::readUnsignedInt($in);
-		$this->updateType = OverrideUpdateType::fromPacket(Byte::readUnsigned($in));
+		$this->updateType = OverrideUpdateType::fromPacket(VarInt::readUnsignedInt($in));
+		$type = Byte::readUnsigned($in);
+		if($type !== $this->updateType->value){
+			throw new \UnexpectedValueException("Expected Type {$this->updateType->value}, got $type");
+		}
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			$this->intOverrideValue = LE::readSignedInt($in);
 		}elseif($this->updateType === OverrideUpdateType::SET_FLOAT_OVERRIDE){
@@ -82,8 +86,9 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		CommonTypes::putActorRuntimeId($out, $this->actorRuntimeId);
+		CommonTypes::putActorUniqueId($out, $this->actorRuntimeId);
 		VarInt::writeUnsignedInt($out, $this->propertyIndex);
+		VarInt::writeUnsignedInt($out, $this->updateType->value);
 		Byte::writeUnsigned($out, $this->updateType->value);
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			if($this->intOverrideValue === null){ // this should never be the case

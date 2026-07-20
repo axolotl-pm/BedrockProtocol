@@ -12,12 +12,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\recipe;
+namespace pocketmine\network\mcpe\protocol\types\skin;
 
-final class ItemDescriptorType{
+use pocketmine\network\mcpe\protocol\types\PacketOrdinalEnumTrait;
 
-	public const EMPTY = 0;
-	public const NAME = 1;
-	public const MOLANG = 2;
-	public const TAG = 3;
+enum ArmSizeType : string{
+	use PacketOrdinalEnumTrait;
+
+	case SLIM = "slim";
+	case WIDE = "wide";
 }
