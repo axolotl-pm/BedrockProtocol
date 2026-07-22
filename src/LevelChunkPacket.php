@@ -44,8 +44,9 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 	 * @param int[] $usedBlobHashes
 	 * @phpstan-param DimensionIds::* $dimensionId
 	 */
-	public static function create(ChunkPosition $chunkPosition,int
-		$dimensionId,
+	public static function create(
+		ChunkPosition $chunkPosition,
+		int $dimensionId,
 		int $subChunkCount,
 		?int $clientRequestSubChunkLimit,
 		bool $cacheEnabled,
