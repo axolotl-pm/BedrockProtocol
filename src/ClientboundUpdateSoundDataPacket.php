@@ -37,13 +37,13 @@ class ClientboundUpdateSoundDataPacket extends DataPacket implements Clientbound
 	 */
 	public static function create(
 		int $serverSoundHandle,
-		?ClientboundUpdateSoundData $stop = null,
-		?ClientboundUpdateSoundData $setVolume = null,
-		?ClientboundUpdateSoundData $setPitch = null,
-		?ClientboundUpdateSoundData $fade = null,
-		?ClientboundUpdateSoundData $seekTo = null,
-		?ClientboundUpdateSoundData $pause = null,
-		?ClientboundUpdateSoundData $resume = null,
+		?ClientboundUpdateSoundData $stop,
+		?ClientboundUpdateSoundData $setVolume,
+		?ClientboundUpdateSoundData $setPitch,
+		?ClientboundUpdateSoundData $fade,
+		?ClientboundUpdateSoundData $seekTo,
+		?ClientboundUpdateSoundData $pause,
+		?ClientboundUpdateSoundData $resume,
 	) : self{
 		$result = new self;
 		$result->serverSoundHandle = $serverSoundHandle;
@@ -58,6 +58,20 @@ class ClientboundUpdateSoundDataPacket extends DataPacket implements Clientbound
 	}
 
 	public function getServerSoundHandle() : int{ return $this->serverSoundHandle; }
+
+	public function getStop() : ?ClientboundUpdateSoundData{ return $this->stop; }
+
+	public function getSetVolume() : ?ClientboundUpdateSoundData{ return $this->setVolume; }
+
+	public function getSetPitch() : ?ClientboundUpdateSoundData{ return $this->setPitch; }
+
+	public function getFade() : ?ClientboundUpdateSoundData{ return $this->fade; }
+
+	public function getSeekTo() : ?ClientboundUpdateSoundData{ return $this->seekTo; }
+
+	public function getPause() : ?ClientboundUpdateSoundData{ return $this->pause; }
+
+	public function getResume() : ?ClientboundUpdateSoundData{ return $this->resume; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->serverSoundHandle = LE::readUnsignedLong($in);

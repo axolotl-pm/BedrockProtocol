@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use Ramsey\Uuid\UuidInterface;
@@ -112,6 +113,10 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		$width = VarInt::readSignedInt($in);
 		$height = VarInt::readSignedInt($in);
 		$input = [];
+		$ingredientCount = VarInt::readUnsignedInt($in);
+		if($height * $width !== $ingredientCount){
+			throw new PacketDecodeException("Expected input count (" . ($height * $width) . ") does not match actual input count (" . $ingredientCount . ") for recipe ID " . $recipeId);
+		}
 		for($row = 0; $row < $height; ++$row){
 			for($column = 0; $column < $width; ++$column){
 				$input[$row][$column] = CommonTypes::getRecipeIngredient($in);
@@ -137,6 +142,7 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		CommonTypes::putString($out, $this->recipeId);
 		VarInt::writeSignedInt($out, $this->getWidth());
 		VarInt::writeSignedInt($out, $this->getHeight());
+		VarInt::writeUnsignedInt($out, $this->getHeight() * $this->getWidth());
 		foreach($this->input as $row){
 			foreach($row as $ingredient){
 				CommonTypes::putRecipeIngredient($out, $ingredient);

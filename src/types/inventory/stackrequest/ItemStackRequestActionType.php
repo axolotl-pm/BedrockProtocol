@@ -38,4 +38,21 @@ final class ItemStackRequestActionType{
 	public const CRAFTING_LOOM = 15;
 	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 16;
 	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 17; //no idea what this is for
+
+	/**
+	 * Map constants to old IDs.
+	 */
+	public const LEGACY_TYPE_ID_MAP = [
+		self::LAB_TABLE_COMBINE => 9,
+		self::BEACON_PAYMENT => 10,
+		self::MINE_BLOCK => 11,
+		self::CRAFTING_RECIPE => 12,
+		self::CRAFTING_RECIPE_AUTO => 13,
+		self::CREATIVE_CREATE => 14,
+		self::CRAFTING_RECIPE_OPTIONAL => 15,
+		self::CRAFTING_GRINDSTONE => 16,
+		self::CRAFTING_LOOM => 17,
+		self::CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING => 18,
+		self::CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING => 19,
+	];
 }

@@ -20,7 +20,7 @@ use pmmp\encoding\ByteBufferWriter;
  * Describes what items are accepted in a recipe input.
  */
 interface ItemDescriptor{
-	public function getTypeId() : int;
+	public function getTypeId() : ItemDescriptorType;
 
 	public function write(ByteBufferWriter $out) : void;
 }

@@ -29,6 +29,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
+use pocketmine\network\mcpe\protocol\types\cereal\RedactableString;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\entity\BlockPosMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
@@ -46,6 +47,7 @@ use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\IntGameRule;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\NullGameRule;
 use pocketmine\network\mcpe\protocol\types\recipe\ItemDescriptorType;
 use pocketmine\network\mcpe\protocol\types\recipe\MolangItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\NameItemDescriptor;
@@ -285,13 +287,12 @@ final class CommonTypes{
 	}
 
 	/**
-	 * @throws PacketDecodeException
 	 * @throws DataDecodeException
 	 */
 	public static function getItemStackWithoutStackId(ByteBufferReader $in) : ItemStack{
 		[$id, $count, $meta] = self::getItemStackHeader($in);
 
-		return $id !== 0 ? self::getItemStackFooter($in, $id, $meta, $count) : ItemStack::null();
+		return self::getItemStackFooter($in, $id, $meta, $count);
 
 	}
 
@@ -362,19 +363,21 @@ final class CommonTypes{
 
 	/** @throws DataDecodeException */
 	public static function getRecipeIngredient(ByteBufferReader $in) : RecipeIngredient{
-		$controlType = VarInt::readUnsignedInt($in);
-		$descriptorType = Byte::readUnsigned($in);
-
-		if($controlType !== $descriptorType){
-			throw new PacketDecodeException("RecipeIngredient descriptor type mismatch ($controlType != $descriptorType)");
+		$variant = VarInt::readUnsignedInt($in);
+		if($variant === 0){
+			VarInt::readSignedInt($in); //meta
+			$count = VarInt::readSignedInt($in);
+			return new RecipeIngredient(null, $count);
 		}
+		$descriptorType = ItemDescriptorType::fromPacket(self::getString($in));
+
 		$descriptor = match($descriptorType){
 			ItemDescriptorType::NAME => NameItemDescriptor::read($in),
-			ItemDescriptorType::TAG => TagItemDescriptor::read($in),
+			ItemDescriptorType::ITEM_TAG => TagItemDescriptor::read($in),
 			ItemDescriptorType::MOLANG => MolangItemDescriptor::read($in),
 			default => null
 		};
-		$count = LE::readSignedShort($in);
+		$count = VarInt::readSignedInt($in);
 
 		return new RecipeIngredient($descriptor, $count);
 	}
@@ -383,11 +386,17 @@ final class CommonTypes{
 		$type = $ingredient->getDescriptor();
 		$typeId = $type?->getTypeId() ?? ItemDescriptorType::EMPTY;
 
-		VarInt::writeUnsignedInt($out, $typeId);
-		Byte::writeUnsigned($out, $typeId);
+		$isValid = $typeId === ItemDescriptorType::EMPTY;
+		VarInt::writeUnsignedInt($out, $isValid ? 1 : 0);
+		if(!$isValid){
+			VarInt::writeSignedInt($out, 0x7fff); //meta
+			VarInt::writeSignedInt($out, 0);
+			return;
+		}
+		self::putString($out, $typeId->value);
 		$type?->write($out);
 
-		LE::writeSignedShort($out, $ingredient->getCount());
+		VarInt::writeSignedInt($out, $ingredient->getCount());
 	}
 
 	/**
@@ -558,6 +567,7 @@ final class CommonTypes{
 	/** @throws DataDecodeException */
 	private static function readGameRule(ByteBufferReader $in, int $type, bool $isPlayerModifiable, bool $isStartGame) : GameRule{
 		return match($type){
+			NullGameRule::ID => NullGameRule::decode($in, $isPlayerModifiable),
 			BoolGameRule::ID => BoolGameRule::decode($in, $isPlayerModifiable),
 			IntGameRule::ID => IntGameRule::decode($in, $isPlayerModifiable, $isStartGame),
 			FloatGameRule::ID => FloatGameRule::decode($in, $isPlayerModifiable),
@@ -690,7 +700,7 @@ final class CommonTypes{
 	public static function getStructureEditorData(ByteBufferReader $in) : StructureEditorData{
 		$result = new StructureEditorData();
 
-		$result->structureName = self::getString($in);
+		$result->structureName = RedactableString::read($in);
 		$result->structureDataField = self::getString($in);
 
 		$result->includePlayers = self::getBool($in);
@@ -698,13 +708,13 @@ final class CommonTypes{
 
 		$result->structureBlockType = VarInt::readSignedInt($in);
 		$result->structureSettings = self::getStructureSettings($in);
-		$result->structureRedstoneSaveMode = VarInt::readSignedInt($in);
+		$result->structureRedstoneSaveMode = Byte::readUnsigned($in);
 
 		return $result;
 	}
 
 	public static function putStructureEditorData(ByteBufferWriter $out, StructureEditorData $structureEditorData) : void{
-		self::putString($out, $structureEditorData->structureName);
+		$structureEditorData->structureName->write($out);
 		self::putString($out, $structureEditorData->structureDataField);
 
 		self::putBool($out, $structureEditorData->includePlayers);
@@ -712,7 +722,7 @@ final class CommonTypes{
 
 		VarInt::writeSignedInt($out, $structureEditorData->structureBlockType);
 		self::putStructureSettings($out, $structureEditorData->structureSettings);
-		VarInt::writeSignedInt($out, $structureEditorData->structureRedstoneSaveMode);
+		Byte::writeUnsigned($out, $structureEditorData->structureRedstoneSaveMode);
 	}
 
 	/** @throws PacketDecodeException */

@@ -19,6 +19,7 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\types\cereal\RedactableString;
 
 final class ItemStackResponseSlotInfo{
 	public function __construct(
@@ -26,7 +27,7 @@ final class ItemStackResponseSlotInfo{
 		private int $hotbarSlot,
 		private int $count,
 		private ?int $itemStackId,
-		private string $customName,
+		private RedactableString $customName,
 		private int $durabilityCorrection
 	){}
 
@@ -38,7 +39,7 @@ final class ItemStackResponseSlotInfo{
 
 	public function getItemStackId() : ?int{ return $this->itemStackId; }
 
-	public function getCustomName() : string{ return $this->customName; }
+	public function getCustomName() : RedactableString{ return $this->customName; }
 
 	public function getDurabilityCorrection() : int{ return $this->durabilityCorrection; }
 
@@ -46,8 +47,8 @@ final class ItemStackResponseSlotInfo{
 		$slot = Byte::readUnsigned($in);
 		$hotbarSlot = Byte::readUnsigned($in);
 		$count = Byte::readUnsigned($in);
-		$itemStackId = CommonTypes::readOptional($in, CommonTypes::readServerItemStackId(...));
-		$customName = CommonTypes::getString($in);
+		$itemStackId = CommonTypes::readOptional($in, CommonTypes::readItemStackNetIdVariant(...));
+		$customName = RedactableString::read($in);
 		$durabilityCorrection = VarInt::readSignedInt($in);
 		return new self($slot, $hotbarSlot, $count, $itemStackId, $customName, $durabilityCorrection);
 	}
@@ -56,8 +57,8 @@ final class ItemStackResponseSlotInfo{
 		Byte::writeUnsigned($out, $this->slot);
 		Byte::writeUnsigned($out, $this->hotbarSlot);
 		Byte::writeUnsigned($out, $this->count);
-		CommonTypes::writeOptional($out, $this->itemStackId, CommonTypes::writeServerItemStackId(...));
-		CommonTypes::putString($out, $this->customName);
+		CommonTypes::writeOptional($out, $this->itemStackId, CommonTypes::writeItemStackNetIdVariant(...));
+		$this->customName->write($out);
 		VarInt::writeSignedInt($out, $this->durabilityCorrection);
 	}
 }

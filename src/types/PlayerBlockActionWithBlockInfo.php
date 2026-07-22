@@ -54,6 +54,7 @@ final class PlayerBlockActionWithBlockInfo implements PlayerBlockAction{
 		return match($actionType){
 			PlayerAction::ABORT_BREAK,
 			PlayerAction::START_BREAK,
+			PlayerAction::STOP_BREAK,
 			PlayerAction::CRACK_BREAK,
 			PlayerAction::PREDICT_DESTROY_BLOCK,
 			PlayerAction::CONTINUE_DESTROY_BLOCK => true,

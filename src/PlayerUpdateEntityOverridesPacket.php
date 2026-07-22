@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
@@ -73,10 +72,10 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->actorRuntimeId = CommonTypes::getActorUniqueId($in);
 		$this->propertyIndex = VarInt::readUnsignedInt($in);
-		$this->updateType = OverrideUpdateType::fromPacket(VarInt::readUnsignedInt($in));
-		$type = Byte::readUnsigned($in);
-		if($type !== $this->updateType->value){
-			throw new \UnexpectedValueException("Expected Type {$this->updateType->value}, got $type");
+		$this->updateType = OverrideUpdateType::fromOrdinal(VarInt::readUnsignedInt($in));
+		$type = OverrideUpdateType::fromPacket(CommonTypes::getString($in));
+		if($type->value !== $this->updateType->value){
+			throw new \UnexpectedValueException("Expected Type {$this->updateType->value}, got {$type->value}");
 		}
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			$this->intOverrideValue = LE::readSignedInt($in);
@@ -88,8 +87,8 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putActorUniqueId($out, $this->actorRuntimeId);
 		VarInt::writeUnsignedInt($out, $this->propertyIndex);
-		VarInt::writeUnsignedInt($out, $this->updateType->value);
-		Byte::writeUnsigned($out, $this->updateType->value);
+		VarInt::writeUnsignedInt($out, $this->updateType->ordinal());
+		CommonTypes::putString($out, $this->updateType->value);
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			if($this->intOverrideValue === null){ // this should never be the case
 				throw new \LogicException("PlayerUpdateEntityOverridesPacket with type SET_INT_OVERRIDE requires intOverrideValue to be provided");

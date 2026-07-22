@@ -14,14 +14,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-final class GameRuleType{
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
 
-	private function __construct(){
+final class NullGameRule extends GameRule{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = GameRuleType::NULL;
+
+	public function __construct(bool $isPlayerModifiable){
+		parent::__construct($isPlayerModifiable);
+	}
+
+	public function encode(ByteBufferWriter $out, bool $isStartGame) : void{
 		//NOOP
 	}
 
-	public const NULL = 0;
-	public const BOOL = 1;
-	public const INT = 2;
-	public const FLOAT = 3;
+	public static function decode(ByteBufferReader $in, bool $isPlayerModifiable) : self{
+		return new self($isPlayerModifiable);
+	}
 }

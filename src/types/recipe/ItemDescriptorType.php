@@ -14,10 +14,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
-final class ItemDescriptorType{
+use pocketmine\network\mcpe\protocol\types\PacketOrdinalEnumTrait;
 
-	public const EMPTY = 0;
-	public const NAME = 1;
-	public const MOLANG = 2;
-	public const TAG = 3;
+enum ItemDescriptorType : string{
+	use PacketOrdinalEnumTrait;
+
+	case EMPTY = "empty";
+	case NAME = "name";
+	case MOLANG = "molang";
+	case ITEM_TAG = "item_tag";
 }

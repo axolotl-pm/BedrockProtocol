@@ -44,15 +44,15 @@ final class GrindstoneStackRequestAction extends ItemStackRequestAction{
 
 	public static function read(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::readRecipeNetId($in);
-		$repairCost = VarInt::readSignedInt($in); //WHY!!!!
 		$repetitions = Byte::readUnsigned($in);
+		$repairCost = VarInt::readSignedInt($in); //WHY!!!!
 
 		return new self($recipeId, $repairCost, $repetitions);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		CommonTypes::writeRecipeNetId($out, $this->recipeId);
-		VarInt::writeSignedInt($out, $this->repairCost);
 		Byte::writeUnsigned($out, $this->repetitions);
+		VarInt::writeSignedInt($out, $this->repairCost);
 	}
 }

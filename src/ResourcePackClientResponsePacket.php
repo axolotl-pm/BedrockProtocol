@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
@@ -52,7 +51,7 @@ class ResourcePackClientResponsePacket extends DataPacket implements Serverbound
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->status = Byte::readUnsigned($in);
+		$this->status = VarInt::readUnsignedInt($in);
 		$this->statusId = CommonTypes::getString($in);
 		$this->packIds = [];
 		if($this->status === self::STATUS_SEND_PACKS){
@@ -64,7 +63,7 @@ class ResourcePackClientResponsePacket extends DataPacket implements Serverbound
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		Byte::writeUnsigned($out, $this->status);
+		VarInt::writeUnsignedInt($out, $this->status);
 		CommonTypes::putString($out, $this->statusId);
 		if($this->status === self::STATUS_SEND_PACKS){
 			VarInt::writeUnsignedInt($out, count($this->packIds));

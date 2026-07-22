@@ -12,37 +12,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\recipe;
+namespace pocketmine\network\mcpe\protocol\types\cereal;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
-final class MolangItemDescriptor implements ItemDescriptor{
+final class RedactableString{
 
 	public function __construct(
-		private string $molangExpression,
-		private int $molangVersion
+		private string $unredacted,
+		private ?string $redacted = null
 	){}
 
-	public function getTypeId() : ItemDescriptorType{
-		return ItemDescriptorType::MOLANG;
-	}
+	public function getUnredacted() : string{ return $this->unredacted; }
 
-	public function getMolangExpression() : string{ return $this->molangExpression; }
-
-	public function getMolangVersion() : int{ return $this->molangVersion; }
+	public function getRedacted() : ?string{ return $this->redacted; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$expression = CommonTypes::getString($in);
-		$version = LE::readUnsignedShort($in);
-
-		return new self($expression, $version);
+		$unredacted = CommonTypes::getString($in);
+		$redacted = CommonTypes::readOptional($in, CommonTypes::getString(...));
+		return new self($unredacted, $redacted);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::putString($out, $this->molangExpression);
-		LE::writeUnsignedShort($out, $this->molangVersion);
+		CommonTypes::putString($out, $this->unredacted);
+		CommonTypes::writeOptional($out, $this->redacted, CommonTypes::putString(...));
 	}
 }

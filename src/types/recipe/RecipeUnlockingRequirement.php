@@ -41,24 +41,26 @@ final class RecipeUnlockingRequirement{
 
 	public static function read(ByteBufferReader $in) : self{
 		$unlockingContext = RecipeUnlockingContext::fromPacket(VarInt::readSignedInt($in));
-		$unlockingIngredients = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
-			$result = [];
+		$unlockingIngredients = null;
+		$hasUnlockingIngredients = CommonTypes::getBool($in);
+		if($hasUnlockingIngredients){
+			$unlockingIngredients = [];
 			for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-				$result[] = CommonTypes::getRecipeIngredient($in);
+				$unlockingIngredients[] = CommonTypes::getRecipeIngredient($in);
 			}
-			return $result;
-		});
+		}
 
 		return new self($unlockingContext, $unlockingIngredients);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		VarInt::writeSignedInt($out, $this->unlockingContext->value);
-		CommonTypes::writeOptional($out, $this->unlockingIngredients, static function(ByteBufferWriter $out, array $unlockingIngredients) : void{
-			VarInt::writeUnsignedInt($out, count($unlockingIngredients));
-			foreach($unlockingIngredients as $ingredient){
+		CommonTypes::putBool($out, $this->unlockingIngredients !== null);
+		if($this->unlockingIngredients !== null){
+			VarInt::writeUnsignedInt($out, count($this->unlockingIngredients));
+			foreach($this->unlockingIngredients as $ingredient){
 				CommonTypes::putRecipeIngredient($out, $ingredient);
 			}
-		});
+		}
 	}
 }
