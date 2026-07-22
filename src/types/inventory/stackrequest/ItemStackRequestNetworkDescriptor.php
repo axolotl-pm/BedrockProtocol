@@ -35,14 +35,14 @@ final class ItemStackRequestNetworkDescriptor{
 	public function getExtraData() : string{ return $this->extraData; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$ingredient = CommonTypes::getRecipeIngredient($in);
+		$ingredient = CommonTypes::getItemStackIngredient($in);
 		$blockRuntimeId = VarInt::readUnsignedInt($in);
 		$extraData = CommonTypes::getString($in);
 		return new self($ingredient, $blockRuntimeId, $extraData);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::putRecipeIngredient($out, $this->ingredient);
+		CommonTypes::putItemStackIngredient($out, $this->ingredient);
 		VarInt::writeUnsignedInt($out, $this->blockRuntimeId);
 		CommonTypes::putString($out, $this->extraData);
 	}

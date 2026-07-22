@@ -66,7 +66,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$result->mode = $mode;
 		$result->onGround = $onGround;
 		$result->ridingActorRuntimeId = $ridingActorRuntimeId;
-		$result->teleportData = $teleportData;
+		$result->teleportData = $mode === self::MODE_TELEPORT && $teleportData === null ? new TeleportData(0, 0) : $teleportData;
 		$result->tick = $tick;
 		return $result;
 	}

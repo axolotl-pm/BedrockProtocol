@@ -386,7 +386,7 @@ final class CommonTypes{
 		$type = $ingredient->getDescriptor();
 		$typeId = $type?->getTypeId() ?? ItemDescriptorType::EMPTY;
 
-		$isValid = $typeId === ItemDescriptorType::EMPTY;
+		$isValid = $typeId !== ItemDescriptorType::EMPTY;
 		VarInt::writeUnsignedInt($out, $isValid ? 1 : 0);
 		if(!$isValid){
 			VarInt::writeSignedInt($out, 0x7fff); //meta
@@ -397,6 +397,37 @@ final class CommonTypes{
 		$type?->write($out);
 
 		VarInt::writeSignedInt($out, $ingredient->getCount());
+	}
+
+	/** @throws DataDecodeException */
+	public static function getItemStackIngredient(ByteBufferReader $in) : RecipeIngredient{
+		$descriptorType = ItemDescriptorType::fromOrdinal(VarInt::readUnsignedInt($in));
+		Byte::readUnsigned($in); //validation byte, always matches type
+
+		$descriptor = match($descriptorType){
+			ItemDescriptorType::NAME => NameItemDescriptor::read($in),
+			ItemDescriptorType::ITEM_TAG => new TagItemDescriptor(self::getString($in)),
+			ItemDescriptorType::MOLANG => MolangItemDescriptor::read($in),
+			default => null
+		};
+
+		$count = LE::readSignedShort($in);
+		return new RecipeIngredient($descriptor, $count);
+	}
+
+	public static function putItemStackIngredient(ByteBufferWriter $out, RecipeIngredient $ingredient) : void{
+		$type = $ingredient->getDescriptor();
+		$typeId = $type?->getTypeId() ?? ItemDescriptorType::EMPTY;
+
+		VarInt::writeUnsignedInt($out, $typeId->ordinal());
+		Byte::writeUnsigned($out, $typeId->ordinal()); //validation byte
+
+		match(true){
+			$type instanceof TagItemDescriptor => CommonTypes::putString($out, $type->getTag()),
+			default => $type?->write($out)
+		};
+
+		LE::writeSignedShort($out, $ingredient->getCount());
 	}
 
 	/**
