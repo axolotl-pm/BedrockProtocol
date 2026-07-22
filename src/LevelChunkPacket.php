@@ -41,17 +41,24 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param int[]|null $usedBlobHashes
+	 * @param int[] $usedBlobHashes
 	 * @phpstan-param DimensionIds::* $dimensionId
 	 */
-	public static function create(ChunkPosition $chunkPosition, int $dimensionId, int $subChunkCount, ?int $clientRequestSubChunkLimit, bool $cacheEnabled, ?array $usedBlobHashes, string $extraPayload) : self{
+	public static function create(ChunkPosition $chunkPosition,int
+		$dimensionId,
+		int $subChunkCount,
+		?int $clientRequestSubChunkLimit,
+		bool $cacheEnabled,
+		array $usedBlobHashes,
+		string $extraPayload,
+	) : self{
 		$result = new self;
 		$result->chunkPosition = $chunkPosition;
 		$result->dimensionId = $dimensionId;
 		$result->subChunkCount = $subChunkCount;
 		$result->clientRequestSubChunkLimit = $clientRequestSubChunkLimit;
 		$result->cacheEnabled = $cacheEnabled;
-		$result->usedBlobHashes = $usedBlobHashes ?? [];
+		$result->usedBlobHashes = $usedBlobHashes;
 		$result->extraPayload = $extraPayload;
 		return $result;
 	}

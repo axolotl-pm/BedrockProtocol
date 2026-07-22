@@ -26,7 +26,6 @@ use pocketmine\network\mcpe\protocol\types\InteractionMode;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\ItemInteractionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
-use pocketmine\network\mcpe\protocol\types\PlayerAuthInputVehicleInfo;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockAction;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\mcpe\protocol\types\PlayMode;
@@ -52,7 +51,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	private ?ItemStackRequest $itemStackRequest = null;
 	/** @var PlayerBlockAction[]|null */
 	private ?array $blockActions = null;
-	private ?PlayerAuthInputVehicleInfo $vehicleInfo = null;
+	private ?Vector2 $vehicleRotation = null;
+	private ?int $predictedVehicleActorUniqueId = null;
 	private float $analogMoveVecX;
 	private float $analogMoveVecZ;
 	private Vector3 $cameraOrientation;
@@ -60,7 +60,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param PlayerBlockAction[]|null $blockActions
+	 * @param PlayerBlockAction[] $blockActions
 	 */
 	private static function internalCreate(
 		Vector3 $position,
@@ -79,7 +79,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		?ItemInteractionData $itemInteractionData,
 		?ItemStackRequest $itemStackRequest,
 		?array $blockActions,
-		?PlayerAuthInputVehicleInfo $vehicleInfo,
+		?Vector2 $vehicleRotation,
+		?int $predictedVehicleActorUniqueId,
 		float $analogMoveVecX,
 		float $analogMoveVecZ,
 		Vector3 $cameraOrientation,
@@ -102,7 +103,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$result->itemInteractionData = $itemInteractionData;
 		$result->itemStackRequest = $itemStackRequest;
 		$result->blockActions = $blockActions;
-		$result->vehicleInfo = $vehicleInfo;
+		$result->vehicleRotation = $vehicleRotation;
+		$result->predictedVehicleActorUniqueId = $predictedVehicleActorUniqueId;
 		$result->analogMoveVecX = $analogMoveVecX;
 		$result->analogMoveVecZ = $analogMoveVecZ;
 		$result->cameraOrientation = $cameraOrientation;
@@ -134,7 +136,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		?ItemInteractionData $itemInteractionData,
 		?ItemStackRequest $itemStackRequest,
 		?array $blockActions,
-		?PlayerAuthInputVehicleInfo $vehicleInfo,
+		?Vector2 $vehicleRotation,
+		?int $predictedVehicleActorUniqueId,
 		float $analogMoveVecX,
 		float $analogMoveVecZ,
 		Vector3 $cameraOrientation,
@@ -147,7 +150,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_ITEM_STACK_REQUEST, $itemStackRequest !== null);
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_ITEM_INTERACTION, $itemInteractionData !== null);
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_BLOCK_ACTIONS, $blockActions !== null);
-		$inputFlags->set(PlayerAuthInputFlags::IN_CLIENT_PREDICTED_VEHICLE, $vehicleInfo !== null);
+		$inputFlags->set(PlayerAuthInputFlags::IN_CLIENT_PREDICTED_VEHICLE, $predictedVehicleActorUniqueId !== null);
 
 		return self::internalCreate(
 			$position,
@@ -166,7 +169,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			$itemInteractionData,
 			$itemStackRequest,
 			$blockActions,
-			$vehicleInfo,
+			$vehicleRotation,
+			$predictedVehicleActorUniqueId,
 			$analogMoveVecX,
 			$analogMoveVecZ,
 			$cameraOrientation,
@@ -251,7 +255,9 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		return $this->blockActions;
 	}
 
-	public function getVehicleInfo() : ?PlayerAuthInputVehicleInfo{ return $this->vehicleInfo; }
+	public function getVehicleRotation() : ?Vector2{ return $this->vehicleRotation; }
+
+	public function getPredictedVehicleActorUniqueId() : ?int{ return $this->predictedVehicleActorUniqueId; }
 
 	public function getAnalogMoveVecX() : float{ return $this->analogMoveVecX; }
 
@@ -314,9 +320,13 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			});
 		}
 
-		$hasVehicleInfo = CommonTypes::getBool($in);
-		if($hasVehicleInfo){
-			$this->vehicleInfo = CommonTypes::readOptional($in, PlayerAuthInputVehicleInfo::read(...));
+		$hasVehicleRotation = CommonTypes::getBool($in);
+		if($hasVehicleRotation){
+			$this->vehicleRotation = CommonTypes::readOptional($in, CommonTypes::getVector2(...));
+		}
+		$hasPredictedVehicleActorUniqueId = CommonTypes::getBool($in);
+		if($hasPredictedVehicleActorUniqueId){
+			$this->predictedVehicleActorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
 		}
 
 		$this->analogMoveVecX = LE::readFloat($in);
@@ -372,9 +382,9 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		});
 
 		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->vehicleInfo, static function(ByteBufferWriter $out, PlayerAuthInputVehicleInfo $info) : void{
-			$info->write($out);
-		});
+		CommonTypes::writeOptional($out, $this->vehicleRotation, CommonTypes::putVector2(...));
+		CommonTypes::putBool($out, true);
+		CommonTypes::writeOptional($out, $this->predictedVehicleActorUniqueId, CommonTypes::putActorUniqueId(...));
 
 		LE::writeFloat($out, $this->analogMoveVecX);
 		LE::writeFloat($out, $this->analogMoveVecZ);

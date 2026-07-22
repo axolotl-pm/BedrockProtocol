@@ -17,7 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
@@ -38,13 +38,13 @@ final class CraftRecipeStackRequestAction extends ItemStackRequestAction{
 	public function getRepetitions() : int{ return $this->repetitions; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$recipeId = CommonTypes::readRecipeNetId($in);
+		$recipeId = VarInt::readUnsignedInt($in);
 		$repetitions = Byte::readUnsigned($in);
 		return new self($recipeId, $repetitions);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::writeRecipeNetId($out, $this->recipeId);
+		VarInt::writeUnsignedInt($out, $this->recipeId);
 		Byte::writeUnsigned($out, $this->repetitions);
 	}
 }

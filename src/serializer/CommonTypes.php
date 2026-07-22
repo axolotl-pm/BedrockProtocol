@@ -789,6 +789,15 @@ final class CommonTypes{
 	}
 
 	/** @throws DataDecodeException */
+	public static function readItemStackNetId(ByteBufferReader $in) : int{
+		return VarInt::readSignedInt($in);
+	}
+
+	public static function writeItemStackNetId(ByteBufferWriter $out, int $id) : void{
+		VarInt::writeSignedInt($out, $id);
+	}
+
+	/** @throws DataDecodeException */
 	public static function readItemStackRequestId(ByteBufferReader $in) : int{
 		return VarInt::readSignedInt($in);
 	}

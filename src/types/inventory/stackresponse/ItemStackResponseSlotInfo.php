@@ -47,7 +47,7 @@ final class ItemStackResponseSlotInfo{
 		$slot = Byte::readUnsigned($in);
 		$hotbarSlot = Byte::readUnsigned($in);
 		$count = Byte::readUnsigned($in);
-		$itemStackId = CommonTypes::readOptional($in, CommonTypes::readItemStackNetIdVariant(...));
+		$itemStackId = CommonTypes::readOptional($in, CommonTypes::readItemStackNetId(...));
 		$customName = RedactableString::read($in);
 		$durabilityCorrection = VarInt::readSignedInt($in);
 		return new self($slot, $hotbarSlot, $count, $itemStackId, $customName, $durabilityCorrection);
@@ -57,7 +57,7 @@ final class ItemStackResponseSlotInfo{
 		Byte::writeUnsigned($out, $this->slot);
 		Byte::writeUnsigned($out, $this->hotbarSlot);
 		Byte::writeUnsigned($out, $this->count);
-		CommonTypes::writeOptional($out, $this->itemStackId, CommonTypes::writeItemStackNetIdVariant(...));
+		CommonTypes::writeOptional($out, $this->itemStackId, CommonTypes::writeItemStackNetId(...));
 		$this->customName->write($out);
 		VarInt::writeSignedInt($out, $this->durabilityCorrection);
 	}
