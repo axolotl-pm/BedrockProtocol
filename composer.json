@@ -1,5 +1,5 @@
 {
-    "name": "pocketmine/bedrock-protocol",
+    "name": "axolotl-pm/bedrock-protocol",
     "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
     "type": "library",
     "require": {
