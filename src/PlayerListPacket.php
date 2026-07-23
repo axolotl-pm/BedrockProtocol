@@ -100,7 +100,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				CommonTypes::putBool($out, $entry->isTeacher);
 				CommonTypes::putBool($out, $entry->isHost);
 				CommonTypes::putBool($out, $entry->isSubClient);
-				LE::writeUnsignedInt($out, ($entry->color ?? new Color(255, 255, 255))->toARGB());
+				LE::writeUnsignedInt($out, ($entry->color ?? new Color(0, 0, 0, 0))->toARGB());
 			}elseif($entry->type === self::TYPE_REMOVE){
 				CommonTypes::putUUID($out, $entry->uuid);
 			}

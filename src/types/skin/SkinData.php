@@ -51,13 +51,14 @@ class SkinData{
 		private bool $personaCapeOnClassic = false,
 		private bool $isPrimaryUser = true,
 		private bool $override = true,
-		private string $trustedSkinFlag = "",
+		private string $trustedSkinFlag = "true",
 		private string $profileHash = ""
 	){
 		$this->capeImage = $capeImage ?? new SkinImage(0, 0, "");
+		$this->geometryData = $geometryData === "" ? "null" : $geometryData;
 		//this has to be unique or the client will do stupid things
 		$this->fullSkinId = $fullSkinId ?? Uuid::uuid4()->toString();
-		$this->skinColor = $skinColor ?? new Color(255, 255, 255);
+		$this->skinColor = $skinColor ?? new Color(0, 0, 0, 0);
 	}
 
 	public function getSkinId() : string{
