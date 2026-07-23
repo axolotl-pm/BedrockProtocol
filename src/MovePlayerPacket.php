@@ -42,10 +42,42 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public ?TeleportData $teleportData = null;
 	public int $tick = 0;
 
+	public static function create(
+		int $actorRuntimeId,
+		Vector3 $position,
+		float $pitch,
+		float $yaw,
+		float $headYaw,
+		int $mode,
+		bool $onGround,
+		int $ridingActorRuntimeId,
+		?TeleportData $teleportData,
+		int $tick,
+	) : self{
+		if($mode === self::MODE_TELEPORT && $teleportData === null){
+			$teleportData = new TeleportData(0, 0);
+		}
+		return self::internalCreate($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, $teleportData, $tick);
+	}
+
+	public static function simple(
+		int $actorRuntimeId,
+		Vector3 $position,
+		float $pitch,
+		float $yaw,
+		float $headYaw,
+		int $mode,
+		bool $onGround,
+		int $ridingActorRuntimeId,
+		int $tick,
+	) : self{
+		return self::create($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, null, $tick);
+	}
+
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(
+	private static function internalCreate(
 		int $actorRuntimeId,
 		Vector3 $position,
 		float $pitch,
@@ -66,23 +98,9 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$result->mode = $mode;
 		$result->onGround = $onGround;
 		$result->ridingActorRuntimeId = $ridingActorRuntimeId;
-		$result->teleportData = $mode === self::MODE_TELEPORT && $teleportData === null ? new TeleportData(0, 0) : $teleportData;
+		$result->teleportData = $teleportData;
 		$result->tick = $tick;
 		return $result;
-	}
-
-	public static function simple(
-		int $actorRuntimeId,
-		Vector3 $position,
-		float $pitch,
-		float $yaw,
-		float $headYaw,
-		int $mode,
-		bool $onGround,
-		int $ridingActorRuntimeId,
-		int $tick,
-	) : self{
-		return self::create($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, null, $tick);
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
