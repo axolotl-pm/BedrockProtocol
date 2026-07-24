@@ -29,7 +29,6 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
-use pocketmine\network\mcpe\protocol\types\cereal\RedactableString;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\entity\BlockPosMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
@@ -731,7 +730,8 @@ final class CommonTypes{
 	public static function getStructureEditorData(ByteBufferReader $in) : StructureEditorData{
 		$result = new StructureEditorData();
 
-		$result->structureName = RedactableString::read($in);
+		$result->structureName = self::getString($in);
+		$result->filteredStructureName = self::readOptional($in, self::getString(...));
 		$result->structureDataField = self::getString($in);
 
 		$result->includePlayers = self::getBool($in);
@@ -745,7 +745,8 @@ final class CommonTypes{
 	}
 
 	public static function putStructureEditorData(ByteBufferWriter $out, StructureEditorData $structureEditorData) : void{
-		$structureEditorData->structureName->write($out);
+		self::putString($out, $structureEditorData->structureName);
+		self::writeOptional($out, $structureEditorData->filteredStructureName, self::putString(...));
 		self::putString($out, $structureEditorData->structureDataField);
 
 		self::putBool($out, $structureEditorData->includePlayers);

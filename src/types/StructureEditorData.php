@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\network\mcpe\protocol\types\cereal\RedactableString;
-
 class StructureEditorData{
 	public const TYPE_DATA = 0;
 	public const TYPE_SAVE = 1;
@@ -24,7 +22,8 @@ class StructureEditorData{
 	public const TYPE_INVALID = 4;
 	public const TYPE_EXPORT = 5;
 
-	public RedactableString $structureName;
+	public string $structureName;
+	public ?string $filteredStructureName;
 	public string $structureDataField;
 	public bool $includePlayers;
 	public bool $showBoundingBox;
