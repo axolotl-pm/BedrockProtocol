@@ -779,11 +779,11 @@ final class CommonTypes{
 
 	/** @throws DataDecodeException */
 	public static function readRecipeNetId(ByteBufferReader $in) : int{
-		return VarInt::readSignedInt($in);
+		return VarInt::readUnsignedInt($in);
 	}
 
 	public static function writeRecipeNetId(ByteBufferWriter $out, int $id) : void{
-		VarInt::writeSignedInt($out, $id);
+		VarInt::writeUnsignedInt($out, $id);
 	}
 
 	/** @throws DataDecodeException */
