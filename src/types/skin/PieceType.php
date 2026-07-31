@@ -19,6 +19,7 @@ use pocketmine\network\mcpe\protocol\types\PacketOrdinalEnumTrait;
 enum PieceType : string{
 	use PacketOrdinalEnumTrait;
 
+	case UNKNOWN = "persona_unknown";
 	case SKELETON = "persona_skeleton";
 	case BODY = "persona_body";
 	case SKIN = "persona_skin";

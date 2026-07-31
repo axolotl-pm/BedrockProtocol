@@ -20,6 +20,9 @@ use Ramsey\Uuid\Uuid;
 
 class SkinData{
 
+	public const ARM_SIZE_SLIM = ArmSizeType::SLIM;
+	public const ARM_SIZE_WIDE = ArmSizeType::WIDE;
+
 	private SkinImage $capeImage;
 	private string $fullSkinId;
 	private Color $skinColor;
@@ -41,7 +44,7 @@ class SkinData{
 		private string $animationData = "",
 		private string $capeId = "",
 		?string $fullSkinId = null,
-		private ArmSizeType $armSize = ArmSizeType::WIDE,
+		private ArmSizeType $armSize = self::ARM_SIZE_WIDE,
 		?Color $skinColor = null,
 		private array $personaPieces = [],
 		private array $pieceTintColors = [],

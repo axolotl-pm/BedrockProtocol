@@ -75,7 +75,7 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 		$this->updateType = OverrideUpdateType::fromOrdinal(VarInt::readUnsignedInt($in));
 		$type = OverrideUpdateType::fromPacket(CommonTypes::getString($in));
 		if($type->value !== $this->updateType->value){
-			throw new \UnexpectedValueException("Expected Type {$this->updateType->value}, got {$type->value}");
+			throw new PacketDecodeException("Expected Type {$this->updateType->value}, got {$type->value}");
 		}
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			$this->intOverrideValue = LE::readSignedInt($in);

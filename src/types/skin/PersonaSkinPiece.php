@@ -18,6 +18,17 @@ use Ramsey\Uuid\UuidInterface;
 
 final class PersonaSkinPiece{
 
+	public const PIECE_TYPE_PERSONA_BODY = PieceType::BODY;
+	public const PIECE_TYPE_PERSONA_BOTTOM = PieceType::BOTTOM;
+	public const PIECE_TYPE_PERSONA_EYES = PieceType::EYES;
+	public const PIECE_TYPE_PERSONA_FACIAL_HAIR = PieceType::FACIAL_HAIR;
+	public const PIECE_TYPE_PERSONA_FEET = PieceType::FEET;
+	public const PIECE_TYPE_PERSONA_HAIR = PieceType::HAIR;
+	public const PIECE_TYPE_PERSONA_MOUTH = PieceType::MOUTH;
+	public const PIECE_TYPE_PERSONA_SKELETON = PieceType::SKELETON;
+	public const PIECE_TYPE_PERSONA_SKIN = PieceType::SKIN;
+	public const PIECE_TYPE_PERSONA_TOP = PieceType::TOP;
+
 	public function __construct(
 		private string $pieceId,
 		private PieceType $pieceType,
