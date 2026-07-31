@@ -62,7 +62,7 @@ abstract class TransactionData{
 					$actions[] = (new NetworkInventoryAction())->readAuthInput($in);
 				}
 				return $actions;
-			});
+			}) ?? [];
 		}
 		$this->decodeData($in);
 	}
