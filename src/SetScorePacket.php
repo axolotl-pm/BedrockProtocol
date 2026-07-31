@@ -20,6 +20,7 @@ use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
+use pocketmine\network\mcpe\protocol\types\ScorePacketEntryAction;
 use function count;
 
 class SetScorePacket extends DataPacket implements ClientboundPacket{
@@ -44,8 +45,11 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(ByteBufferReader $in) : void{
 		for($i = 0, $i2 = VarInt::readUnsignedInt($in); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
-			$entry->type = VarInt::readUnsignedInt($in);
-			$entry->typeId = CommonTypes::getString($in);
+			$entry->type = ScorePacketEntryAction::fromOrdinal(VarInt::readUnsignedInt($in));
+			$type = ScorePacketEntryAction::fromPacket(CommonTypes::getString($in));
+			if($entry->type->value !== $type->value){
+				throw new PacketDecodeException("Expected Type {$entry->type->value}, got {$type->value}");
+			}
 			switch($entry->type){
 				case ScorePacketEntry::TYPE_REMOVE:
 					$entry->scoreboardId = VarInt::readSignedLong($in);
@@ -65,7 +69,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 					$entry->customName = CommonTypes::getString($in);
 					break;
 				default:
-					throw new PacketDecodeException("Unknown entry type $entry->type");
+					throw new PacketDecodeException("Unknown entry type " . $entry->type->value);
 			}
 			$this->entries[] = $entry;
 		}
@@ -74,8 +78,8 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, count($this->entries));
 		foreach($this->entries as $entry){
-			VarInt::writeUnsignedInt($out, $entry->type);
-			CommonTypes::putString($out, $entry->typeId);
+			VarInt::writeUnsignedInt($out, $entry->type->ordinal());
+			CommonTypes::putString($out, $entry->type->value);
 			switch($entry->type){
 				case ScorePacketEntry::TYPE_REMOVE:
 					VarInt::writeSignedLong($out, $entry->scoreboardId);
