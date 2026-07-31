@@ -17,8 +17,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 enum ScorePacketEntryAction : string{
 	use PacketOrdinalEnumTrait;
 
-	case REMOVE = "Remove";
-	case CHANGE_PLAYER = "ChangePlayer";
-	case CHANGE_ENTITY = "ChangeEntity";
-	case CHANGE_FAKE_PLAYER = "ChangeFakePlayer";
+	case REMOVE = "remove";
+	case CHANGE_PLAYER = "changeplayer";
+	case CHANGE_ENTITY = "changeentity";
+	case CHANGE_FAKE_PLAYER = "changefakeplayer";
 }
