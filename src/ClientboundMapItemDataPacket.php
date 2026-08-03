@@ -46,8 +46,6 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 	/** @var MapDecoration[]|null */
 	public ?array $decorations = null;
 
-	public ?int $width = null;
-	public ?int $height = null;
 	public ?int $xOffset = null;
 	public ?int $yOffset = null;
 	public ?MapImage $colors = null;
@@ -74,11 +72,11 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			$trackedEntities = [];
 			for($i = 0; $i < $count; ++$i){
 				$object = new MapTrackedObject();
-				$object->type = LE::readUnsignedInt($in);
+				$object->type = LE::readSignedInt($in);
 				if($object->type === MapTrackedObject::TYPE_BLOCK){
-					$object->blockPosition = CommonTypes::readOptional($in, CommonTypes::getBlockPosition(...));
+					$object->blockPosition = CommonTypes::getBlockPosition($in);
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
-					$object->actorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
+					$object->actorUniqueId = CommonTypes::getActorUniqueId($in);
 				}else{
 					throw new PacketDecodeException("Unknown map object type $object->type");
 				}
@@ -102,12 +100,12 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			return $decorations;
 		});
 
-		$this->width = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
-		$this->height = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
+		$width = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
+		$height = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
 		$this->xOffset = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
 		$this->yOffset = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
 
-		$this->colors = MapImage::decode($in, $this->height ?? 0, $this->width ?? 0);
+		$this->colors = MapImage::decode($in, $height ?? 0, $width ?? 0);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -128,11 +126,11 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		CommonTypes::writeOptional($out, $this->trackedEntities, function(ByteBufferWriter $out, array $list) : void{
 			VarInt::writeUnsignedInt($out, count($list));
 			foreach($list as $object){
-				LE::writeUnsignedInt($out, $object->type);
+				LE::writeSignedInt($out, $object->type);
 				if($object->type === MapTrackedObject::TYPE_BLOCK){
-					CommonTypes::writeOptional($out, $object->blockPosition, CommonTypes::putBlockPosition(...));
+					CommonTypes::putBlockPosition($out, $object->blockPosition);
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
-					CommonTypes::writeOptional($out, $object->actorUniqueId, CommonTypes::putActorUniqueId(...));
+					CommonTypes::putActorUniqueId($out, $object->actorUniqueId);
 				}else{
 					throw new \InvalidArgumentException("Unknown map object type $object->type");
 				}
@@ -151,8 +149,8 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			}
 		});
 
-		CommonTypes::writeOptional($out, $this->width, VarInt::writeSignedInt(...));
-		CommonTypes::writeOptional($out, $this->height, VarInt::writeSignedInt(...));
+		CommonTypes::writeOptional($out, $this->colors?->getWidth(), VarInt::writeSignedInt(...));
+		CommonTypes::writeOptional($out, $this->colors?->getHeight(), VarInt::writeSignedInt(...));
 		CommonTypes::writeOptional($out, $this->xOffset, VarInt::writeSignedInt(...));
 		CommonTypes::writeOptional($out, $this->yOffset, VarInt::writeSignedInt(...));
 
