@@ -299,8 +299,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			$this->itemInteractionData = CommonTypes::readOptional($in, ItemInteractionData::read(...));
 		}
 
-		$hasitemStackRequest = CommonTypes::getBool($in);
-		if($hasitemStackRequest){
+		$hasItemStackRequest = CommonTypes::getBool($in);
+		if($hasItemStackRequest){
 			$this->itemStackRequest = CommonTypes::readOptional($in, ItemStackRequest::read(...));
 		}
 
