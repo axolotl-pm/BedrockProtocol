@@ -26,27 +26,4 @@ enum ClientboundUpdateSoundDataType : int{
 	case SEEK_TO = 4;
 	case PAUSE = 5;
 	case RESUME = 6;
-
-	public const PAYLOAD_TYPE_STOP = 0;
-	public const PAYLOAD_TYPE_SET_VOLUME = 1;
-	public const PAYLOAD_TYPE_SET_PITCH = 2;
-	public const PAYLOAD_TYPE_FADE = 3;
-	public const PAYLOAD_TYPE_SEEK_TO = 4;
-	public const PAYLOAD_TYPE_PAUSE = 5;
-	public const PAYLOAD_TYPE_RESUME = 6;
-
-	/**
-	 * UGH
-	 */
-	public function getPayloadType() : int{
-		return match($this){
-			self::STOP => self::PAYLOAD_TYPE_STOP,
-			self::SET_VOLUME => self::PAYLOAD_TYPE_SET_VOLUME,
-			self::SET_PITCH => self::PAYLOAD_TYPE_SET_PITCH,
-			self::FADE => self::PAYLOAD_TYPE_FADE,
-			self::SEEK_TO => self::PAYLOAD_TYPE_SEEK_TO,
-			self::PAUSE => self::PAYLOAD_TYPE_PAUSE,
-			self::RESUME => self::PAYLOAD_TYPE_RESUME,
-		};
-	}
 }
