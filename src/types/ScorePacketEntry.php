@@ -15,11 +15,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 class ScorePacketEntry{
-	public const TYPE_REMOVE = ScorePacketEntryAction::REMOVE;
-	public const TYPE_PLAYER = ScorePacketEntryAction::CHANGE_PLAYER;
-	public const TYPE_ENTITY = ScorePacketEntryAction::CHANGE_ENTITY;
-	public const TYPE_FAKE_PLAYER = ScorePacketEntryAction::CHANGE_FAKE_PLAYER;
-
 	public int $scoreboardId;
 	public ?string $objectiveName;
 	public int $score;
