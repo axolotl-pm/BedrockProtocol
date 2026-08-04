@@ -154,7 +154,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		CommonTypes::writeOptional($out, $this->xOffset, VarInt::writeSignedInt(...));
 		CommonTypes::writeOptional($out, $this->yOffset, VarInt::writeSignedInt(...));
 
-		CommonTypes::writeOptional($out, $this->colors, function(ByteBufferWriter $out, MapImage $image) : void{
+		CommonTypes::writeOptional($out, $this->colors, static function(ByteBufferWriter $out, MapImage $image) : void{
 			$image->encode($out);
 		});
 	}
