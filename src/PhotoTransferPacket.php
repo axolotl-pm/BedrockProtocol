@@ -76,7 +76,7 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 			throw new \InvalidArgumentException("Invalid photo name: '$photoName'. Must be a UUID followed by " . self::PHOTO_NAME_EXTENSION);
 		}
 		if(strlen($photoData) > self::MAX_PHOTO_DATA_SIZE){
-			throw new \InvalidArgumentException("Photo data size (" . strlen($photoData) . " bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE . " bytes (20 MiB)");
+			throw new \InvalidArgumentException("Photo data size (" . strlen($photoData) . " bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE);
 		}
 
 		return self::internalCreate($photoName, $photoData, $bookId, $type, $sourceType, $ownerActorUniqueId, $newPhotoName);
@@ -106,7 +106,7 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 		//a proper restriction/weight system for packet fields would be cleaner
 		$photoDataLength = VarInt::readUnsignedInt($in);
 		if($photoDataLength > self::MAX_PHOTO_DATA_SIZE){
-			throw new PacketDecodeException("Photo data size ($photoDataLength bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE . " bytes (20 MiB)");
+			throw new PacketDecodeException("Photo data size ($photoDataLength bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE);
 		}
 		$this->photoData = $in->readByteArray($photoDataLength);
 
