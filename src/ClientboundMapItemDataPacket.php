@@ -56,7 +56,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		$this->isLocked = CommonTypes::getBool($in);
 		$this->origin = CommonTypes::getBlockPosition($in);
 
-		$this->parentMapIds = CommonTypes::readOptional($in, function(ByteBufferReader $in) : array{
+		$this->parentMapIds = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
 			$count = VarInt::readUnsignedInt($in);
 			$parentMapIds = [];
 			for($i = 0; $i < $count; ++$i){
