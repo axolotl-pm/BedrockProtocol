@@ -53,11 +53,9 @@ final class ItemStackResponse{
 		$requestId = CommonTypes::readItemStackRequestId($in);
 		$containerInfos = [];
 		$containerHasValue = CommonTypes::getBool($in);
-		if($containerHasValue){
-			if(CommonTypes::getBool($in)){
-				for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-					$containerInfos[] = ItemStackResponseContainerInfo::read($in);
-				}
+		if($containerHasValue && CommonTypes::getBool($in)){
+			for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+				$containerInfos[] = ItemStackResponseContainerInfo::read($in);
 			}
 		}
 		return new self($result, $requestId, $containerInfos);

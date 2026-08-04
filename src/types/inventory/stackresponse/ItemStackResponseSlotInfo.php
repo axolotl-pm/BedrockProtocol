@@ -49,12 +49,7 @@ final class ItemStackResponseSlotInfo{
 		$slot = Byte::readUnsigned($in);
 		$hotbarSlot = Byte::readUnsigned($in);
 		$count = Byte::readUnsigned($in);
-		$itemStackId = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : ?int{
-			if(CommonTypes::getBool($in)){
-				return CommonTypes::readItemStackNetId($in);
-			}
-			return null;
-		});
+		$itemStackId = CommonTypes::readOptional($in, fn(ByteBufferReader $in) : ?int => CommonTypes::getBool($in) ? CommonTypes::readItemStackNetId($in) : null);
 		$customName = CommonTypes::getString($in);
 		$filteredCustomName = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$durabilityCorrection = VarInt::readSignedInt($in);
