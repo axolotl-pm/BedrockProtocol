@@ -67,7 +67,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 
 		$this->scale = CommonTypes::readOptional($in, Byte::readUnsigned(...));
 
-		$this->trackedEntities = CommonTypes::readOptional($in, function(ByteBufferReader $in) : array{
+		$this->trackedEntities = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
 			$count = VarInt::readUnsignedInt($in);
 			$trackedEntities = [];
 			for($i = 0; $i < $count; ++$i){
