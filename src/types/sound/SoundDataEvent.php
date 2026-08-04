@@ -22,10 +22,10 @@ use pocketmine\network\mcpe\protocol\ClientboundUpdateSoundDataPacket;
 /**
  * @see ClientboundUpdateSoundDataPacket
  */
-final class ClientboundUpdateSoundData{
+final class SoundDataEvent{
 
 	public function __construct(
-		private ClientboundUpdateSoundDataType $type,
+		private SoundDataEventType $type,
 		private ?float $volume,
 		private ?float $pitch,
 		private ?float $duration,
@@ -35,7 +35,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function stop() : self{
 		return new self(
-			ClientboundUpdateSoundDataType::STOP,
+			SoundDataEventType::STOP,
 			null,
 			null,
 			null,
@@ -46,7 +46,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function setVolume(float $volume) : self{
 		return new self(
-			ClientboundUpdateSoundDataType::SET_VOLUME,
+			SoundDataEventType::SET_VOLUME,
 			$volume,
 			null,
 			null,
@@ -57,7 +57,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function setPitch(float $pitch) : self{
 		return new self(
-			ClientboundUpdateSoundDataType::SET_PITCH,
+			SoundDataEventType::SET_PITCH,
 			null,
 			$pitch,
 			null,
@@ -68,7 +68,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function fade(float $duration, float $targetVolume) : self{
 		return new self(
-			ClientboundUpdateSoundDataType::FADE,
+			SoundDataEventType::FADE,
 			null,
 			null,
 			$duration,
@@ -79,7 +79,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function seekTo(float $seconds) : self{
 		return new self(
-			ClientboundUpdateSoundDataType::SEEK_TO,
+			SoundDataEventType::SEEK_TO,
 			null,
 			null,
 			null,
@@ -90,7 +90,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function pause() : self{
 		return new self(
-			ClientboundUpdateSoundDataType::PAUSE,
+			SoundDataEventType::PAUSE,
 			null,
 			null,
 			null,
@@ -101,7 +101,7 @@ final class ClientboundUpdateSoundData{
 
 	public static function resume() : self{
 		return new self(
-			ClientboundUpdateSoundDataType::RESUME,
+			SoundDataEventType::RESUME,
 			null,
 			null,
 			null,
@@ -111,56 +111,56 @@ final class ClientboundUpdateSoundData{
 	}
 
 	public static function read(ByteBufferReader $in) : self{
-		$type = ClientboundUpdateSoundDataType::fromPacket(LE::readUnsignedInt($in));
+		$type = SoundDataEventType::fromPacket(LE::readUnsignedInt($in));
 		return match($type){
-			ClientboundUpdateSoundDataType::STOP => self::stop(),
-			ClientboundUpdateSoundDataType::SET_VOLUME => self::setVolume(
+			SoundDataEventType::STOP => self::stop(),
+			SoundDataEventType::SET_VOLUME => self::setVolume(
 				volume: LE::readFloat($in)
 			),
-			ClientboundUpdateSoundDataType::SET_PITCH => self::setPitch(
+			SoundDataEventType::SET_PITCH => self::setPitch(
 				pitch: LE::readFloat($in)
 			),
-			ClientboundUpdateSoundDataType::FADE => self::fade(
+			SoundDataEventType::FADE => self::fade(
 				duration: LE::readFloat($in),
 				targetVolume: LE::readFloat($in)
 			),
-			ClientboundUpdateSoundDataType::SEEK_TO => self::seekTo(
+			SoundDataEventType::SEEK_TO => self::seekTo(
 				seconds: LE::readFloat($in)
 			),
-			ClientboundUpdateSoundDataType::PAUSE => self::pause(),
-			ClientboundUpdateSoundDataType::RESUME => self::resume(),
+			SoundDataEventType::PAUSE => self::pause(),
+			SoundDataEventType::RESUME => self::resume(),
 		};
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		LE::writeUnsignedInt($out, $this->type->value);
 		switch($this->type){
-			case ClientboundUpdateSoundDataType::STOP:
-			case ClientboundUpdateSoundDataType::PAUSE:
-			case ClientboundUpdateSoundDataType::RESUME:
+			case SoundDataEventType::STOP:
+			case SoundDataEventType::PAUSE:
+			case SoundDataEventType::RESUME:
 				break;
-			case ClientboundUpdateSoundDataType::SET_VOLUME:
+			case SoundDataEventType::SET_VOLUME:
 				if($this->volume === null){
-					throw new \LogicException("ClientboundUpdateSoundData with type SET_VOLUME requires volume");
+					throw new \LogicException("SoundDataEvent with type SET_VOLUME requires volume");
 				}
 				LE::writeFloat($out, $this->volume);
 				break;
-			case ClientboundUpdateSoundDataType::SET_PITCH:
+			case SoundDataEventType::SET_PITCH:
 				if($this->pitch === null){
-					throw new \LogicException("ClientboundUpdateSoundData with type SET_PITCH requires pitch");
+					throw new \LogicException("SoundDataEvent with type SET_PITCH requires pitch");
 				}
 				LE::writeFloat($out, $this->pitch);
 				break;
-			case ClientboundUpdateSoundDataType::FADE:
+			case SoundDataEventType::FADE:
 				if($this->duration === null || $this->targetVolume === null){
-					throw new \LogicException("ClientboundUpdateSoundData with type FADE requires duration and targetVolume");
+					throw new \LogicException("SoundDataEvent with type FADE requires duration and targetVolume");
 				}
 				LE::writeFloat($out, $this->duration);
 				LE::writeFloat($out, $this->targetVolume);
 				break;
-			case ClientboundUpdateSoundDataType::SEEK_TO:
+			case SoundDataEventType::SEEK_TO:
 				if($this->seconds === null){
-					throw new \LogicException("ClientboundUpdateSoundData with type SEEK_TO requires seconds");
+					throw new \LogicException("SoundDataEvent with type SEEK_TO requires seconds");
 				}
 				LE::writeFloat($out, $this->seconds);
 				break;

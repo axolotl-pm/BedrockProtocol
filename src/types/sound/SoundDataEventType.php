@@ -16,7 +16,7 @@ namespace pocketmine\network\mcpe\protocol\types\sound;
 
 use pocketmine\network\mcpe\protocol\types\PacketIntEnumTrait;
 
-enum ClientboundUpdateSoundDataType : int{
+enum SoundDataEventType : int{
 	use PacketIntEnumTrait;
 
 	case STOP = 0;
