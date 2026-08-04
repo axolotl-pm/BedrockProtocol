@@ -137,17 +137,21 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			}
 		});
 
-		CommonTypes::writeOptional($out, $this->decorations !== null && count($this->decorations) > 0 ? $this->decorations : null, function(ByteBufferWriter $out, array $list) : void{
-			VarInt::writeUnsignedInt($out, count($list));
-			foreach($list as $decoration){
-				Byte::writeUnsigned($out, $decoration->getIcon());
-				Byte::writeUnsigned($out, $decoration->getRotation());
-				Byte::writeUnsigned($out, $decoration->getXOffset());
-				Byte::writeUnsigned($out, $decoration->getYOffset());
-				CommonTypes::putString($out, $decoration->getLabel());
-				LE::writeUnsignedInt($out, $decoration->getColor()->toRGBA());
+		CommonTypes::writeOptional(
+			$out,
+			$this->decorations !== null && count($this->decorations) > 0 ? $this->decorations : null,
+			static function(ByteBufferWriter $out, array $list) : void{
+				VarInt::writeUnsignedInt($out, count($list));
+				foreach($list as $decoration){
+					Byte::writeUnsigned($out, $decoration->getIcon());
+					Byte::writeUnsigned($out, $decoration->getRotation());
+					Byte::writeUnsigned($out, $decoration->getXOffset());
+					Byte::writeUnsigned($out, $decoration->getYOffset());
+					CommonTypes::putString($out, $decoration->getLabel());
+					LE::writeUnsignedInt($out, $decoration->getColor()->toRGBA());
+				}
 			}
-		});
+		);
 
 		CommonTypes::writeOptional($out, $this->colors?->getWidth(), VarInt::writeSignedInt(...));
 		CommonTypes::writeOptional($out, $this->colors?->getHeight(), VarInt::writeSignedInt(...));
