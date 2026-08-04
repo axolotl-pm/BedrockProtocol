@@ -19,9 +19,6 @@ use function count;
 
 final class PersonaPieceTintColor{
 
-	public const PIECE_TYPE_PERSONA_EYES = PieceType::EYES;
-	public const PIECE_TYPE_PERSONA_HAIR = PieceType::HAIR;
-	public const PIECE_TYPE_PERSONA_MOUTH = PieceType::MOUTH;
 	public const EXPECTED_COLOR_COUNT = 4;
 
 	/**

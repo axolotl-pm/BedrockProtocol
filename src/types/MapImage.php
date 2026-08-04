@@ -25,6 +25,7 @@ use function array_slice;
 use function count;
 
 final class MapImage{
+	//these limits are enforced in the protocol in 1.20.0
 	public const MAX_HEIGHT = 128;
 	public const MAX_WIDTH = 128;
 
