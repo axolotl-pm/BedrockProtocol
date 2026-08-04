@@ -33,8 +33,8 @@ use function count;
 class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CRAFTING_DATA_PACKET;
 
-	public const ENTRY_SHAPELESS = 1;
 	public const ENTRY_SHAPED = 0;
+	public const ENTRY_SHAPELESS = 1;
 	public const ENTRY_MULTI = 2;
 	public const ENTRY_USER_DATA_SHAPELESS = 3;
 	public const ENTRY_SHAPELESS_CHEMISTRY = 4;
