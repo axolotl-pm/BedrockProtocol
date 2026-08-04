@@ -85,7 +85,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			return $trackedEntities;
 		});
 
-		$this->decorations = CommonTypes::readOptional($in, function(ByteBufferReader $in) : array{
+		$this->decorations = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
 			$count = VarInt::readUnsignedInt($in);
 			$decorations = [];
 			for($i = 0; $i < $count; ++$i){
