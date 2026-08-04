@@ -19,26 +19,31 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\serializer\VarInt;
 use Ramsey\Uuid\Uuid;
+use function str_ends_with;
 use function strlen;
+use function substr;
 
 class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
-	public string $photoName;
-	public string $photoData;
-	public string $bookId;
-	public int $type;
-	public int $sourceType;
-	public int $ownerActorUniqueId;
-	public string $newPhotoName;
+	private string $photoName;
+	private string $photoData;
+	private string $bookId;
+	private int $type;
+	private int $sourceType;
+	private int $ownerActorUniqueId;
+	private string $newPhotoName;
 
+	private const PHOTO_NAME_EXTENSION = '.jpeg';
+	private const PHOTO_NAME_EXTENSION_LENGTH = 5;
 	private const MAX_PHOTO_DATA_SIZE = 20 * 1024 * 1024; // 20 MiB in bytes
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(
+	private static function internalCreate(
 		string $photoName,
 		string $photoData,
 		string $bookId,
@@ -58,12 +63,52 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
+	public static function create(
+		string $photoName,
+		string $photoData,
+		string $bookId,
+		int $type,
+		int $sourceType,
+		int $ownerActorUniqueId,
+		string $newPhotoName,
+	) : self{
+		if(!str_ends_with($photoName, self::PHOTO_NAME_EXTENSION) || !Uuid::isValid(substr($photoName, 0, -self::PHOTO_NAME_EXTENSION_LENGTH))){
+			throw new \InvalidArgumentException("Invalid photo name: '$photoName'. Must be a UUID followed by " . self::PHOTO_NAME_EXTENSION);
+		}
+		if(strlen($photoData) > self::MAX_PHOTO_DATA_SIZE){
+			throw new \InvalidArgumentException("Photo data size (" . strlen($photoData) . " bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE . " bytes (20 MiB)");
+		}
+
+		return self::internalCreate($photoName, $photoData, $bookId, $type, $sourceType, $ownerActorUniqueId, $newPhotoName);
+	}
+
+	public function getPhotoName() : string{ return $this->photoName; }
+
+	public function getPhotoData() : string{ return $this->photoData; }
+
+	public function getBookId() : string{ return $this->bookId; }
+
+	public function getType() : int{ return $this->type; }
+
+	public function getSourceType() : int{ return $this->sourceType; }
+
+	public function getOwnerActorUniqueId() : int{ return $this->ownerActorUniqueId; }
+
+	public function getNewPhotoName() : string{ return $this->newPhotoName; }
+
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->photoName = CommonTypes::getString($in);
-		$this->photoData = CommonTypes::getString($in);
+		if(!str_ends_with($this->photoName, self::PHOTO_NAME_EXTENSION) || !Uuid::isValid(substr($this->photoName, 0, -self::PHOTO_NAME_EXTENSION_LENGTH))){
+			throw new PacketDecodeException("Invalid photo name: '$this->photoName'. Must be a UUID followed by " . self::PHOTO_NAME_EXTENSION);
+		}
 
-		$this->validatePhotoName($this->photoName);
-		$this->validatePhotoData($this->photoData);
+		//TODO: reading the length manually before allocating is a hacky workaround;
+		//a proper restriction/weight system for packet fields would be cleaner
+		$photoDataLength = VarInt::readUnsignedInt($in);
+		if($photoDataLength > self::MAX_PHOTO_DATA_SIZE){
+			throw new PacketDecodeException("Photo data size ($photoDataLength bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE . " bytes (20 MiB)");
+		}
+		$this->photoData = $in->readByteArray($photoDataLength);
 
 		$this->bookId = CommonTypes::getString($in);
 		$this->type = Byte::readUnsigned($in);
@@ -73,9 +118,6 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		$this->validatePhotoName($this->photoName);
-		$this->validatePhotoData($this->photoData);
-
 		CommonTypes::putString($out, $this->photoName);
 		CommonTypes::putString($out, $this->photoData);
 		CommonTypes::putString($out, $this->bookId);
@@ -87,18 +129,5 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 
 	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handlePhotoTransfer($this);
-	}
-
-	protected function validatePhotoName(string $name) : void{
-		if(Uuid::isValid($name)){
-			throw new \InvalidArgumentException("Invalid photo name: '$name'. Must be a UUID followed by .jpeg");
-		}
-	}
-
-	protected function validatePhotoData(string $data) : void{
-		$size = strlen($data);
-		if($size > self::MAX_PHOTO_DATA_SIZE){
-			throw new \InvalidArgumentException("Photo data size ($size bytes) exceeds maximum allowed " . self::MAX_PHOTO_DATA_SIZE . " bytes (20 MiB)");
-		}
 	}
 }
