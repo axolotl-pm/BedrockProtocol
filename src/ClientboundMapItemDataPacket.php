@@ -114,7 +114,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		CommonTypes::putBool($out, $this->isLocked);
 		CommonTypes::putBlockPosition($out, $this->origin);
 
-		CommonTypes::writeOptional($out, $this->parentMapIds, function(ByteBufferWriter $out, array $list) : void{
+		CommonTypes::writeOptional($out, $this->parentMapIds, static function(ByteBufferWriter $out, array $list) : void{
 			VarInt::writeUnsignedInt($out, count($list));
 			foreach($list as $id){
 				CommonTypes::putActorUniqueId($out, $id);
