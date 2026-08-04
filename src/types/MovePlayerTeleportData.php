@@ -21,7 +21,7 @@ use pmmp\encoding\LE;
 /**
  * @see MovePlayerPacket
  */
-final class TeleportData{
+final class MovePlayerTeleportData{
 	public function __construct(
 		private int $cause,
 		private int $item

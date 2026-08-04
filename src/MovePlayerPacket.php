@@ -21,7 +21,7 @@ use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\TeleportData;
+use pocketmine\network\mcpe\protocol\types\MovePlayerTeleportData;
 
 class MovePlayerPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -39,7 +39,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public int $mode = self::MODE_NORMAL;
 	public bool $onGround = false; //TODO
 	public int $ridingActorRuntimeId = 0;
-	public ?TeleportData $teleportData = null;
+	public ?MovePlayerTeleportData $teleportData = null;
 	public int $tick = 0;
 
 	public static function create(
@@ -51,11 +51,11 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		int $mode,
 		bool $onGround,
 		int $ridingActorRuntimeId,
-		?TeleportData $teleportData,
+		?MovePlayerTeleportData $teleportData,
 		int $tick,
 	) : self{
 		if($mode === self::MODE_TELEPORT && $teleportData === null){
-			$teleportData = new TeleportData(0, 0);
+			$teleportData = new MovePlayerTeleportData(0, 0);
 		}
 		return self::internalCreate($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, $teleportData, $tick);
 	}
@@ -86,7 +86,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		int $mode,
 		bool $onGround,
 		int $ridingActorRuntimeId,
-		?TeleportData $teleportData,
+		?MovePlayerTeleportData $teleportData,
 		int $tick,
 	) : self{
 		$result = new self;
@@ -112,7 +112,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$this->mode = Byte::readUnsigned($in);
 		$this->onGround = CommonTypes::getBool($in);
 		$this->ridingActorRuntimeId = CommonTypes::getActorRuntimeId($in);
-		$this->teleportData = CommonTypes::readOptional($in, TeleportData::read(...));
+		$this->teleportData = CommonTypes::readOptional($in, MovePlayerTeleportData::read(...));
 		$this->tick = VarInt::readUnsignedLong($in);
 	}
 
@@ -125,7 +125,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		Byte::writeUnsigned($out, $this->mode);
 		CommonTypes::putBool($out, $this->onGround);
 		CommonTypes::putActorRuntimeId($out, $this->ridingActorRuntimeId);
-		CommonTypes::writeOptional($out, $this->teleportData, fn(ByteBufferWriter $out, TeleportData $data) => $data->write($out));
+		CommonTypes::writeOptional($out, $this->teleportData, fn(ByteBufferWriter $out, MovePlayerTeleportData $data) => $data->write($out));
 		VarInt::writeUnsignedLong($out, $this->tick);
 	}
 
