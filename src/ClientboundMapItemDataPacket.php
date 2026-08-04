@@ -123,7 +123,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 
 		CommonTypes::writeOptional($out, $this->scale, Byte::writeUnsigned(...));
 
-		CommonTypes::writeOptional($out, $this->trackedEntities, function(ByteBufferWriter $out, array $list) : void{
+		CommonTypes::writeOptional($out, $this->trackedEntities, static function(ByteBufferWriter $out, array $list) : void{
 			VarInt::writeUnsignedInt($out, count($list));
 			foreach($list as $object){
 				LE::writeSignedInt($out, $object->type);
