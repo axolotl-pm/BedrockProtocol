@@ -405,7 +405,7 @@ final class CommonTypes{
 
 		$descriptor = match($descriptorType){
 			ItemDescriptorType::NAME => NameItemDescriptor::read($in),
-			ItemDescriptorType::ITEM_TAG => new TagItemDescriptor(self::getString($in)),
+			ItemDescriptorType::ITEM_TAG => TagItemDescriptor::read($in),
 			ItemDescriptorType::MOLANG => MolangItemDescriptor::read($in),
 			default => null
 		};
@@ -421,10 +421,7 @@ final class CommonTypes{
 		VarInt::writeUnsignedInt($out, $typeId->ordinal());
 		Byte::writeUnsigned($out, $typeId->ordinal()); //validation byte
 
-		match(true){
-			$type instanceof TagItemDescriptor => CommonTypes::putString($out, $type->getTag()),
-			default => $type?->write($out)
-		};
+		$type?->write($out);
 
 		LE::writeSignedShort($out, $ingredient->getCount());
 	}
