@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pmmp\encoding\BE;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\color\Color;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
@@ -79,7 +79,7 @@ final class MapImage{
 		VarInt::writeUnsignedInt($out, $count);
 		foreach($this->pixels as $row){
 			foreach($row as $pixel){
-				LE::writeUnsignedInt($out, $pixel->toRGBA());
+				BE::writeSignedInt($out, $pixel->toRGBA());
 			}
 		}
 	}
@@ -102,7 +102,7 @@ final class MapImage{
 			}
 			$list = [];
 			for($i = 0; $i < $count; ++$i){
-				$list[] = Color::fromRGBA(LE::readUnsignedInt($buf));
+				$list[] = Color::fromRGBA(BE::readSignedInt($buf));
 			}
 			return $list;
 		});
