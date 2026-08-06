@@ -680,7 +680,7 @@ final class CommonTypes{
 		$result = new StructureEditorData();
 
 		$result->structureName = self::getString($in);
-		$result->filteredStructureName = self::getString($in);
+		$result->filteredStructureName = self::readOptional($in, self::getString(...));
 		$result->structureDataField = self::getString($in);
 
 		$result->includePlayers = self::getBool($in);
@@ -695,7 +695,7 @@ final class CommonTypes{
 
 	public static function putStructureEditorData(ByteBufferWriter $out, StructureEditorData $structureEditorData) : void{
 		self::putString($out, $structureEditorData->structureName);
-		self::putString($out, $structureEditorData->filteredStructureName);
+		self::writeOptional($out, $structureEditorData->filteredStructureName, self::putString(...));
 		self::putString($out, $structureEditorData->structureDataField);
 
 		self::putBool($out, $structureEditorData->includePlayers);
