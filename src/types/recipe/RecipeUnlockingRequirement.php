@@ -30,7 +30,7 @@ final class RecipeUnlockingRequirement{
 		private RecipeUnlockingContext $unlockingContext,
 		private ?array $unlockingIngredients
 	){
-		if($context !== RecipeUnlockingContext::NONE && $unlockingIngredients !== null){
+		if($unlockingContext !== RecipeUnlockingContext::NONE && $unlockingIngredients !== null){
 			throw new \InvalidArgumentException("Unlocking ingredients can only be set when unlocking context is NONE");
 		}
 	}
@@ -48,12 +48,12 @@ final class RecipeUnlockingRequirement{
 		//It's basically just an optional list, which could have been done by an empty list wherever it's not needed.
 		$unlockingContext = RecipeUnlockingContext::fromPacket(VarInt::readSignedInt($in));
 		$unlockingIngredients = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...)));
-		if($unlockingContext !== RecipeUnlockingContext::CONTEXT_NONE && $unlockingIngredients !== null){
+		if($unlockingContext !== RecipeUnlockingContext::NONE && $unlockingIngredients !== null){
 			//this is a runtime error, make sure the correct exception type is thrown
 			throw new PacketDecodeException("Unlocking ingredients should only be set when context is CONTEXT_NONE");
 		}
 
-		return new self($unlockingIngredients, $unlockingContext);
+		return new self($unlockingContext, $unlockingIngredients);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
