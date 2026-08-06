@@ -57,7 +57,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 			}
 
 			$entry = new ScorePacketEntry();
-			$entry->type = $action;
+			$entry->action = $action;
 
 			//same for all types
 			$entry->scoreboardId = VarInt::readSignedLong($in);
@@ -71,6 +71,8 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 			}elseif($action === ScorePacketEntryAction::CHANGE_FAKE_PLAYER){
 				$entry->score = LE::readSignedInt($in);
 				$entry->customName = CommonTypes::getString($in);
+			}else{ // this should never be the case
+				throw new \LogicException("Unhandled decode for action: " . $action->name);
 			}
 			return $entry;
 		});
@@ -78,21 +80,23 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::writeList($out, $this->entries, function(ByteBufferWriter $out, ScorePacketEntry $entry) : void{
-			VarInt::writeUnsignedInt($out, $entry->type->toOrdinal());
-			CommonTypes::putString($out, $entry->type->value);
+			VarInt::writeUnsignedInt($out, $entry->action->toOrdinal());
+			CommonTypes::putString($out, $entry->action->value);
 
 			//same for all types
 			VarInt::writeSignedLong($out, $entry->scoreboardId);
 			CommonTypes::writeOptional($out, $entry->objectiveName, CommonTypes::putString(...));
 
-			if($entry->type === ScorePacketEntryAction::REMOVE){
+			if($entry->action === ScorePacketEntryAction::REMOVE){
 				//NOOP
-			}elseif($entry->type === ScorePacketEntryAction::CHANGE_PLAYER || $entry->type === ScorePacketEntryAction::CHANGE_ENTITY){
+			}elseif($entry->action === ScorePacketEntryAction::CHANGE_PLAYER || $entry->action === ScorePacketEntryAction::CHANGE_ENTITY){
 				LE::writeSignedInt($out, $entry->score);
 				CommonTypes::putActorUniqueId($out, $entry->actorUniqueId);
-			}elseif($entry->type === ScorePacketEntryAction::CHANGE_FAKE_PLAYER){
+			}elseif($entry->action === ScorePacketEntryAction::CHANGE_FAKE_PLAYER){
 				LE::writeSignedInt($out, $entry->score);
 				CommonTypes::putString($out, $entry->customName ?? throw new \InvalidArgumentException("CustomName must be set for this entry type"));
+			}else{ // this should never be the case
+				throw new \LogicException("Unhandled encode for action: " . $entry->action->name);
 			}
 		});
 	}

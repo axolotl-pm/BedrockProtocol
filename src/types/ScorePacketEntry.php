@@ -18,9 +18,9 @@ class ScorePacketEntry{
 	public int $scoreboardId;
 	public ?string $objectiveName;
 	public int $score;
-	public ScorePacketEntryAction $type;
-	/** @var int|null (if type entity or player) */
+	public ScorePacketEntryAction $action;
+	/** @var int|null (if action entity or player) */
 	public ?int $actorUniqueId;
-	/** @var string|null (if type fake player) */
+	/** @var string|null (if action fake player) */
 	public ?string $customName;
 }
