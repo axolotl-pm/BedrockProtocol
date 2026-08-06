@@ -203,7 +203,7 @@ final class CommonTypes{
 			VarInt::writeUnsignedInt($out, $animation->getExpressionType());
 		});
 		self::putSkinImage($out, $skin->getCapeImage());
-		self::putString($out, $skin->getGeometryData());
+		self::putString($out, $skin->getGeometryDataJson());
 		self::putString($out, $skin->getGeometryDataEngineVersion());
 		self::putString($out, $skin->getAnimationData());
 		self::putString($out, $skin->getCapeId());
