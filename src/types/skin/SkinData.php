@@ -68,93 +68,59 @@ class SkinData{
 		$this->fullSkinId = $fullSkinId ?? Uuid::uuid4()->toString();
 	}
 
-	public function getSkinId() : string{
-		return $this->skinId;
-	}
+	public function getSkinId() : string{ return $this->skinId; }
 
 	public function getPlayFabId() : string{ return $this->playFabId; }
 
-	public function getResourcePatch() : string{
-		return $this->resourcePatch;
-	}
+	public function getResourcePatch() : string{ return $this->resourcePatch; }
 
-	public function getSkinImage() : SkinImage{
-		return $this->skinImage;
-	}
+	public function getSkinImage() : SkinImage{ return $this->skinImage; }
 
 	/**
 	 * @return SkinAnimation[]
 	 * @phpstan-return list<SkinAnimation>
 	 */
-	public function getAnimations() : array{
-		return $this->animations;
-	}
+	public function getAnimations() : array{ return $this->animations; }
 
-	public function getCapeImage() : SkinImage{
-		return $this->capeImage;
-	}
+	public function getCapeImage() : SkinImage{ return $this->capeImage; }
 
-	public function getGeometryDataJson() : string{
-		return $this->geometryDataJson;
-	}
+	public function getGeometryDataJson() : string{ return $this->geometryDataJson; }
 
 	public function getGeometryDataEngineVersion() : string{ return $this->geometryDataEngineVersion; }
 
-	public function getAnimationData() : string{
-		return $this->animationData;
-	}
+	public function getAnimationData() : string{ return $this->animationData; }
 
-	public function getCapeId() : string{
-		return $this->capeId;
-	}
+	public function getCapeId() : string{ return $this->capeId; }
 
-	public function getFullSkinId() : string{
-		return $this->fullSkinId;
-	}
+	public function getFullSkinId() : string{ return $this->fullSkinId; }
 
-	public function getArmSize() : SkinArmSizeType{
-		return $this->armSize;
-	}
+	public function getArmSize() : SkinArmSizeType{ return $this->armSize; }
 
-	public function getSkinColor() : Color{
-		return $this->skinColor;
-	}
+	public function getSkinColor() : Color{ return $this->skinColor; }
 
 	/**
 	 * @return PersonaSkinPiece[]
 	 * @phpstan-return list<PersonaSkinPiece>
 	 */
-	public function getPersonaPieces() : array{
-		return $this->personaPieces;
-	}
+	public function getPersonaPieces() : array{ return $this->personaPieces; }
 
 	/**
 	 * @return PersonaPieceTintColor[]
 	 * @phpstan-return list<PersonaPieceTintColor>
 	 */
-	public function getPieceTintColors() : array{
-		return $this->pieceTintColors;
-	}
+	public function getPieceTintColors() : array{ return $this->pieceTintColors; }
 
-	public function isPersona() : bool{
-		return $this->persona;
-	}
+	public function isPersona() : bool{ return $this->persona; }
 
-	public function isPremium() : bool{
-		return $this->premium;
-	}
+	public function isPremium() : bool{ return $this->premium; }
 
-	public function isPersonaCapeOnClassic() : bool{
-		return $this->personaCapeOnClassic;
-	}
+	public function isPersonaCapeOnClassic() : bool{ return $this->personaCapeOnClassic; }
 
 	public function isPrimaryUser() : bool{ return $this->isPrimaryUser; }
 
 	public function isOverride() : bool{ return $this->override; }
 
-	public function getTrustedSkinFlag() : string{
-		return $this->trustedSkinFlag;
-	}
+	public function getTrustedSkinFlag() : string{ return $this->trustedSkinFlag; }
 
 	public function getProfileHash() : string{ return $this->profileHash; }
 }
