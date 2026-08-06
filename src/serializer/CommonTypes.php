@@ -46,6 +46,7 @@ use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\IntGameRule;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\NullGameRule;
 use pocketmine\network\mcpe\protocol\types\recipe\ItemDescriptorType;
 use pocketmine\network\mcpe\protocol\types\recipe\MolangItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
@@ -202,7 +203,7 @@ final class CommonTypes{
 			VarInt::writeUnsignedInt($out, $animation->getExpressionType());
 		});
 		self::putSkinImage($out, $skin->getCapeImage());
-		self::putString($out, $skin->getGeometryData());
+		self::putString($out, $skin->getGeometryDataJson());
 		self::putString($out, $skin->getGeometryDataEngineVersion());
 		self::putString($out, $skin->getAnimationData());
 		self::putString($out, $skin->getCapeId());
@@ -541,6 +542,7 @@ final class CommonTypes{
 	/** @throws DataDecodeException */
 	private static function readGameRule(ByteBufferReader $in, int $type, bool $isPlayerModifiable) : GameRule{
 		return match($type){
+			NullGameRule::ID => NullGameRule::decode($in, $isPlayerModifiable),
 			BoolGameRule::ID => BoolGameRule::decode($in, $isPlayerModifiable),
 			IntGameRule::ID => IntGameRule::decode($in, $isPlayerModifiable),
 			FloatGameRule::ID => FloatGameRule::decode($in, $isPlayerModifiable),
@@ -678,7 +680,7 @@ final class CommonTypes{
 		$result = new StructureEditorData();
 
 		$result->structureName = self::getString($in);
-		$result->filteredStructureName = self::getString($in);
+		$result->filteredStructureName = self::readOptional($in, self::getString(...));
 		$result->structureDataField = self::getString($in);
 
 		$result->includePlayers = self::getBool($in);
@@ -693,7 +695,7 @@ final class CommonTypes{
 
 	public static function putStructureEditorData(ByteBufferWriter $out, StructureEditorData $structureEditorData) : void{
 		self::putString($out, $structureEditorData->structureName);
-		self::putString($out, $structureEditorData->filteredStructureName);
+		self::writeOptional($out, $structureEditorData->filteredStructureName, self::putString(...));
 		self::putString($out, $structureEditorData->structureDataField);
 
 		self::putBool($out, $structureEditorData->includePlayers);

@@ -43,7 +43,7 @@ class SkinData{
 		private SkinImage $skinImage,
 		private array $animations = [],
 		?SkinImage $capeImage = null,
-		private string $geometryData = "",
+		private string $geometryDataJson = "{}",
 		private string $geometryDataEngineVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 		private string $animationData = "",
 		private string $capeId = "",
@@ -92,8 +92,8 @@ class SkinData{
 		return $this->capeImage;
 	}
 
-	public function getGeometryData() : string{
-		return $this->geometryData;
+	public function getGeometryDataJson() : string{
+		return $this->geometryDataJson;
 	}
 
 	public function getGeometryDataEngineVersion() : string{ return $this->geometryDataEngineVersion; }

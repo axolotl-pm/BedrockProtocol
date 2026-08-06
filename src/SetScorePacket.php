@@ -25,12 +25,16 @@ use pocketmine\network\mcpe\protocol\types\ScorePacketEntryAction;
 class SetScorePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_SCORE_PACKET;
 
-	/** @var ScorePacketEntry[] */
+	/**
+	 * @var ScorePacketEntry[]
+	 * @phpstan-var list<ScorePacketEntry>
+	 */
 	private array $entries = [];
 
 	/**
 	 * @generate-create-func
 	 * @param ScorePacketEntry[] $entries
+	 * @phpstan-param list<ScorePacketEntry> $entries
 	 */
 	public static function create(array $entries) : self{
 		$result = new self;
@@ -38,7 +42,10 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	/** @return ScorePacketEntry[] */
+	/**
+	 * @return ScorePacketEntry[]
+	 * @phpstan-return list<ScorePacketEntry>
+	 */
 	public function getEntries() : array{ return $this->entries; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
@@ -54,7 +61,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 			//same for all types
 			$entry->scoreboardId = VarInt::readSignedLong($in);
-			$entry->objectiveName = CommonTypes::getString($in);
+			$entry->objectiveName = CommonTypes::readOptional($in, CommonTypes::getString(...));
 
 			if($action === ScorePacketEntryAction::REMOVE){
 				//NOOP
@@ -76,7 +83,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 			//same for all types
 			VarInt::writeSignedLong($out, $entry->scoreboardId);
-			CommonTypes::putString($out, $entry->objectiveName);
+			CommonTypes::writeOptional($out, $entry->objectiveName, CommonTypes::putString(...));
 
 			if($entry->type === ScorePacketEntryAction::REMOVE){
 				//NOOP
@@ -85,7 +92,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 				CommonTypes::putActorUniqueId($out, $entry->actorUniqueId);
 			}elseif($entry->type === ScorePacketEntryAction::CHANGE_FAKE_PLAYER){
 				LE::writeSignedInt($out, $entry->score);
-				CommonTypes::putString($out, $entry->customName);
+				CommonTypes::putString($out, $entry->customName ?? throw new \InvalidArgumentException("CustomName must be set for this entry type"));
 			}
 		});
 	}

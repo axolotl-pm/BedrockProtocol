@@ -79,6 +79,7 @@ class ReleaseItemTransactionData extends TransactionData{
 
 	/**
 	 * @param NetworkInventoryAction[] $actions
+	 * @phpstan-param list<NetworkInventoryAction> $actions
 	 */
 	public static function new(array $actions, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $headPosition) : self{
 		$result = self::initSelf($actionType, $hotbarSlot, $itemInHand, $headPosition);
