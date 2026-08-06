@@ -20,6 +20,8 @@ use Ramsey\Uuid\Uuid;
 
 class SkinData{
 
+	public const GEOMETRY_DATA_NONE = "{}";
+
 	public const TRUSTED_SKIN_UNSET = "unset";
 	public const TRUSTED_SKIN_FALSE = "false";
 	public const TRUSTED_SKIN_TRUE = "true";
@@ -43,7 +45,7 @@ class SkinData{
 		private SkinImage $skinImage,
 		private array $animations = [],
 		?SkinImage $capeImage = null,
-		private string $geometryDataJson = "{}",
+		private string $geometryDataJson = self::GEOMETRY_DATA_NONE,
 		private string $geometryDataEngineVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 		private string $animationData = "",
 		private string $capeId = "",
