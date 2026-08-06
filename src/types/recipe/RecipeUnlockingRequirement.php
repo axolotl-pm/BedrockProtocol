@@ -17,8 +17,8 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use function count;
 
 final class RecipeUnlockingRequirement{
 

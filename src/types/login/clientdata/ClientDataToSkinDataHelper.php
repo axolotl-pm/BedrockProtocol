@@ -15,15 +15,14 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 
 use pocketmine\color\Color;
-use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPieceType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinAnimation;
+use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use Ramsey\Uuid\Uuid;
-
 use function array_map;
 use function array_values;
 use function base64_decode;
