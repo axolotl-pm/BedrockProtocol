@@ -144,7 +144,7 @@ class UseItemTransactionData extends TransactionData{
 	}
 
 	/**
-	 * @param NetworkInventoryAction[] $actions
+	 * @param list<NetworkInventoryAction> $actions
 	 */
 	public static function new(array $actions, int $actionType, TriggerType $triggerType, BlockPosition $blockPosition, int $face, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPosition, Vector3 $clickPosition, int $blockRuntimeId, PredictedResult $clientInteractPrediction, int $clientCooldownState) : self{
 		$result = self::initSelf($actionType, $triggerType, $blockPosition, $face, $hotbarSlot, $itemInHand, $playerPosition, $clickPosition, $blockRuntimeId, $clientInteractPrediction, $clientCooldownState);

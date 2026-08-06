@@ -16,7 +16,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use Ramsey\Uuid\UuidInterface;
@@ -24,7 +23,7 @@ use Ramsey\Uuid\UuidInterface;
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
-	/** @var ResourcePackInfoEntry[] */
+	/** @var list<ResourcePackInfoEntry> */
 	public array $resourcePackEntries = [];
 	public bool $mustAccept = false; //if true, forces client to choose between accepting packs or being disconnected
 	public bool $hasAddons = false;
@@ -35,7 +34,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param ResourcePackInfoEntry[] $resourcePackEntries
+	 * @param list<ResourcePackInfoEntry> $resourcePackEntries
 	 */
 	public static function create(
 		array $resourcePackEntries,

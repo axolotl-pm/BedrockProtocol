@@ -21,11 +21,11 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 abstract class TransactionData{
-	/** @var NetworkInventoryAction[] */
+	/** @var list<NetworkInventoryAction> */
 	protected array $actions = [];
 
 	/**
-	 * @return NetworkInventoryAction[]
+	 * @return list<NetworkInventoryAction>
 	 */
 	final public function getActions() : array{
 		return $this->actions;

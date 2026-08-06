@@ -64,7 +64,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->actorUniqueId = CommonTypes::getActorUniqueId($in);
 		$this->actorRuntimeId = CommonTypes::getActorRuntimeId($in);
-		$this->item = CommonTypes::getNetworkItemStackDescriptor($in);
+		$this->item = CommonTypes::getItemStackWrapper($in);
 		$this->position = CommonTypes::getVector3($in);
 		$this->motion = CommonTypes::getVector3($in);
 		$this->metadata = CommonTypes::getEntityMetadata($in);
@@ -74,7 +74,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putActorUniqueId($out, $this->actorUniqueId);
 		CommonTypes::putActorRuntimeId($out, $this->actorRuntimeId);
-		CommonTypes::putNetworkItemStackDescriptor($out, $this->item);
+		CommonTypes::putItemStackWrapper($out, $this->item);
 		CommonTypes::putVector3($out, $this->position);
 		CommonTypes::putVector3Nullable($out, $this->motion);
 		CommonTypes::putEntityMetadata($out, $this->metadata);
