@@ -23,7 +23,6 @@ use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use Ramsey\Uuid\Uuid;
-
 use function array_map;
 use function array_values;
 use function base64_decode;
