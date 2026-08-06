@@ -33,7 +33,8 @@ class NormalTransactionData extends TransactionData{
 	}
 
 	/**
-	 * @param list<NetworkInventoryAction> $actions
+	 * @param NetworkInventoryAction[] $actions
+	 * @phpstan-param list<NetworkInventoryAction> $actions
 	 */
 	public static function new(array $actions) : self{
 		$result = new self();

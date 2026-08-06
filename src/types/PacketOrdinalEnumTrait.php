@@ -48,7 +48,10 @@ trait PacketOrdinalEnumTrait{
 	}
 
 	public static function fromOrdinal(int $ordinal) : self{
-		/** @var list<self>|null $cases */
+		/**
+		 * @var self[]|null $cases
+		 * @phpstan-var list<self>|null $cases
+		 */
 		static $cases = null;
 
 		$cases ??= self::cases();

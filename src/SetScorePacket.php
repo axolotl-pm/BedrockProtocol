@@ -26,14 +26,14 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_SCORE_PACKET;
 
 	/**
-	 * @var list<ScorePacketEntry>
+	 * @var ScorePacketEntry[]
 	 * @phpstan-var list<ScorePacketEntry>
 	 */
 	private array $entries = [];
 
 	/**
 	 * @generate-create-func
-	 * @param list $entries
+	 * @param ScorePacketEntry[] $entries
 	 * @phpstan-param list<ScorePacketEntry> $entries
 	 */
 	public static function create(array $entries) : self{
@@ -42,7 +42,10 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	/** @return list<ScorePacketEntry> */
+	/**
+	 * @return ScorePacketEntry[]
+	 * @phpstan-return list<ScorePacketEntry>
+	 */
 	public function getEntries() : array{ return $this->entries; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{

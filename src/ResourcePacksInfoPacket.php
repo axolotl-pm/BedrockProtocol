@@ -24,7 +24,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
 	/**
-	 * @var list<ResourcePackInfoEntry>
+	 * @var ResourcePackInfoEntry[]
 	 * @phpstan-var list<ResourcePackInfoEntry>
 	 */
 	public array $resourcePackEntries = [];
@@ -37,7 +37,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param list $resourcePackEntries
+	 * @param ResourcePackInfoEntry[] $resourcePackEntries
 	 * @phpstan-param list<ResourcePackInfoEntry> $resourcePackEntries
 	 */
 	public static function create(
