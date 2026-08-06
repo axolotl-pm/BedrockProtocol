@@ -15,10 +15,11 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
+use function count;
 
 /**
- * Trait for enums serialized in packets. Provides a convenient helper method to read, validate and properly bail on
- * invalid values.
+ * Trait for string-backed enums serialized in packets, with ordinal-based case resolution.
+ * Provides helpers to read, validate and properly bail on invalid values.
  */
 trait PacketOrdinalEnumTrait{
 
@@ -28,17 +29,17 @@ trait PacketOrdinalEnumTrait{
 	public static function fromPacket(string $value) : self{
 		$enum = self::tryFrom($value);
 		if($enum === null){
-			throw new PacketDecodeException("Invalid raw value $value for " . static::class);
+			throw new PacketDecodeException("Invalid raw case '$value' for " . static::class);
 		}
 
 		return $enum;
 	}
 
-	public function ordinal() : int{
-		/** @var array<string, int>|null $ordinals */
-		static $ordinals = null;
+	public function toOrdinal() : int{
+		/** @var array<string, int> $ordinals */
+		static $ordinals = [];
 
-		if($ordinals === null){
+		if(count($ordinals) === 0){
 			foreach(self::cases() as $i => $case){
 				$ordinals[$case->name] = $i;
 			}
@@ -47,15 +48,20 @@ trait PacketOrdinalEnumTrait{
 		return $ordinals[$this->name];
 	}
 
-	public static function fromOrdinal(int $ordinal) : self{
+	/**
+	 * @throws PacketDecodeException
+	 */
+	public static function fromOrdinal(int $ordinal) : static{
 		/**
-		 * @var self[]|null $cases
-		 * @phpstan-var list<self>|null $cases
+		 * @var static[] $cases
+		 * @phpstan-var list<static> $cases
 		 */
-		static $cases = null;
+		static $cases = [];
 
-		$cases ??= self::cases();
+		if(count($cases) === 0){
+			$cases = self::cases();
+		}
 
-		return $cases[$ordinal] ?? throw new PacketDecodeException("Invalid ordinal $ordinal");
+		return $cases[$ordinal] ?? throw new PacketDecodeException("Invalid ordinal value $ordinal for " . static::class);
 	}
 }

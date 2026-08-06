@@ -208,11 +208,11 @@ final class CommonTypes{
 		self::putString($out, $skin->getAnimationData());
 		self::putString($out, $skin->getCapeId());
 		self::putString($out, $skin->getFullSkinId());
-		Byte::writeUnsigned($out, $skin->getArmSize()->ordinal());
+		Byte::writeUnsigned($out, $skin->getArmSize()->toOrdinal());
 		self::writeColor($out, $skin->getSkinColor());
 		self::writeList($out, $skin->getPersonaPieces(), function(ByteBufferWriter $out, PersonaSkinPiece $piece) : void{
 			self::putString($out, $piece->getPieceId());
-			LE::writeUnsignedInt($out, $piece->getPieceType()->ordinal());
+			LE::writeUnsignedInt($out, $piece->getPieceType()->toOrdinal());
 			self::putUUID($out, $piece->getPackId());
 			self::putBool($out, $piece->isDefaultPiece());
 			self::putString($out, $piece->getProductId());
@@ -320,7 +320,7 @@ final class CommonTypes{
 	}
 
 	public static function writeItemDescriptorNormal(ByteBufferWriter $out, StringIdMetaItemDescriptor|TagItemDescriptor|MolangItemDescriptor|null $descriptor) : void{
-		$typeOrd = ($descriptor?->getDescriptorType() ?? ItemDescriptorType::EMPTY)->ordinal();
+		$typeOrd = ($descriptor?->getDescriptorType() ?? ItemDescriptorType::EMPTY)->toOrdinal();
 		VarInt::writeUnsignedInt($out, $typeOrd);
 		Byte::writeUnsigned($out, $typeOrd);
 		$descriptor?->write($out);

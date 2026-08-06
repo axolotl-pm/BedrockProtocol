@@ -87,7 +87,7 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putActorUniqueId($out, $this->actorUniqueId);
 		VarInt::writeUnsignedInt($out, $this->propertyIndex);
-		VarInt::writeUnsignedInt($out, $this->updateType->ordinal());
+		VarInt::writeUnsignedInt($out, $this->updateType->toOrdinal());
 		CommonTypes::putString($out, $this->updateType->value);
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			if($this->intOverrideValue === null){ // this should never be the case

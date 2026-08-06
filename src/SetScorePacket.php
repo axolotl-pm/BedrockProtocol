@@ -53,7 +53,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 			$action = ScorePacketEntryAction::fromOrdinal(VarInt::readUnsignedInt($in));
 			$innerType = CommonTypes::getString($in);
 			if($action !== ScorePacketEntryAction::fromPacket($innerType)){
-				throw new PacketDecodeException("Expected inner type {$action->value} for score packet entry ordinal {$action->ordinal()}, got $innerType");
+				throw new PacketDecodeException("Expected inner type {$action->value} for score packet entry ordinal {$action->toOrdinal()}, got $innerType");
 			}
 
 			$entry = new ScorePacketEntry();
@@ -78,7 +78,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::writeList($out, $this->entries, function(ByteBufferWriter $out, ScorePacketEntry $entry) : void{
-			VarInt::writeUnsignedInt($out, $entry->type->ordinal());
+			VarInt::writeUnsignedInt($out, $entry->type->toOrdinal());
 			CommonTypes::putString($out, $entry->type->value);
 
 			//same for all types
