@@ -58,7 +58,7 @@ final class LocatorBarWaypoint{
 		$worldPosition = CommonTypes::readOptional($in, WorldPosition::read(...));
 		$texturePath = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$iconSize = CommonTypes::readOptional($in, CommonTypes::getVector2(...));
-		$color = CommonTypes::readOptional($in, fn() => Color::fromARGB(LE::readUnsignedInt($in)));
+		$color = CommonTypes::readOptional($in, CommonTypes::readColor(...));
 		$clientPositionAuthority = CommonTypes::readOptional($in, CommonTypes::getBool(...));
 		$actorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
 
@@ -80,7 +80,7 @@ final class LocatorBarWaypoint{
 		CommonTypes::writeOptional($out, $this->worldPosition, fn(ByteBufferWriter $out, WorldPosition $v) => $v->write($out));
 		CommonTypes::writeOptional($out, $this->texturePath, CommonTypes::putString(...));
 		CommonTypes::writeOptional($out, $this->iconSize, CommonTypes::putVector2(...));
-		CommonTypes::writeOptional($out, $this->color, fn(ByteBufferWriter $out, Color $v) => LE::writeUnsignedInt($out, $v->toARGB()));
+		CommonTypes::writeOptional($out, $this->color, CommonTypes::writeColor(...));
 		CommonTypes::writeOptional($out, $this->clientPositionAuthority, CommonTypes::putBool(...));
 		CommonTypes::writeOptional($out, $this->actorUniqueId, CommonTypes::putActorUniqueId(...));
 	}

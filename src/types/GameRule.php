@@ -25,5 +25,5 @@ abstract class GameRule{
 
 	abstract public function getTypeId() : int;
 
-	abstract public function encode(ByteBufferWriter $out, bool $isStartGame) : void;
+	abstract public function encode(ByteBufferWriter $out) : void;
 }

@@ -20,7 +20,6 @@ use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use Ramsey\Uuid\UuidInterface;
-use function count;
 
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
@@ -75,10 +74,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->worldTemplateId = CommonTypes::getUUID($in);
 		$this->worldTemplateVersion = CommonTypes::getString($in);
 
-		$resourcePackCount = VarInt::readUnsignedInt($in);
-		while($resourcePackCount-- > 0){
-			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($in);
-		}
+		$this->resourcePackEntries = CommonTypes::readList($in, static fn(ByteBufferReader $in) => ResourcePackInfoEntry::read($in));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -88,10 +84,8 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		CommonTypes::putBool($out, $this->forceDisableVibrantVisuals);
 		CommonTypes::putUUID($out, $this->worldTemplateId);
 		CommonTypes::putString($out, $this->worldTemplateVersion);
-		VarInt::writeUnsignedInt($out, count($this->resourcePackEntries));
-		foreach($this->resourcePackEntries as $entry){
-			$entry->write($out);
-		}
+
+		CommonTypes::writeList($out, $this->resourcePackEntries, static fn(ByteBufferWriter $out, ResourcePackInfoEntry $entry) => $entry->write($out));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

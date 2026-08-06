@@ -239,7 +239,7 @@ final class PacketShapeData{
 		$rotation = CommonTypes::readOptional($in, CommonTypes::getVector3(...));
 		$totalTimeLeft = CommonTypes::readOptional($in, LE::readFloat(...));
 		$maximumRenderDistance = CommonTypes::readOptional($in, LE::readFloat(...));
-		$color = CommonTypes::readOptional($in, fn() => Color::fromARGB(LE::readUnsignedInt($in)));
+		$color = CommonTypes::readOptional($in, CommonTypes::readColor(...));
 		$dimensionId = CommonTypes::readOptional($in, fn() => VarInt::readSignedInt($in));
 		$attachedToEntityId = CommonTypes::readOptional($in, fn() => CommonTypes::getActorRuntimeId($in));
 
@@ -289,7 +289,7 @@ final class PacketShapeData{
 		CommonTypes::writeOptional($out, $this->rotation, CommonTypes::putVector3(...));
 		CommonTypes::writeOptional($out, $this->totalTimeLeft, LE::writeFloat(...));
 		CommonTypes::writeOptional($out, $this->maximumRenderDistance, LE::writeFloat(...));
-		CommonTypes::writeOptional($out, $this->color, fn(ByteBufferWriter $out, Color $color) => LE::writeUnsignedInt($out, $color->toARGB()));
+		CommonTypes::writeOptional($out, $this->color, CommonTypes::writeColor(...));
 		CommonTypes::writeOptional($out, $this->dimensionId, fn(ByteBufferWriter $out, int $dimensionId) => VarInt::writeSignedInt($out, $dimensionId));
 		CommonTypes::writeOptional($out, $this->attachedToEntityId, fn(ByteBufferWriter $out, int $entityId) => CommonTypes::putActorRuntimeId($out, $entityId));
 

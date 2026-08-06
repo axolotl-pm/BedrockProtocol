@@ -23,7 +23,7 @@ final class SystemCategory{
 
 	public function __construct(
 		private string $categoryName,
-		private int $systemIndex,
+		private int $systemIndex
 	){}
 
 	public function getCategoryName() : string{ return $this->categoryName; }
@@ -34,10 +34,7 @@ final class SystemCategory{
 		$categoryName = CommonTypes::getString($in);
 		$systemIndex = LE::readUnsignedLong($in);
 
-		return new self(
-			$categoryName,
-			$systemIndex
-		);
+		return new self($categoryName, $systemIndex);
 	}
 
 	public function write(ByteBufferWriter $out) : void{

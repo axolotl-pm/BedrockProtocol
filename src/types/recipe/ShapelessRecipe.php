@@ -22,7 +22,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use Ramsey\Uuid\UuidInterface;
 use function count;
 
-final class ShapelessRecipe extends RecipeWithTypeId{
+final class ShapelessRecipe{
 	/**
 	 * @param RecipeIngredient[] $inputs
 	 * @param ItemStack[]        $outputs
@@ -30,7 +30,6 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 	 * @phpstan-param list<ItemStack> $outputs
 	 */
 	public function __construct(
-		int $typeId,
 		private string $recipeId,
 		private array $inputs,
 		private array $outputs,
@@ -39,9 +38,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		private int $priority,
 		private ?RecipeUnlockingRequirement $unlockingRequirement,
 		private int $recipeNetId
-	){
-		parent::__construct($typeId);
-	}
+	){}
 
 	public function getRecipeId() : string{
 		return $this->recipeId;
@@ -81,7 +78,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		return $this->recipeNetId;
 	}
 
-	public static function decode(int $recipeType, ByteBufferReader $in) : self{
+	public static function decode(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::getString($in);
 		$input = [];
 		for($j = 0, $ingredientCount = VarInt::readUnsignedInt($in); $j < $ingredientCount; ++$j){
@@ -98,7 +95,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 
 		$recipeNetId = CommonTypes::readRecipeNetId($in);
 
-		return new self($recipeType, $recipeId, $input, $output, $uuid, $block, $priority, $unlockingRequirement, $recipeNetId);
+		return new self($recipeId, $input, $output, $uuid, $block, $priority, $unlockingRequirement, $recipeNetId);
 	}
 
 	public function encode(ByteBufferWriter $out) : void{
@@ -116,7 +113,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		CommonTypes::putUUID($out, $this->uuid);
 		CommonTypes::putString($out, $this->blockName);
 		VarInt::writeSignedInt($out, $this->priority);
-		CommonTypes::writeOptional($out, $this->unlockingRequirement, fn(ByteBufferWriter $out, RecipeUnlockingRequirement $data) => $data->write($out));
+		CommonTypes::writeOptional($out, $this->unlockingRequirement, static fn(ByteBufferWriter $out, RecipeUnlockingRequirement $data) => $data->write($out));
 
 		CommonTypes::writeRecipeNetId($out, $this->recipeNetId);
 	}

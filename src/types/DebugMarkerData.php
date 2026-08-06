@@ -41,7 +41,7 @@ final class DebugMarkerData{
 	public static function read(ByteBufferReader $in) : self{
 		$text = CommonTypes::getString($in);
 		$position = CommonTypes::getVector3($in);
-		$color = Color::fromARGB(LE::readUnsignedInt($in));
+		$color = CommonTypes::readColor($in);
 		$durationMillis = LE::readUnsignedLong($in);
 
 		return new self(
@@ -55,7 +55,7 @@ final class DebugMarkerData{
 	public function write(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->text);
 		CommonTypes::putVector3($out, $this->position);
-		LE::writeUnsignedInt($out, $this->color->toARGB());
+		CommonTypes::writeColor($out, $this->color);
 		LE::writeUnsignedLong($out, $this->durationMillis);
 	}
 }

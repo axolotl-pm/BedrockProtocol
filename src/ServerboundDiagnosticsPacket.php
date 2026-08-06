@@ -17,13 +17,12 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\EntityDiagnosticTimingInfo;
 use pocketmine\network\mcpe\protocol\types\MemoryCategoryCounter;
 use pocketmine\network\mcpe\protocol\types\SystemCategory;
 use pocketmine\network\mcpe\protocol\types\SystemDiagnosticTimingInfo;
 use pocketmine\network\mcpe\protocol\types\WhiskerScopeDataSummary;
-use function count;
 
 class ServerboundDiagnosticsPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SERVERBOUND_DIAGNOSTICS_PACKET;
@@ -169,30 +168,11 @@ class ServerboundDiagnosticsPacket extends DataPacket implements ServerboundPack
 		$this->avgRemainderTimePercent = LE::readFloat($in);
 		$this->avgUnaccountedTimePercent = LE::readFloat($in);
 
-		$this->memoryCategoryValues = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->memoryCategoryValues[] = MemoryCategoryCounter::read($in);
-		}
-
-		$this->entityDiagnostics = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->entityDiagnostics[] = EntityDiagnosticTimingInfo::read($in);
-		}
-
-		$this->systemDiagnostics = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->systemDiagnostics[] = SystemDiagnosticTimingInfo::read($in);
-		}
-
-		$this->systemCategories = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->systemCategories[] = SystemCategory::read($in);
-		}
-
-		$this->whiskerScopes = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->whiskerScopes[] = WhiskerScopeDataSummary::read($in);
-		}
+		$this->memoryCategoryValues = CommonTypes::readList($in, MemoryCategoryCounter::read(...));
+		$this->entityDiagnostics = CommonTypes::readList($in, EntityDiagnosticTimingInfo::read(...));
+		$this->systemDiagnostics = CommonTypes::readList($in, SystemDiagnosticTimingInfo::read(...));
+		$this->systemCategories = CommonTypes::readList($in, SystemCategory::read(...));
+		$this->whiskerScopes = CommonTypes::readList($in, WhiskerScopeDataSummary::read(...));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -206,30 +186,11 @@ class ServerboundDiagnosticsPacket extends DataPacket implements ServerboundPack
 		LE::writeFloat($out, $this->avgRemainderTimePercent);
 		LE::writeFloat($out, $this->avgUnaccountedTimePercent);
 
-		VarInt::writeUnsignedInt($out, count($this->memoryCategoryValues));
-		foreach($this->memoryCategoryValues as $value){
-			$value->write($out);
-		}
-
-		VarInt::writeUnsignedInt($out, count($this->entityDiagnostics));
-		foreach($this->entityDiagnostics as $value){
-			$value->write($out);
-		}
-
-		VarInt::writeUnsignedInt($out, count($this->systemDiagnostics));
-		foreach($this->systemDiagnostics as $value){
-			$value->write($out);
-		}
-
-		VarInt::writeUnsignedInt($out, count($this->systemDiagnostics));
-		foreach($this->systemCategories as $value){
-			$value->write($out);
-		}
-
-		VarInt::writeUnsignedInt($out, count($this->whiskerScopes));
-		foreach($this->whiskerScopes as $value){
-			$value->write($out);
-		}
+		CommonTypes::writeList($out, $this->memoryCategoryValues, static fn($out, $v) => $v->write($out));
+		CommonTypes::writeList($out, $this->entityDiagnostics, static fn($out, $v) => $v->write($out));
+		CommonTypes::writeList($out, $this->systemDiagnostics, static fn($out, $v) => $v->write($out));
+		CommonTypes::writeList($out, $this->systemCategories, static fn($out, $v) => $v->write($out));
+		CommonTypes::writeList($out, $this->whiskerScopes, static fn($out, $v) => $v->write($out));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

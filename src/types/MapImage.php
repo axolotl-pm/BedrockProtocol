@@ -14,14 +14,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pmmp\encoding\BE;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pmmp\encoding\VarInt;
 use pocketmine\color\Color;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
-use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use function array_slice;
+use pocketmine\utils\Binary;
 use function count;
 
 final class MapImage{
@@ -36,6 +35,7 @@ final class MapImage{
 	 * @phpstan-var list<list<Color>>
 	 */
 	private array $pixels;
+	private ?string $encodedPixelCache = null;
 
 	/**
 	 * @param Color[][] $pixels
@@ -75,46 +75,41 @@ final class MapImage{
 	public function getPixels() : array{ return $this->pixels; }
 
 	public function encode(ByteBufferWriter $out) : void{
-		$count = $this->width * $this->height;
-		VarInt::writeUnsignedInt($out, $count);
-		foreach($this->pixels as $row){
-			foreach($row as $pixel){
-				BE::writeSignedInt($out, $pixel->toRGBA());
+		if($this->encodedPixelCache === null){
+			$serializer = new ByteBufferWriter();
+			for($y = 0; $y < $this->height; ++$y){
+				for($x = 0; $x < $this->width; ++$x){
+					//if mojang had any sense this would just be a regular LE int
+					VarInt::writeUnsignedInt($serializer, Binary::flipIntEndianness($this->pixels[$y][$x]->toRGBA()));
+				}
 			}
+			$this->encodedPixelCache = $serializer->getData();
 		}
+
+		$out->writeByteArray($this->encodedPixelCache);
 	}
 
 	/**
 	 * @throws PacketDecodeException
+	 * @throws DataDecodeException
 	 */
-	public static function decode(ByteBufferReader $in, int $height, int $width) : ?self{
+	public static function decode(ByteBufferReader $in, int $height, int $width) : self{
 		if($width > self::MAX_WIDTH){
 			throw new PacketDecodeException("Image width must be at most " . self::MAX_WIDTH . " pixels wide");
 		}
 		if($height > self::MAX_HEIGHT){
 			throw new PacketDecodeException("Image height must be at most " . self::MAX_HEIGHT . " pixels tall");
 		}
+		$pixels = [];
 
-		$pixels = CommonTypes::readOptional($in, static function(ByteBufferReader $buf) use ($height, $width) : array{
-			$count = VarInt::readUnsignedInt($buf);
-			if($count !== $width * $height){
-				throw new PacketDecodeException("Expected colour count of " . ($height * $width) . " (height $height * width $width), got $count");
-			}
-			$list = [];
-			for($i = 0; $i < $count; ++$i){
-				$list[] = Color::fromRGBA(BE::readSignedInt($buf));
-			}
-			return $list;
-		});
-
-		if($pixels === null){
-			return null;
-		}
-
-		$rows = [];
 		for($y = 0; $y < $height; ++$y){
-			$rows[] = array_slice($pixels, $y * $width, $width);
+			$row = [];
+			for($x = 0; $x < $width; ++$x){
+				$row[] = Color::fromRGBA(Binary::flipIntEndianness(VarInt::readUnsignedInt($in)));
+			}
+			$pixels[] = $row;
 		}
-		return new self($rows);
+
+		return new self($pixels);
 	}
 }

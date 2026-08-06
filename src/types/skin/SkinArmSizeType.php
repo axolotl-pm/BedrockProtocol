@@ -16,7 +16,7 @@ namespace pocketmine\network\mcpe\protocol\types\skin;
 
 use pocketmine\network\mcpe\protocol\types\PacketOrdinalEnumTrait;
 
-enum ArmSizeType : string{
+enum SkinArmSizeType : string{
 	use PacketOrdinalEnumTrait;
 
 	case SLIM = "slim";

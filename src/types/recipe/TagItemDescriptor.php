@@ -22,23 +22,27 @@ use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 final class TagItemDescriptor implements ItemDescriptor{
 
 	public function __construct(
-		private string $tag
+		private string $tag,
+		private int $meta
 	){}
 
-	public function getTypeId() : ItemDescriptorType{
-		return ItemDescriptorType::ITEM_TAG;
+	public function getDescriptorType() : ItemDescriptorType{
+		return ItemDescriptorType::TAG;
 	}
 
 	public function getTag() : string{ return $this->tag; }
 
+	public function getMeta() : int{ return $this->meta; }
+
 	public static function read(ByteBufferReader $in) : self{
 		$tag = CommonTypes::getString($in);
-		VarInt::readSignedInt($in); //meta
-		return new self($tag);
+		$meta = VarInt::readSignedInt($in);
+
+		return new self($tag, $meta);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->tag);
-		VarInt::writeSignedInt($out, 0x7fff); //meta
+		VarInt::writeSignedInt($out, $this->meta);
 	}
 }

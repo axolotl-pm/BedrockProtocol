@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
@@ -68,13 +67,9 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 			return $result;
 		});
 
-		if(Byte::readUnsigned($in) !== 1){
-			throw new PacketDecodeException("Dummy optional bool for transactionType should always be 1");
-		}
+		CommonTypes::readDummyOptional($in);
 		$transactionType = VarInt::readUnsignedInt($in);
-		if(Byte::readUnsigned($in) !== 1){
-			throw new PacketDecodeException("Dummy optional bool for trData should always be 1");
-		}
+		CommonTypes::readDummyOptional($in);
 		$this->trData = match($transactionType) {
 			NormalTransactionData::ID => new NormalTransactionData(),
 			MismatchTransactionData::ID => new MismatchTransactionData(),
@@ -83,7 +78,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 			ReleaseItemTransactionData::ID => new ReleaseItemTransactionData(),
 			default => throw new PacketDecodeException("Unknown transaction type $transactionType"),
 		};
-		$this->trData->decodeTransaction($in);
+		$this->trData->decode($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -96,10 +91,10 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 			}
 		});
 
-		Byte::writeUnsigned($out, 1);
+		CommonTypes::writeDummyOptional($out);
 		VarInt::writeUnsignedInt($out, $this->trData->getTypeId());
-		Byte::writeUnsigned($out, 1);
-		$this->trData->encodeTransaction($out);
+		CommonTypes::writeDummyOptional($out);
+		$this->trData->encode($out);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

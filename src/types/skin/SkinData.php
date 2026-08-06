@@ -20,14 +20,21 @@ use Ramsey\Uuid\Uuid;
 
 class SkinData{
 
+	public const TRUSTED_SKIN_UNSET = "unset";
+	public const TRUSTED_SKIN_FALSE = "false";
+	public const TRUSTED_SKIN_TRUE = "true";
+
+	private Color $skinColor;
 	private SkinImage $capeImage;
 	private string $fullSkinId;
-	private Color $skinColor;
 
 	/**
 	 * @param SkinAnimation[]         $animations
 	 * @param PersonaSkinPiece[]      $personaPieces
 	 * @param PersonaPieceTintColor[] $pieceTintColors
+	 * @phpstan-param list<SkinAnimation> $animations
+	 * @phpstan-param list<PersonaSkinPiece> $personaPieces
+	 * @phpstan-param list<PersonaPieceTintColor> $pieceTintColors
 	 */
 	public function __construct(
 		private string $skinId,
@@ -41,24 +48,22 @@ class SkinData{
 		private string $animationData = "",
 		private string $capeId = "",
 		?string $fullSkinId = null,
-		private ArmSizeType $armSize = ArmSizeType::WIDE,
+		private SkinArmSizeType $armSize = SkinArmSizeType::WIDE,
 		?Color $skinColor = null,
 		private array $personaPieces = [],
 		private array $pieceTintColors = [],
-		private bool $isVerified = true,
+		private string $trustedSkinFlag = self::TRUSTED_SKIN_TRUE,
 		private bool $premium = false,
 		private bool $persona = false,
 		private bool $personaCapeOnClassic = false,
 		private bool $isPrimaryUser = true,
 		private bool $override = true,
-		private string $trustedSkinFlag = "true",
 		private string $profileHash = ""
 	){
+		$this->skinColor = $skinColor ?? new Color(0, 0, 0, 0);
 		$this->capeImage = $capeImage ?? new SkinImage(0, 0, "");
-		$this->geometryData = $geometryData === "" ? "null" : $geometryData;
 		//this has to be unique or the client will do stupid things
 		$this->fullSkinId = $fullSkinId ?? Uuid::uuid4()->toString();
-		$this->skinColor = $skinColor ?? new Color(0, 0, 0, 0);
 	}
 
 	public function getSkinId() : string{
@@ -77,6 +82,7 @@ class SkinData{
 
 	/**
 	 * @return SkinAnimation[]
+	 * @phpstan-return list<SkinAnimation>
 	 */
 	public function getAnimations() : array{
 		return $this->animations;
@@ -104,7 +110,7 @@ class SkinData{
 		return $this->fullSkinId;
 	}
 
-	public function getArmSize() : ArmSizeType{
+	public function getArmSize() : SkinArmSizeType{
 		return $this->armSize;
 	}
 
@@ -114,6 +120,7 @@ class SkinData{
 
 	/**
 	 * @return PersonaSkinPiece[]
+	 * @phpstan-return list<PersonaSkinPiece>
 	 */
 	public function getPersonaPieces() : array{
 		return $this->personaPieces;
@@ -121,6 +128,7 @@ class SkinData{
 
 	/**
 	 * @return PersonaPieceTintColor[]
+	 * @phpstan-return list<PersonaPieceTintColor>
 	 */
 	public function getPieceTintColors() : array{
 		return $this->pieceTintColors;
@@ -142,18 +150,9 @@ class SkinData{
 
 	public function isOverride() : bool{ return $this->override; }
 
-	public function getTrustedSkinFlag() : string{ return $this->trustedSkinFlag; }
+	public function getTrustedSkinFlag() : string{
+		return $this->trustedSkinFlag;
+	}
 
 	public function getProfileHash() : string{ return $this->profileHash; }
-
-	public function isVerified() : bool{
-		return $this->isVerified;
-	}
-
-	/**
-	 * @internal
-	 */
-	public function setVerified(bool $verified) : void{
-		$this->isVerified = $verified;
-	}
 }

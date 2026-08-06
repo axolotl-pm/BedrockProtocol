@@ -37,42 +37,10 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public float $yaw;
 	public float $headYaw;
 	public int $mode = self::MODE_NORMAL;
-	public bool $onGround = false; //TODO
+	public bool $onGround = false;
 	public int $ridingActorRuntimeId = 0;
-	public ?MovePlayerTeleportData $teleportData = null;
+	public ?MovePlayerTeleportData $telemetryData;
 	public int $tick = 0;
-
-	public static function create(
-		int $actorRuntimeId,
-		Vector3 $position,
-		float $pitch,
-		float $yaw,
-		float $headYaw,
-		int $mode,
-		bool $onGround,
-		int $ridingActorRuntimeId,
-		?MovePlayerTeleportData $teleportData,
-		int $tick,
-	) : self{
-		if($mode === self::MODE_TELEPORT && $teleportData === null){
-			$teleportData = new MovePlayerTeleportData(0, 0);
-		}
-		return self::internalCreate($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, $teleportData, $tick);
-	}
-
-	public static function simple(
-		int $actorRuntimeId,
-		Vector3 $position,
-		float $pitch,
-		float $yaw,
-		float $headYaw,
-		int $mode,
-		bool $onGround,
-		int $ridingActorRuntimeId,
-		int $tick,
-	) : self{
-		return self::create($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, null, $tick);
-	}
 
 	/**
 	 * @generate-create-func
@@ -86,7 +54,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		int $mode,
 		bool $onGround,
 		int $ridingActorRuntimeId,
-		?MovePlayerTeleportData $teleportData,
+		?MovePlayerTeleportData $telemetryData,
 		int $tick,
 	) : self{
 		$result = new self;
@@ -98,9 +66,41 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$result->mode = $mode;
 		$result->onGround = $onGround;
 		$result->ridingActorRuntimeId = $ridingActorRuntimeId;
-		$result->teleportData = $teleportData;
+		$result->telemetryData = $telemetryData;
 		$result->tick = $tick;
 		return $result;
+	}
+
+	public static function create(
+		int $actorRuntimeId,
+		Vector3 $position,
+		float $pitch,
+		float $yaw,
+		float $headYaw,
+		int $mode,
+		bool $onGround,
+		int $ridingActorRuntimeId,
+		?MovePlayerTeleportData $telemetryData,
+		int $tick,
+	) : self{
+		if($mode === self::MODE_TELEPORT && $telemetryData === null){
+			throw new \InvalidArgumentException("telemetryData must be provided when mode is MODE_TELEPORT");
+		}
+		return self::internalCreate($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, $telemetryData, $tick);
+	}
+
+	public static function simple(
+		int $actorRuntimeId,
+		Vector3 $position,
+		float $pitch,
+		float $yaw,
+		float $headYaw,
+		int $mode,
+		bool $onGround,
+		int $ridingActorRuntimeId,
+		int $tick,
+	) : self{
+		return self::create($actorRuntimeId, $position, $pitch, $yaw, $headYaw, $mode, $onGround, $ridingActorRuntimeId, $mode === self::MODE_TELEPORT ? new MovePlayerTeleportData(0, 0) : null, $tick);
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
@@ -112,7 +112,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$this->mode = Byte::readUnsigned($in);
 		$this->onGround = CommonTypes::getBool($in);
 		$this->ridingActorRuntimeId = CommonTypes::getActorRuntimeId($in);
-		$this->teleportData = CommonTypes::readOptional($in, MovePlayerTeleportData::read(...));
+		$this->telemetryData = CommonTypes::readOptional($in, MovePlayerTeleportData::read(...));
 		$this->tick = VarInt::readUnsignedLong($in);
 	}
 
@@ -121,11 +121,11 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		CommonTypes::putVector3($out, $this->position);
 		LE::writeFloat($out, $this->pitch);
 		LE::writeFloat($out, $this->yaw);
-		LE::writeFloat($out, $this->headYaw); //TODO
+		LE::writeFloat($out, $this->headYaw);
 		Byte::writeUnsigned($out, $this->mode);
 		CommonTypes::putBool($out, $this->onGround);
 		CommonTypes::putActorRuntimeId($out, $this->ridingActorRuntimeId);
-		CommonTypes::writeOptional($out, $this->teleportData, fn(ByteBufferWriter $out, MovePlayerTeleportData $data) => $data->write($out));
+		CommonTypes::writeOptional($out, $this->telemetryData, static fn(ByteBufferWriter $out, MovePlayerTeleportData $data) => $data->write($out));
 		VarInt::writeUnsignedLong($out, $this->tick);
 	}
 

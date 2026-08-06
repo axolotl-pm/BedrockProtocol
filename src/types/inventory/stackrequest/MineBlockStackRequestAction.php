@@ -20,6 +20,9 @@ use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
+/**
+ * Spec name: ItemStackRequestMineBlockAction
+ */
 final class MineBlockStackRequestAction extends ItemStackRequestAction{
 	use GetTypeIdFromConstTrait;
 

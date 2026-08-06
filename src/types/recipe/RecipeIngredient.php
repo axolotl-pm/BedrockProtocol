@@ -16,11 +16,11 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 final class RecipeIngredient{
 	public function __construct(
-		private ?ItemDescriptor $descriptor,
+		private StringIdMetaItemDescriptor|TagItemDescriptor|MolangItemDescriptor|null $descriptor,
 		private int $count
 	){}
 
-	public function getDescriptor() : ?ItemDescriptor{
+	public function getDescriptor() : StringIdMetaItemDescriptor|TagItemDescriptor|MolangItemDescriptor|null{
 		return $this->descriptor;
 	}
 

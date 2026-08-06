@@ -19,10 +19,9 @@ use pmmp\encoding\ByteBufferWriter;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
-final class SmithingTransformRecipe extends RecipeWithTypeId{
+final class SmithingTransformRecipe{
 
 	public function __construct(
-		int $typeId,
 		private string $recipeId,
 		private RecipeIngredient $template,
 		private RecipeIngredient $input,
@@ -30,9 +29,7 @@ final class SmithingTransformRecipe extends RecipeWithTypeId{
 		private ItemStack $output,
 		private string $blockName,
 		private int $recipeNetId
-	){
-		parent::__construct($typeId);
-	}
+	){}
 
 	public function getRecipeId() : string{ return $this->recipeId; }
 
@@ -48,7 +45,7 @@ final class SmithingTransformRecipe extends RecipeWithTypeId{
 
 	public function getRecipeNetId() : int{ return $this->recipeNetId; }
 
-	public static function decode(int $typeId, ByteBufferReader $in) : self{
+	public static function decode(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::getString($in);
 		$template = CommonTypes::getRecipeIngredient($in);
 		$input = CommonTypes::getRecipeIngredient($in);
@@ -58,7 +55,6 @@ final class SmithingTransformRecipe extends RecipeWithTypeId{
 		$recipeNetId = CommonTypes::readRecipeNetId($in);
 
 		return new self(
-			$typeId,
 			$recipeId,
 			$template,
 			$input,

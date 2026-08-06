@@ -20,7 +20,7 @@ final class PersonaSkinPiece{
 
 	public function __construct(
 		private string $pieceId,
-		private PieceType $pieceType,
+		private PersonaSkinPieceType $pieceType,
 		private UuidInterface $packId,
 		private bool $isDefaultPiece,
 		private string $productId
@@ -30,7 +30,7 @@ final class PersonaSkinPiece{
 		return $this->pieceId;
 	}
 
-	public function getPieceType() : PieceType{
+	public function getPieceType() : PersonaSkinPieceType{
 		return $this->pieceType;
 	}
 

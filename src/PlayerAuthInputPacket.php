@@ -22,14 +22,14 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\types\InputMode;
 use pocketmine\network\mcpe\protocol\types\InteractionMode;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\ItemInteractionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
+use pocketmine\network\mcpe\protocol\types\PlayerAuthInputVehicleInfo;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockAction;
-use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\mcpe\protocol\types\PlayMode;
-use function count;
 
 class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_AUTH_INPUT_PACKET;
@@ -49,10 +49,12 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	private Vector3 $delta;
 	private ?ItemInteractionData $itemInteractionData = null;
 	private ?ItemStackRequest $itemStackRequest = null;
-	/** @var PlayerBlockAction[]|null */
+	/**
+	 * @var PlayerBlockAction[]|null
+	 * @phpstan-var list<PlayerBlockAction>|null
+	 */
 	private ?array $blockActions = null;
-	private ?Vector2 $vehicleRotation = null;
-	private ?int $predictedVehicleActorUniqueId = null;
+	private ?PlayerAuthInputVehicleInfo $vehicleInfo = null;
 	private float $analogMoveVecX;
 	private float $analogMoveVecZ;
 	private Vector3 $cameraOrientation;
@@ -60,7 +62,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param PlayerBlockAction[] $blockActions
+	 * @param PlayerBlockAction[]|null $blockActions
+	 * @phpstan-param list<PlayerBlockAction>|null $blockActions
 	 */
 	private static function internalCreate(
 		Vector3 $position,
@@ -79,8 +82,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		?ItemInteractionData $itemInteractionData,
 		?ItemStackRequest $itemStackRequest,
 		?array $blockActions,
-		?Vector2 $vehicleRotation,
-		?int $predictedVehicleActorUniqueId,
+		?PlayerAuthInputVehicleInfo $vehicleInfo,
 		float $analogMoveVecX,
 		float $analogMoveVecZ,
 		Vector3 $cameraOrientation,
@@ -103,8 +105,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$result->itemInteractionData = $itemInteractionData;
 		$result->itemStackRequest = $itemStackRequest;
 		$result->blockActions = $blockActions;
-		$result->vehicleRotation = $vehicleRotation;
-		$result->predictedVehicleActorUniqueId = $predictedVehicleActorUniqueId;
+		$result->vehicleInfo = $vehicleInfo;
 		$result->analogMoveVecX = $analogMoveVecX;
 		$result->analogMoveVecZ = $analogMoveVecZ;
 		$result->cameraOrientation = $cameraOrientation;
@@ -118,6 +119,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	 * @param int                      $playMode @see PlayMode
 	 * @param int                      $interactionMode @see InteractionMode
 	 * @param PlayerBlockAction[]|null $blockActions Blocks that the client has interacted with
+	 * @phpstan-param list<PlayerBlockAction>|null $blockActions
 	 */
 	public static function create(
 		Vector3 $position,
@@ -136,8 +138,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		?ItemInteractionData $itemInteractionData,
 		?ItemStackRequest $itemStackRequest,
 		?array $blockActions,
-		?Vector2 $vehicleRotation,
-		?int $predictedVehicleActorUniqueId,
+		?PlayerAuthInputVehicleInfo $vehicleInfo,
 		float $analogMoveVecX,
 		float $analogMoveVecZ,
 		Vector3 $cameraOrientation,
@@ -147,10 +148,11 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			throw new \InvalidArgumentException("Input flags must be " . PlayerAuthInputFlags::NUMBER_OF_FLAGS . " bits long");
 		}
 
+		//TODO: are these still needed in 26.40?
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_ITEM_STACK_REQUEST, $itemStackRequest !== null);
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_ITEM_INTERACTION, $itemInteractionData !== null);
 		$inputFlags->set(PlayerAuthInputFlags::PERFORM_BLOCK_ACTIONS, $blockActions !== null);
-		$inputFlags->set(PlayerAuthInputFlags::IN_CLIENT_PREDICTED_VEHICLE, $predictedVehicleActorUniqueId !== null);
+		$inputFlags->set(PlayerAuthInputFlags::IN_CLIENT_PREDICTED_VEHICLE, $vehicleInfo !== null);
 
 		return self::internalCreate(
 			$position,
@@ -169,8 +171,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			$itemInteractionData,
 			$itemStackRequest,
 			$blockActions,
-			$vehicleRotation,
-			$predictedVehicleActorUniqueId,
+			$vehicleInfo,
 			$analogMoveVecX,
 			$analogMoveVecZ,
 			$cameraOrientation,
@@ -250,14 +251,13 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 
 	/**
 	 * @return PlayerBlockAction[]|null
+	 * @phpstan-return list<PlayerBlockAction>|null
 	 */
 	public function getBlockActions() : ?array{
 		return $this->blockActions;
 	}
 
-	public function getVehicleRotation() : ?Vector2{ return $this->vehicleRotation; }
-
-	public function getPredictedVehicleActorUniqueId() : ?int{ return $this->predictedVehicleActorUniqueId; }
+	public function getVehicleInfo() : ?PlayerAuthInputVehicleInfo{ return $this->vehicleInfo; }
 
 	public function getAnalogMoveVecX() : float{ return $this->analogMoveVecX; }
 
@@ -275,17 +275,14 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$this->moveVecZ = LE::readFloat($in);
 		$this->headYaw = LE::readFloat($in);
 
+		CommonTypes::readDummyOptional($in);
 		$this->inputFlags = new BitSet(PlayerAuthInputFlags::NUMBER_OF_FLAGS);
-		CommonTypes::readOptional($in, function(ByteBufferReader $in) : void{
-			$count = VarInt::readUnsignedInt($in);
-			for($i = 0; $i < $count; ++$i){
-				$flag = VarInt::readSignedInt($in);
-				if($flag < 0 || $flag >= PlayerAuthInputFlags::NUMBER_OF_FLAGS){
-					throw new PacketDecodeException("Unknown input flag $flag");
-				}
-				$this->inputFlags->set($flag, true);
+		foreach(CommonTypes::readList($in, VarInt::readSignedInt(...)) as $flag){
+			if($this->inputFlags->get($flag)){
+				throw new PacketDecodeException("Duplicate input flag $flag");
 			}
-		});
+			$this->inputFlags->set($flag, true);
+		}
 
 		$this->inputMode = VarInt::readUnsignedInt($in);
 		$this->playMode = VarInt::readUnsignedInt($in);
@@ -293,42 +290,19 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$this->interactRotation = CommonTypes::getVector2($in);
 		$this->tick = VarInt::readUnsignedLong($in);
 		$this->delta = CommonTypes::getVector3($in);
+		$this->itemInteractionData = CommonTypes::readDoubleOptional($in, ItemInteractionData::read(...));
+		$this->itemStackRequest = CommonTypes::readDoubleOptional($in, ItemStackRequest::read(...));
 
-		$hasInteractionData = CommonTypes::getBool($in);
-		if($hasInteractionData){
-			$this->itemInteractionData = CommonTypes::readOptional($in, ItemInteractionData::read(...));
+		$this->blockActions = CommonTypes::readDoubleOptional($in, static fn($in) => CommonTypes::readList($in, PlayerBlockAction::read(...)));
+		$vehicleRotation = CommonTypes::readDoubleOptional($in, CommonTypes::getVector2(...));
+		$vehicleActorUniqueId = CommonTypes::readDoubleOptional($in, CommonTypes::getActorUniqueId(...));
+		if($vehicleRotation !== null && $vehicleActorUniqueId !== null){
+			$this->vehicleInfo = new PlayerAuthInputVehicleInfo($vehicleRotation, $vehicleActorUniqueId);
+		}elseif($vehicleRotation === null && $vehicleActorUniqueId === null){
+			$this->vehicleInfo = null;
+		}else{
+			throw new PacketDecodeException("Vehicle rotation and actor unique ID must both be present or both be absent");
 		}
-
-		$hasItemStackRequest = CommonTypes::getBool($in);
-		if($hasItemStackRequest){
-			$this->itemStackRequest = CommonTypes::readOptional($in, ItemStackRequest::read(...));
-		}
-
-		$hasBlockActions = CommonTypes::getBool($in);
-		if($hasBlockActions){
-			$this->blockActions = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
-				$blockActions = [];
-				$max = VarInt::readUnsignedInt($in);
-				for($i = 0; $i < $max; ++$i){
-					$actionType = VarInt::readSignedInt($in);
-					$blockActions[] = match(true){
-						PlayerBlockActionWithBlockInfo::isValidActionType($actionType) => PlayerBlockActionWithBlockInfo::read($in, $actionType),
-						default => throw new PacketDecodeException("Unexpected block action type $actionType")
-					};
-				}
-				return $blockActions;
-			});
-		}
-
-		$hasVehicleRotation = CommonTypes::getBool($in);
-		if($hasVehicleRotation){
-			$this->vehicleRotation = CommonTypes::readOptional($in, CommonTypes::getVector2(...));
-		}
-		$hasPredictedVehicleActorUniqueId = CommonTypes::getBool($in);
-		if($hasPredictedVehicleActorUniqueId){
-			$this->predictedVehicleActorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
-		}
-
 		$this->analogMoveVecX = LE::readFloat($in);
 		$this->analogMoveVecZ = LE::readFloat($in);
 		$this->cameraOrientation = CommonTypes::getVector3($in);
@@ -343,17 +317,14 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		LE::writeFloat($out, $this->moveVecZ);
 		LE::writeFloat($out, $this->headYaw);
 
-		CommonTypes::putBool($out, true);
-		$inputFlags = [];
+		CommonTypes::writeDummyOptional($out);
+		$flagsArray = [];
 		for($i = 0; $i < PlayerAuthInputFlags::NUMBER_OF_FLAGS; ++$i){
 			if($this->inputFlags->get($i)){
-				$inputFlags[] = $i;
+				$flagsArray[] = $i;
 			}
 		}
-		VarInt::writeUnsignedInt($out, count($inputFlags));
-		foreach($inputFlags as $flag){
-			VarInt::writeSignedInt($out, $flag);
-		}
+		CommonTypes::writeList($out, $flagsArray, VarInt::writeSignedInt(...));
 
 		VarInt::writeUnsignedInt($out, $this->inputMode);
 		VarInt::writeUnsignedInt($out, $this->playMode);
@@ -361,31 +332,11 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		CommonTypes::putVector2($out, $this->interactRotation);
 		VarInt::writeUnsignedLong($out, $this->tick);
 		CommonTypes::putVector3($out, $this->delta);
-
-		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->itemInteractionData, static function(ByteBufferWriter $out, ItemInteractionData $data) : void{
-			$data->write($out);
-		});
-
-		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->itemStackRequest, static function(ByteBufferWriter $out, ItemStackRequest $request) : void{
-			$request->write($out);
-		});
-
-		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->blockActions, static function(ByteBufferWriter $out, array $blockActions) : void{
-			VarInt::writeUnsignedInt($out, count($blockActions));
-			foreach($blockActions as $blockAction){
-				VarInt::writeSignedInt($out, $blockAction->getActionType());
-				$blockAction->write($out);
-			}
-		});
-
-		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->vehicleRotation, CommonTypes::putVector2(...));
-		CommonTypes::putBool($out, true);
-		CommonTypes::writeOptional($out, $this->predictedVehicleActorUniqueId, CommonTypes::putActorUniqueId(...));
-
+		CommonTypes::writeDoubleOptional($out, $this->itemInteractionData, static fn(ByteBufferWriter $out, ItemInteractionData $data) => $data->write($out));
+		CommonTypes::writeDoubleOptional($out, $this->itemStackRequest, static fn(ByteBufferWriter $out, ItemStackRequest $request) => $request->write($out));
+		CommonTypes::writeDoubleOptional($out, $this->blockActions, static fn($out, $array) => CommonTypes::writeList($out, $array, static fn($out, $v) => $v->write($out)));
+		CommonTypes::writeDoubleOptional($out, $this->vehicleInfo?->getVehicleRotation(), CommonTypes::putVector2(...));
+		CommonTypes::writeDoubleOptional($out, $this->vehicleInfo?->getPredictedVehicleActorUniqueId(), CommonTypes::putActorUniqueId(...));
 		LE::writeFloat($out, $this->analogMoveVecX);
 		LE::writeFloat($out, $this->analogMoveVecZ);
 		CommonTypes::putVector3($out, $this->cameraOrientation);

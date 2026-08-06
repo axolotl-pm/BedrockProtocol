@@ -29,7 +29,11 @@ final class RecipeUnlockingRequirement{
 	public function __construct(
 		private RecipeUnlockingContext $unlockingContext,
 		private ?array $unlockingIngredients
-	){}
+	){
+		if($context !== RecipeUnlockingContext::NONE && $unlockingIngredients !== null){
+			throw new \InvalidArgumentException("Unlocking ingredients can only be set when unlocking context is NONE");
+		}
+	}
 
 	public function getUnlockingContext() : RecipeUnlockingContext{ return $this->unlockingContext; }
 
@@ -40,27 +44,20 @@ final class RecipeUnlockingRequirement{
 	public function getUnlockingIngredients() : ?array{ return $this->unlockingIngredients; }
 
 	public static function read(ByteBufferReader $in) : self{
+		//I don't know what the point of this structure is. It could easily have been a list<RecipeIngredient> instead.
+		//It's basically just an optional list, which could have been done by an empty list wherever it's not needed.
 		$unlockingContext = RecipeUnlockingContext::fromPacket(VarInt::readSignedInt($in));
-		$unlockingIngredients = null;
-		$hasUnlockingIngredients = CommonTypes::getBool($in);
-		if($hasUnlockingIngredients){
-			$unlockingIngredients = [];
-			for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-				$unlockingIngredients[] = CommonTypes::getRecipeIngredient($in);
-			}
+		$unlockingIngredients = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...)));
+		if($unlockingContext !== RecipeUnlockingContext::CONTEXT_NONE && $unlockingIngredients !== null){
+			//this is a runtime error, make sure the correct exception type is thrown
+			throw new PacketDecodeException("Unlocking ingredients should only be set when context is CONTEXT_NONE");
 		}
 
-		return new self($unlockingContext, $unlockingIngredients);
+		return new self($unlockingIngredients, $unlockingContext);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		VarInt::writeSignedInt($out, $this->unlockingContext->value);
-		CommonTypes::putBool($out, $this->unlockingIngredients !== null);
-		if($this->unlockingIngredients !== null){
-			VarInt::writeUnsignedInt($out, count($this->unlockingIngredients));
-			foreach($this->unlockingIngredients as $ingredient){
-				CommonTypes::putRecipeIngredient($out, $ingredient);
-			}
-		}
+		CommonTypes::writeOptional($out, $this->unlockingIngredients, static fn($out, $v) => CommonTypes::writeList($out, $v, CommonTypes::putRecipeIngredient(...)));
 	}
 }

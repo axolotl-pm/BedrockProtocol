@@ -18,26 +18,25 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 
-/**
- * @see MovePlayerPacket
- */
 final class MovePlayerTeleportData{
+
 	public function __construct(
 		private int $cause,
-		private int $item
+		private int $sourceActorType
 	){}
 
 	public function getCause() : int{ return $this->cause; }
-	public function getItem() : int{ return $this->item; }
+
+	public function getSourceActorType() : int{ return $this->sourceActorType; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$cause = LE::readSignedInt($in);
-		$item = LE::readSignedInt($in);
-		return new self($cause, $item);
+		$cause = LE::readUnsignedInt($in);
+		$sourceActorType = LE::readUnsignedInt($in);
+		return new self($cause, $sourceActorType);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		LE::writeSignedInt($out, $this->cause);
-		LE::writeSignedInt($out, $this->item);
+		LE::writeUnsignedInt($out, $this->cause);
+		LE::writeUnsignedInt($out, $this->sourceActorType);
 	}
 }

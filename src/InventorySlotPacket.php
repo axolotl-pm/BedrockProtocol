@@ -47,16 +47,16 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 		$this->windowId = VarInt::readUnsignedInt($in);
 		$this->inventorySlot = VarInt::readUnsignedInt($in);
 		$this->containerName = CommonTypes::readOptional($in, FullContainerName::read(...));
-		$this->storage = CommonTypes::readOptional($in, CommonTypes::getNetworkItemStackDescriptor(...));
-		$this->item = CommonTypes::getNetworkItemStackDescriptor($in);
+		$this->storage = CommonTypes::readOptional($in, CommonTypes::getItemStackWrapper(...));
+		$this->item = CommonTypes::getItemStackWrapper($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, $this->windowId);
 		VarInt::writeUnsignedInt($out, $this->inventorySlot);
 		CommonTypes::writeOptional($out, $this->containerName, fn(ByteBufferWriter $out, FullContainerName $v) => $v->write($out));
-		CommonTypes::writeOptional($out, $this->storage, CommonTypes::putNetworkItemStackDescriptor(...));
-		CommonTypes::putNetworkItemStackDescriptor($out, $this->item);
+		CommonTypes::writeOptional($out, $this->storage, CommonTypes::putItemStackWrapper(...));
+		CommonTypes::putItemStackWrapper($out, $this->item);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

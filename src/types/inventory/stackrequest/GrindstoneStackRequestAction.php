@@ -17,11 +17,13 @@ namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
  * Repair and/or remove enchantments from an item in a grindstone.
+ * Spec name: ItemStackRequestCraftRepairAndDisenchantAction
  */
 final class GrindstoneStackRequestAction extends ItemStackRequestAction{
 	use GetTypeIdFromConstTrait;
@@ -42,7 +44,7 @@ final class GrindstoneStackRequestAction extends ItemStackRequestAction{
 	public function getRepetitions() : int{ return $this->repetitions; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$recipeId = VarInt::readUnsignedInt($in);
+		$recipeId = LE::readUnsignedInt($in); //WHY!!!!
 		$repetitions = Byte::readUnsigned($in);
 		$repairCost = VarInt::readSignedInt($in); //WHY!!!!
 
@@ -50,7 +52,7 @@ final class GrindstoneStackRequestAction extends ItemStackRequestAction{
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		VarInt::writeUnsignedInt($out, $this->recipeId);
+		LE::writeUnsignedInt($out, $this->recipeId);
 		Byte::writeUnsigned($out, $this->repetitions);
 		VarInt::writeSignedInt($out, $this->repairCost);
 	}

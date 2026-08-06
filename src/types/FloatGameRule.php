@@ -34,7 +34,7 @@ final class FloatGameRule extends GameRule{
 		return $this->value;
 	}
 
-	public function encode(ByteBufferWriter $out, bool $isStartGame) : void{
+	public function encode(ByteBufferWriter $out) : void{
 		LE::writeFloat($out, $this->value);
 	}
 

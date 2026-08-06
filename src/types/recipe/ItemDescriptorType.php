@@ -20,7 +20,7 @@ enum ItemDescriptorType : string{
 	use PacketOrdinalEnumTrait;
 
 	case EMPTY = "empty";
-	case NAME = "name";
+	case STRING_ID_META = "name";
 	case MOLANG = "molang";
-	case ITEM_TAG = "item_tag";
+	case TAG = "item_tag";
 }

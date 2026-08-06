@@ -48,20 +48,20 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 		$this->windowId = VarInt::readUnsignedInt($in);
 		$count = VarInt::readUnsignedInt($in);
 		for($i = 0; $i < $count; ++$i){
-			$this->items[] = CommonTypes::getNetworkItemStackDescriptor($in);
+			$this->items[] = CommonTypes::getItemStackWrapper($in);
 		}
 		$this->containerName = FullContainerName::read($in);
-		$this->storage = CommonTypes::getNetworkItemStackDescriptor($in);
+		$this->storage = CommonTypes::getItemStackWrapper($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, $this->windowId);
 		VarInt::writeUnsignedInt($out, count($this->items));
 		foreach($this->items as $item){
-			CommonTypes::putNetworkItemStackDescriptor($out, $item);
+			CommonTypes::putItemStackWrapper($out, $item);
 		}
 		$this->containerName->write($out);
-		CommonTypes::putNetworkItemStackDescriptor($out, $this->storage);
+		CommonTypes::putItemStackWrapper($out, $this->storage);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

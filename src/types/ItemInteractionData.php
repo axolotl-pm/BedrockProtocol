@@ -20,11 +20,11 @@ use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\InventoryTransactionChangedSlotsHack;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
-use function count;
 
 final class ItemInteractionData{
 	/**
-	 * @param InventoryTransactionChangedSlotsHack[]|null $requestChangedSlots
+	 * @param InventoryTransactionChangedSlotsHack[] $requestChangedSlots
+	 * @phpstan-param list<InventoryTransactionChangedSlotsHack> $requestChangedSlots
 	 */
 	public function __construct(
 		private int $requestId,
@@ -38,6 +38,7 @@ final class ItemInteractionData{
 
 	/**
 	 * @return InventoryTransactionChangedSlotsHack[]|null
+	 * @phpstan-return list<InventoryTransactionChangedSlotsHack>|null
 	 */
 	public function getRequestChangedSlots() : ?array{
 		return $this->requestChangedSlots;
@@ -49,27 +50,19 @@ final class ItemInteractionData{
 
 	public static function read(ByteBufferReader $in) : self{
 		$requestId = VarInt::readSignedInt($in);
-		$requestChangedSlots = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
-			$result = [];
-			$len = VarInt::readUnsignedInt($in);
-			for($i = 0; $i < $len; ++$i){
-				$result[] = InventoryTransactionChangedSlotsHack::read($in);
-			}
-			return $result;
-		});
+		$requestChangedSlots = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, InventoryTransactionChangedSlotsHack::read(...)));
 		$transactionData = new UseItemTransactionData();
-		$transactionData->decodeAuthInput($in);
+		CommonTypes::readDummyOptional($in);
+		CommonTypes::readDummyOptional($in);
+		$transactionData->decode($in);
 		return new ItemInteractionData($requestId, $requestChangedSlots, $transactionData);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		VarInt::writeSignedInt($out, $this->requestId);
-		CommonTypes::writeOptional($out, $this->requestChangedSlots, static function(ByteBufferWriter $out, array $requestChangedSlots) : void{
-			VarInt::writeUnsignedInt($out, count($requestChangedSlots));
-			foreach($requestChangedSlots as $changedSlot){
-				$changedSlot->write($out);
-			}
-		});
-		$this->transactionData->encodeAuthInput($out);
+		CommonTypes::writeOptional($out, $this->requestChangedSlots, static fn($out, $list) => CommonTypes::writeList($out, $list, static fn($out, $v) => $v->write($out)));
+		CommonTypes::writeDummyOptional($out);
+		CommonTypes::writeDummyOptional($out);
+		$this->transactionData->encode($out);
 	}
 }

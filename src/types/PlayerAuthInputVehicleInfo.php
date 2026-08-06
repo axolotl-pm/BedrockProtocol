@@ -14,22 +14,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pmmp\encoding\ByteBufferReader;
-use pmmp\encoding\ByteBufferWriter;
+use pocketmine\math\Vector2;
 
-final class SubChunkPacketEntryWithoutCache{
+final class PlayerAuthInputVehicleInfo{
 
 	public function __construct(
-		private SubChunkPacketEntryCommon $base
+		private Vector2 $vehicleRotation,
+		private int $predictedVehicleActorUniqueId
 	){}
 
-	public function getBase() : SubChunkPacketEntryCommon{ return $this->base; }
+	public function getVehicleRotation() : Vector2{ return $this->vehicleRotation; }
 
-	public static function read(ByteBufferReader $in) : self{
-		return new self(SubChunkPacketEntryCommon::read($in, false));
-	}
-
-	public function write(ByteBufferWriter $out) : void{
-		$this->base->write($out, false);
-	}
+	public function getPredictedVehicleActorUniqueId() : int{ return $this->predictedVehicleActorUniqueId; }
 }

@@ -24,6 +24,7 @@ use function count;
 /**
  * Not clear what this is needed for, but it is very clearly marked as deprecated, so hopefully it'll go away before I
  * have to write a proper description for it.
+ * Spec name: ItemStackRequestCraftResultsDeprecatedAction
  */
 final class DeprecatedCraftingResultsStackRequestAction extends ItemStackRequestAction{
 	use GetTypeIdFromConstTrait;
@@ -31,14 +32,14 @@ final class DeprecatedCraftingResultsStackRequestAction extends ItemStackRequest
 	public const ID = ItemStackRequestActionType::CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING;
 
 	/**
-	 * @param ItemStackRequestNetworkDescriptor[] $results
+	 * @param DeprecatedCraftingResultsEntry[] $results
 	 */
 	public function __construct(
 		private array $results,
 		private int $iterations
 	){}
 
-	/** @return ItemStackRequestNetworkDescriptor[] */
+	/** @return DeprecatedCraftingResultsEntry[] */
 	public function getResults() : array{ return $this->results; }
 
 	public function getIterations() : int{ return $this->iterations; }
@@ -46,7 +47,7 @@ final class DeprecatedCraftingResultsStackRequestAction extends ItemStackRequest
 	public static function read(ByteBufferReader $in) : self{
 		$results = [];
 		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$results[] = ItemStackRequestNetworkDescriptor::read($in);
+			$results[] = DeprecatedCraftingResultsEntry::read($in);
 		}
 		$iterations = Byte::readUnsigned($in);
 		return new self($results, $iterations);

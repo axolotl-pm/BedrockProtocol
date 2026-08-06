@@ -12,33 +12,41 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\LE;
+use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
-final class SubChunkPacketEntryWithCache{
+final class StringIdMetaItemDescriptor implements ItemDescriptor{
 
 	public function __construct(
-		private SubChunkPacketEntryCommon $base,
-		private ?int $usedBlobHash
-	){}
+		private string $id,
+		private int $meta
+	){
+		if($meta < 0){
+			throw new \InvalidArgumentException("Meta cannot be negative");
+		}
+	}
 
-	public function getBase() : SubChunkPacketEntryCommon{ return $this->base; }
+	public function getDescriptorType() : ItemDescriptorType{
+		return ItemDescriptorType::STRING_ID_META;
+	}
 
-	public function getUsedBlobHash() : ?int{ return $this->usedBlobHash; }
+	public function getId() : string{ return $this->id; }
+
+	public function getMeta() : int{ return $this->meta; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$base = SubChunkPacketEntryCommon::read($in, true);
-		$usedBlobHash = CommonTypes::readOptional($in, LE::readUnsignedLong(...));
+		$stringId = CommonTypes::getString($in);
+		$meta = VarInt::readSignedInt($in);
 
-		return new self($base, $usedBlobHash);
+		return new self($stringId, $meta);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		$this->base->write($out, true);
-		CommonTypes::writeOptional($out, $this->usedBlobHash, LE::writeUnsignedLong(...));
+		CommonTypes::putString($out, $this->id);
+		VarInt::writeSignedInt($out, $this->meta);
 	}
 }

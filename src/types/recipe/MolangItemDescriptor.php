@@ -26,7 +26,7 @@ final class MolangItemDescriptor implements ItemDescriptor{
 		private int $molangVersion
 	){}
 
-	public function getTypeId() : ItemDescriptorType{
+	public function getDescriptorType() : ItemDescriptorType{
 		return ItemDescriptorType::MOLANG;
 	}
 

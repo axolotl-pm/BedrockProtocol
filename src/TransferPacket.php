@@ -26,17 +26,17 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 	public string $address;
 	public int $port = 19132;
 	public bool $reloadWorld;
-	public ?GatheringJoinInfo $gatheringJoinInfo = null;
+	public ?GatheringJoinInfo $gatheringsConfig = null;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(string $address, int $port, bool $reloadWorld, ?GatheringJoinInfo $gatheringJoinInfo) : self{
+	public static function create(string $address, int $port, bool $reloadWorld, ?GatheringJoinInfo $gatheringsConfig) : self{
 		$result = new self;
 		$result->address = $address;
 		$result->port = $port;
 		$result->reloadWorld = $reloadWorld;
-		$result->gatheringJoinInfo = $gatheringJoinInfo;
+		$result->gatheringsConfig = $gatheringsConfig;
 		return $result;
 	}
 
@@ -44,14 +44,14 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 		$this->address = CommonTypes::getString($in);
 		$this->port = LE::readUnsignedShort($in);
 		$this->reloadWorld = CommonTypes::getBool($in);
-		$this->gatheringJoinInfo = CommonTypes::readOptional($in, GatheringJoinInfo::read(...));
+		$this->gatheringsConfig = CommonTypes::readOptional($in, GatheringJoinInfo::read(...));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->address);
 		LE::writeUnsignedShort($out, $this->port);
 		CommonTypes::putBool($out, $this->reloadWorld);
-		CommonTypes::writeOptional($out, $this->gatheringJoinInfo, fn(ByteBufferWriter $out, GatheringJoinInfo $gatheringJoinInfo) => $gatheringJoinInfo->write($out));
+		CommonTypes::writeOptional($out, $this->gatheringsConfig, static fn($out, $v) => $v->write($out));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

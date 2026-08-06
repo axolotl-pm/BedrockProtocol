@@ -112,7 +112,7 @@ final class LevelSettings{
 		$this->createdInEditorMode = CommonTypes::getBool($in);
 		$this->exportedFromEditorMode = CommonTypes::getBool($in);
 		$this->time = VarInt::readSignedInt($in);
-		$this->eduEditionOffer = VarInt::readUnsignedInt($in);
+		$this->eduEditionOffer = VarInt::readSignedInt($in);
 		$this->hasEduFeaturesEnabled = CommonTypes::getBool($in);
 		$this->eduProductUUID = CommonTypes::getString($in);
 		$this->rainLevel = LE::readFloat($in);
@@ -124,7 +124,7 @@ final class LevelSettings{
 		$this->platformBroadcastMode = VarInt::readSignedInt($in);
 		$this->commandsEnabled = CommonTypes::getBool($in);
 		$this->isTexturePacksRequired = CommonTypes::getBool($in);
-		$this->gameRules = CommonTypes::getGameRules($in, true);
+		$this->gameRules = CommonTypes::getGameRules($in);
 		$this->experiments = Experiments::read($in);
 		$this->hasBonusChestEnabled = CommonTypes::getBool($in);
 		$this->hasStartWithMapEnabled = CommonTypes::getBool($in);
@@ -165,7 +165,7 @@ final class LevelSettings{
 		CommonTypes::putBool($out, $this->createdInEditorMode);
 		CommonTypes::putBool($out, $this->exportedFromEditorMode);
 		VarInt::writeSignedInt($out, $this->time);
-		VarInt::writeUnsignedInt($out, $this->eduEditionOffer);
+		VarInt::writeSignedInt($out, $this->eduEditionOffer);
 		CommonTypes::putBool($out, $this->hasEduFeaturesEnabled);
 		CommonTypes::putString($out, $this->eduProductUUID);
 		LE::writeFloat($out, $this->rainLevel);
@@ -177,7 +177,7 @@ final class LevelSettings{
 		VarInt::writeSignedInt($out, $this->platformBroadcastMode);
 		CommonTypes::putBool($out, $this->commandsEnabled);
 		CommonTypes::putBool($out, $this->isTexturePacksRequired);
-		CommonTypes::putGameRules($out, $this->gameRules, true);
+		CommonTypes::putGameRules($out, $this->gameRules);
 		$this->experiments->write($out);
 		CommonTypes::putBool($out, $this->hasBonusChestEnabled);
 		CommonTypes::putBool($out, $this->hasStartWithMapEnabled);

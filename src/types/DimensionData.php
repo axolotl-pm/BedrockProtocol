@@ -20,6 +20,9 @@ use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use Ramsey\Uuid\UuidInterface;
 
+/**
+ * Spec name: DimensionDefinition
+ */
 final class DimensionData{
 
 	public function __construct(
@@ -27,7 +30,7 @@ final class DimensionData{
 		private int $minHeight,
 		private int $generator,
 		private int $dimensionType,
-		private UuidInterface $packId,
+		private UuidInterface $packId
 	){}
 
 	public function getMaxHeight() : int{ return $this->maxHeight; }
@@ -37,6 +40,8 @@ final class DimensionData{
 	public function getGenerator() : int{ return $this->generator; }
 
 	public function getDimensionType() : int{ return $this->dimensionType; }
+
+	public function getPackId() : UuidInterface{ return $this->packId; }
 
 	public static function read(ByteBufferReader $in) : self{
 		$maxHeight = VarInt::readSignedInt($in);

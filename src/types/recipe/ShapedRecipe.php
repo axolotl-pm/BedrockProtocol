@@ -23,7 +23,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use Ramsey\Uuid\UuidInterface;
 use function count;
 
-final class ShapedRecipe extends RecipeWithTypeId{
+final class ShapedRecipe{
 	private string $blockName;
 
 	/**
@@ -33,7 +33,6 @@ final class ShapedRecipe extends RecipeWithTypeId{
 	 * @phpstan-param list<ItemStack> $output
 	 */
 	public function __construct(
-		int $typeId,
 		private string $recipeId,
 		private array $input,
 		private array $output,
@@ -44,7 +43,6 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		private ?RecipeUnlockingRequirement $unlockingRequirement,
 		private int $recipeNetId
 	){
-		parent::__construct($typeId);
 		$rows = count($input);
 		if($rows < 1 or $rows > 3){
 			throw new \InvalidArgumentException("Expected 1, 2 or 3 input rows");
@@ -108,15 +106,15 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		return $this->recipeNetId;
 	}
 
-	public static function decode(int $recipeType, ByteBufferReader $in) : self{
+	public static function decode(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::getString($in);
 		$width = VarInt::readSignedInt($in);
 		$height = VarInt::readSignedInt($in);
-		$input = [];
-		$ingredientCount = VarInt::readUnsignedInt($in);
-		if($height * $width !== $ingredientCount){
-			throw new PacketDecodeException("Expected input count (" . ($height * $width) . ") does not match actual input count (" . $ingredientCount . ") for recipe ID " . $recipeId);
+		$count = VarInt::readUnsignedInt($in);
+		if($count !== $width * $height){
+			throw new PacketDecodeException("Provided ingredient count $count does not match width $width * height $height");
 		}
+		$input = [];
 		for($row = 0; $row < $height; ++$row){
 			for($column = 0; $column < $width; ++$column){
 				$input[$row][$column] = CommonTypes::getRecipeIngredient($in);
@@ -135,14 +133,14 @@ final class ShapedRecipe extends RecipeWithTypeId{
 
 		$recipeNetId = CommonTypes::readRecipeNetId($in);
 
-		return new self($recipeType, $recipeId, $input, $output, $uuid, $block, $priority, $symmetric, $unlockingRequirement, $recipeNetId);
+		return new self($recipeId, $input, $output, $uuid, $block, $priority, $symmetric, $unlockingRequirement, $recipeNetId);
 	}
 
 	public function encode(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->recipeId);
 		VarInt::writeSignedInt($out, $this->getWidth());
 		VarInt::writeSignedInt($out, $this->getHeight());
-		VarInt::writeUnsignedInt($out, $this->getHeight() * $this->getWidth());
+		VarInt::writeUnsignedInt($out, $this->getWidth() * $this->getHeight());
 		foreach($this->input as $row){
 			foreach($row as $ingredient){
 				CommonTypes::putRecipeIngredient($out, $ingredient);
@@ -158,7 +156,7 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		CommonTypes::putString($out, $this->blockName);
 		VarInt::writeSignedInt($out, $this->priority);
 		CommonTypes::putBool($out, $this->symmetric);
-		CommonTypes::writeOptional($out, $this->unlockingRequirement, fn(ByteBufferWriter $out, RecipeUnlockingRequirement $data) => $data->write($out));
+		CommonTypes::writeOptional($out, $this->unlockingRequirement, static fn(ByteBufferWriter $out, RecipeUnlockingRequirement $data) => $data->write($out));
 
 		CommonTypes::writeRecipeNetId($out, $this->recipeNetId);
 	}

@@ -56,7 +56,10 @@ class PlayerLocationPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->actorUniqueId = CommonTypes::getActorUniqueId($in);
 		$this->type = PlayerLocationType::fromPacket(VarInt::readUnsignedInt($in));
-		VarInt::readSignedInt($in); //WTF mojang???
+		$innerType = VarInt::readSignedInt($in);
+		if($innerType !== $this->type->value){
+			throw new PacketDecodeException("Unexpected inner type, expected {$this->type->value}, got $innerType");
+		}
 
 		if($this->type === PlayerLocationType::PLAYER_LOCATION_COORDINATES){
 			$this->position = CommonTypes::getVector3($in);
@@ -66,7 +69,7 @@ class PlayerLocationPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putActorUniqueId($out, $this->actorUniqueId);
 		VarInt::writeUnsignedInt($out, $this->type->value);
-		VarInt::writeSignedInt($out, 0); //different types but the same value, really mojang???
+		VarInt::writeSignedInt($out, $this->type->value); //inner type
 
 		if($this->type === PlayerLocationType::PLAYER_LOCATION_COORDINATES){
 			if($this->position === null){ // this should never be the case

@@ -23,22 +23,24 @@ final class PersonaPieceTintColor{
 
 	/**
 	 * @param Color[] $colors
+	 * @phpstan-param array{Color, Color, Color, Color} $colors
 	 */
 	public function __construct(
-		private PieceType $pieceType,
+		private PersonaSkinPieceType $pieceType,
 		private array $colors
 	){
 		if(count($this->colors) !== self::EXPECTED_COLOR_COUNT){
-			throw new \InvalidArgumentException("Expected exactly " . self::EXPECTED_COLOR_COUNT . " colors");
+			throw new \InvalidArgumentException("Colors array must contain exactly " . self::EXPECTED_COLOR_COUNT . " Color objects");
 		}
 	}
 
-	public function getPieceType() : PieceType{
+	public function getPieceType() : PersonaSkinPieceType{
 		return $this->pieceType;
 	}
 
 	/**
 	 * @return Color[]
+	 * @phpstan-return array{Color, Color, Color, Color}
 	 */
 	public function getColors() : array{
 		return $this->colors;
