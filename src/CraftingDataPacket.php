@@ -89,17 +89,17 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @generate-create-func
-	 * @param ShapedRecipe[]                            $shapedRecipes
-	 * @param ShapelessRecipe[]                         $shapelessRecipes
-	 * @param MultiRecipe[]                             $multiRecipes
-	 * @param ShapelessRecipe[]                         $userDataShapelessRecipes
-	 * @param ShapelessRecipe[]                         $shapelessChemistryRecipes
-	 * @param ShapedRecipe[]                            $shapedChemistryRecipes
-	 * @param SmithingTransformRecipe[]                 $smithingTransformRecipes
-	 * @param SmithingTrimRecipe[]                      $smithingTrimRecipes
-	 * @param PotionTypeRecipe[]                        $potionTypeRecipes
-	 * @param PotionContainerChangeRecipe[]             $potionContainerRecipes
-	 * @param MaterialReducerRecipe[]                   $materialReducerRecipes
+	 * @param ShapedRecipe[]                $shapedRecipes
+	 * @param ShapelessRecipe[]             $shapelessRecipes
+	 * @param MultiRecipe[]                 $multiRecipes
+	 * @param ShapelessRecipe[]             $userDataShapelessRecipes
+	 * @param ShapelessRecipe[]             $shapelessChemistryRecipes
+	 * @param ShapedRecipe[]                $shapedChemistryRecipes
+	 * @param SmithingTransformRecipe[]     $smithingTransformRecipes
+	 * @param SmithingTrimRecipe[]          $smithingTrimRecipes
+	 * @param PotionTypeRecipe[]            $potionTypeRecipes
+	 * @param PotionContainerChangeRecipe[] $potionContainerRecipes
+	 * @param MaterialReducerRecipe[]       $materialReducerRecipes
 	 * @phpstan-param list<ShapedRecipe>                $shapedRecipes
 	 * @phpstan-param list<ShapelessRecipe>             $shapelessRecipes
 	 * @phpstan-param list<MultiRecipe>                 $multiRecipes
