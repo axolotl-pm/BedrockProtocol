@@ -25,12 +25,16 @@ use pocketmine\network\mcpe\protocol\types\ScorePacketEntryAction;
 class SetScorePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_SCORE_PACKET;
 
-	/** @var list<ScorePacketEntry> */
+	/**
+	 * @var list<ScorePacketEntry>
+	 * @phpstan-var list<ScorePacketEntry>
+	 */
 	private array $entries = [];
 
 	/**
 	 * @generate-create-func
-	 * @param list<ScorePacketEntry> $entries
+	 * @param list $entries
+	 * @phpstan-param list<ScorePacketEntry> $entries
 	 */
 	public static function create(array $entries) : self{
 		$result = new self;
