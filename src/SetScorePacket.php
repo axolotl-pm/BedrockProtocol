@@ -61,7 +61,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 			//same for all types
 			$entry->scoreboardId = VarInt::readSignedLong($in);
-			$entry->objectiveName = CommonTypes::getString($in);
+			$entry->objectiveName = CommonTypes::readOptional($in, CommonTypes::getString(...));
 
 			if($action === ScorePacketEntryAction::REMOVE){
 				//NOOP
@@ -83,7 +83,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 
 			//same for all types
 			VarInt::writeSignedLong($out, $entry->scoreboardId);
-			CommonTypes::putString($out, $entry->objectiveName ?? throw new \InvalidArgumentException("ObjectiveName must be set for this entry type"));
+			CommonTypes::writeOptional($out, $entry->objectiveName, CommonTypes::putString(...));
 
 			if($entry->type === ScorePacketEntryAction::REMOVE){
 				//NOOP
