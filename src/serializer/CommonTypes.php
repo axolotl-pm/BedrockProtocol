@@ -354,7 +354,7 @@ final class CommonTypes{
 			return;
 		}
 		Byte::writeUnsigned($out, 1);
-		self::putString($out, $descriptor->getDescriptorType()->name);
+		self::putString($out, $descriptor->getDescriptorType()->value);
 		$descriptor->write($out);
 	}
 
