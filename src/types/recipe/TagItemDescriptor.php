@@ -21,9 +21,12 @@ use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 final class TagItemDescriptor implements ItemDescriptor{
 
+	//used to indicate that the item has multiple selectable variants
+	private const DEFAULT_META = 32767;
+
 	public function __construct(
 		private string $tag,
-		private int $meta
+		private int $meta = self::DEFAULT_META
 	){}
 
 	public function getDescriptorType() : ItemDescriptorType{
@@ -44,5 +47,13 @@ final class TagItemDescriptor implements ItemDescriptor{
 	public function write(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->tag);
 		VarInt::writeSignedInt($out, $this->meta);
+	}
+
+	public static function readTagOnly(ByteBufferReader $in) : self{
+		return new self(CommonTypes::getString($in));
+	}
+
+	public function writeTagOnly(ByteBufferWriter $out) : void{
+		CommonTypes::putString($out, $this->tag);
 	}
 }

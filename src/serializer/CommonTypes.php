@@ -313,7 +313,7 @@ final class CommonTypes{
 		$descriptorType = ItemDescriptorType::fromOrdinal($descriptorTypeOrd);
 		return match($descriptorType){
 			ItemDescriptorType::STRING_ID_META => StringIdMetaItemDescriptor::read($in),
-			ItemDescriptorType::TAG => TagItemDescriptor::read($in),
+			ItemDescriptorType::TAG => TagItemDescriptor::readTagOnly($in),
 			ItemDescriptorType::MOLANG => MolangItemDescriptor::read($in),
 			ItemDescriptorType::EMPTY => null,
 		};
@@ -323,7 +323,11 @@ final class CommonTypes{
 		$typeOrd = ($descriptor?->getDescriptorType() ?? ItemDescriptorType::EMPTY)->toOrdinal();
 		VarInt::writeUnsignedInt($out, $typeOrd);
 		Byte::writeUnsigned($out, $typeOrd);
-		$descriptor?->write($out);
+		if($descriptor instanceof TagItemDescriptor){
+			$descriptor->writeTagOnly($out);
+		}else{
+			$descriptor?->write($out);
+		}
 	}
 
 	public static function readItemDescriptorMess(ByteBufferReader $in) : StringIdMetaItemDescriptor|TagItemDescriptor|MolangItemDescriptor|null{
@@ -369,6 +373,22 @@ final class CommonTypes{
 	public static function putRecipeIngredient(ByteBufferWriter $out, RecipeIngredient $ingredient) : void{
 		self::writeItemDescriptorMess($out, $ingredient->getDescriptor());
 		VarInt::writeSignedInt($out, $ingredient->getCount());
+	}
+
+	/**
+	 * @throws DataDecodeException
+	 * @throws PacketDecodeException
+	 */
+	public static function readStackRequestIngredient(ByteBufferReader $in) : RecipeIngredient{
+		$descriptor = self::readItemDescriptorNormal($in);
+		$count = LE::readUnsignedShort($in);
+
+		return new RecipeIngredient($descriptor, $count);
+	}
+
+	public static function writeStackRequestIngredient(ByteBufferWriter $out, RecipeIngredient $ingredient) : void{
+		self::writeItemDescriptorNormal($out, $ingredient->getDescriptor());
+		LE::writeUnsignedShort($out, $ingredient->getCount());
 	}
 
 	/**

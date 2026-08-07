@@ -54,13 +54,13 @@ final class CraftRecipeAutoStackRequestAction extends ItemStackRequestAction{
 	public static function read(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::readRecipeNetId($in);
 		$repetitions = Byte::readUnsigned($in);
-		$ingredients = CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...));
+		$ingredients = CommonTypes::readList($in, CommonTypes::readStackRequestIngredient(...));
 		return new self($recipeId, $repetitions, $ingredients);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		CommonTypes::writeRecipeNetId($out, $this->recipeId);
 		Byte::writeUnsigned($out, $this->repetitions);
-		CommonTypes::writeList($out, $this->ingredients, CommonTypes::putRecipeIngredient(...));
+		CommonTypes::writeList($out, $this->ingredients, CommonTypes::writeStackRequestIngredient(...));
 	}
 }
