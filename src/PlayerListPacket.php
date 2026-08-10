@@ -22,7 +22,6 @@ use pmmp\encoding\VarInt;
 use pocketmine\color\Color;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class PlayerListPacket extends DataPacket implements ClientboundPacket{
