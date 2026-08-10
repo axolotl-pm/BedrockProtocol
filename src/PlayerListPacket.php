@@ -36,12 +36,12 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 		self::TYPE_REMOVE => 1,
 	];
 
-	/** @var PlayerListEntry[]|UuidInterface[] */
+	/** @var PlayerListEntry[] */
 	private array $entries = [];
 
 	/**
 	 * @generate-create-func
-	 * @param PlayerListEntry[]|UuidInterface[] $entries
+	 * @param PlayerListEntry[] $entries
 	 */
 	public static function create(array $entries) : self{
 		$result = new self;
@@ -57,14 +57,14 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param UuidInterface[] $entries
+	 * @param PlayerListEntry[] $entries
 	 */
 	public static function remove(array $entries) : self{
 		return self::create($entries);
 	}
 
 	/**
-	 * @return PlayerListEntry[]|UuidInterface[]
+	 * @return PlayerListEntry[]
 	 */
 	public function getEntries() : array{ return $this->entries; }
 
@@ -79,10 +79,8 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				throw new PacketDecodeException("Unexpected inner type $innerType for player list entry type $type, expected $expectedInnerType");
 			}
 
-			if($type === self::TYPE_REMOVE){
-				$this->entries[] = CommonTypes::getUUID($in);
-			}elseif($type === self::TYPE_ADD){
-				$entry = new PlayerListEntry();
+			$entry = new PlayerListEntry();
+			if($type === self::TYPE_ADD){
 				$entry->uuid = CommonTypes::getUUID($in);
 				$entry->actorUniqueId = CommonTypes::getActorUniqueId($in);
 				$entry->username = CommonTypes::getString($in);
@@ -94,26 +92,22 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				$entry->isHost = CommonTypes::getBool($in);
 				$entry->isSubClient = CommonTypes::getBool($in);
 				$entry->color = CommonTypes::readColor($in);
-
-				$this->entries[] = $entry;
+			}elseif($type === self::TYPE_REMOVE){
+				$entry->uuid = CommonTypes::getUUID($in);
 			}else{
 				throw new PacketDecodeException("Unknown player list entry type $type");
 			}
+			$this->entries[] = $entry;
 		}
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, count($this->entries));
 		foreach($this->entries as $entry){
-			$isRemoveEntry = $entry instanceof UuidInterface;
-			$type = $isRemoveEntry ? self::TYPE_REMOVE : self::TYPE_ADD;
+			VarInt::writeUnsignedInt($out, $entry->type);
+			Byte::writeUnsigned($out, self::INNER_TYPES[$entry->type]);
 
-			VarInt::writeUnsignedInt($out, $type);
-			Byte::writeUnsigned($out, self::INNER_TYPES[$type]);
-
-			if($isRemoveEntry){
-				CommonTypes::putUUID($out, $entry);
-			}else{
+			if($entry->type === self::TYPE_ADD){
 				CommonTypes::putUUID($out, $entry->uuid);
 				CommonTypes::putActorUniqueId($out, $entry->actorUniqueId);
 				CommonTypes::putString($out, $entry->username);
@@ -125,6 +119,8 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				CommonTypes::putBool($out, $entry->isHost);
 				CommonTypes::putBool($out, $entry->isSubClient);
 				CommonTypes::writeColor($out, $entry->color ?? new Color(255, 255, 255));
+			}else{
+				CommonTypes::putUUID($out, $entry->uuid);
 			}
 		}
 	}
