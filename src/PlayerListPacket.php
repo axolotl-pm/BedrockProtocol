@@ -49,20 +49,6 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param PlayerListEntry[] $entries
-	 */
-	public static function add(array $entries) : self{
-		return self::create($entries);
-	}
-
-	/**
-	 * @param PlayerListEntry[] $entries
-	 */
-	public static function remove(array $entries) : self{
-		return self::create($entries);
-	}
-
-	/**
 	 * @return PlayerListEntry[]
 	 */
 	public function getEntries() : array{ return $this->entries; }
