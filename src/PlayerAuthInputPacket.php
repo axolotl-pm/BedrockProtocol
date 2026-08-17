@@ -275,7 +275,6 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$this->moveVecZ = LE::readFloat($in);
 		$this->headYaw = LE::readFloat($in);
 
-		CommonTypes::readDummyOptional($in);
 		$this->inputFlags = new BitSet(PlayerAuthInputFlags::NUMBER_OF_FLAGS);
 		foreach(CommonTypes::readList($in, VarInt::readSignedInt(...)) as $flag){
 			if($this->inputFlags->get($flag)){
@@ -290,12 +289,12 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$this->interactRotation = CommonTypes::getVector2($in);
 		$this->tick = VarInt::readUnsignedLong($in);
 		$this->delta = CommonTypes::getVector3($in);
-		$this->itemInteractionData = CommonTypes::readDoubleOptional($in, ItemInteractionData::read(...));
-		$this->itemStackRequest = CommonTypes::readDoubleOptional($in, ItemStackRequest::read(...));
+		$this->itemInteractionData = CommonTypes::readOptional($in, ItemInteractionData::read(...));
+		$this->itemStackRequest = CommonTypes::readOptional($in, ItemStackRequest::read(...));
 
-		$this->blockActions = CommonTypes::readDoubleOptional($in, static fn($in) => CommonTypes::readList($in, PlayerBlockAction::read(...)));
-		$vehicleRotation = CommonTypes::readDoubleOptional($in, CommonTypes::getVector2(...));
-		$vehicleActorUniqueId = CommonTypes::readDoubleOptional($in, CommonTypes::getActorUniqueId(...));
+		$this->blockActions = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, PlayerBlockAction::read(...)));
+		$vehicleRotation = CommonTypes::readOptional($in, CommonTypes::getVector2(...));
+		$vehicleActorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
 		if($vehicleRotation !== null && $vehicleActorUniqueId !== null){
 			$this->vehicleInfo = new PlayerAuthInputVehicleInfo($vehicleRotation, $vehicleActorUniqueId);
 		}elseif($vehicleRotation === null && $vehicleActorUniqueId === null){
@@ -317,7 +316,6 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		LE::writeFloat($out, $this->moveVecZ);
 		LE::writeFloat($out, $this->headYaw);
 
-		CommonTypes::writeDummyOptional($out);
 		$flagsArray = [];
 		for($i = 0; $i < PlayerAuthInputFlags::NUMBER_OF_FLAGS; ++$i){
 			if($this->inputFlags->get($i)){
@@ -332,11 +330,11 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		CommonTypes::putVector2($out, $this->interactRotation);
 		VarInt::writeUnsignedLong($out, $this->tick);
 		CommonTypes::putVector3($out, $this->delta);
-		CommonTypes::writeDoubleOptional($out, $this->itemInteractionData, static fn(ByteBufferWriter $out, ItemInteractionData $data) => $data->write($out));
-		CommonTypes::writeDoubleOptional($out, $this->itemStackRequest, static fn(ByteBufferWriter $out, ItemStackRequest $request) => $request->write($out));
-		CommonTypes::writeDoubleOptional($out, $this->blockActions, static fn($out, $array) => CommonTypes::writeList($out, $array, static fn($out, $v) => $v->write($out)));
-		CommonTypes::writeDoubleOptional($out, $this->vehicleInfo?->getVehicleRotation(), CommonTypes::putVector2(...));
-		CommonTypes::writeDoubleOptional($out, $this->vehicleInfo?->getPredictedVehicleActorUniqueId(), CommonTypes::putActorUniqueId(...));
+		CommonTypes::writeOptional($out, $this->itemInteractionData, static fn(ByteBufferWriter $out, ItemInteractionData $data) => $data->write($out));
+		CommonTypes::writeOptional($out, $this->itemStackRequest, static fn(ByteBufferWriter $out, ItemStackRequest $request) => $request->write($out));
+		CommonTypes::writeOptional($out, $this->blockActions, static fn($out, $array) => CommonTypes::writeList($out, $array, static fn($out, $v) => $v->write($out)));
+		CommonTypes::writeOptional($out, $this->vehicleInfo?->getVehicleRotation(), CommonTypes::putVector2(...));
+		CommonTypes::writeOptional($out, $this->vehicleInfo?->getPredictedVehicleActorUniqueId(), CommonTypes::putActorUniqueId(...));
 		LE::writeFloat($out, $this->analogMoveVecX);
 		LE::writeFloat($out, $this->analogMoveVecZ);
 		CommonTypes::putVector3($out, $this->cameraOrientation);

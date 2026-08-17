@@ -14,11 +14,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-enum PackSettingType : int{
+enum NoiseAlignmentType : int{
 	use PacketIntEnumTrait;
 
-	case FLOAT = 0;
-	case BOOL = 1;
-	case STRING = 2;
-	case STRING_ARRAY = 3;
+	case MIN_LOCAL_TRANSITION_END = 0;
 }

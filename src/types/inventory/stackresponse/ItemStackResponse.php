@@ -56,13 +56,13 @@ final class ItemStackResponse{
 	public static function read(ByteBufferReader $in) : self{
 		$result = Byte::readUnsigned($in);
 		$requestId = CommonTypes::readItemStackRequestId($in);
-		$containerInfos = CommonTypes::readDoubleOptional($in, static fn($in) => CommonTypes::readList($in, ItemStackResponseContainerInfo::read(...)));
+		$containerInfos = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, ItemStackResponseContainerInfo::read(...)));
 		return new self($result, $requestId, $containerInfos);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
 		Byte::writeUnsigned($out, $this->result);
 		CommonTypes::writeItemStackRequestId($out, $this->requestId);
-		CommonTypes::writeDoubleOptional($out, $this->containerInfos, static fn($out, $list) => CommonTypes::writeList($out, $list, static fn($out, $v) => $v->write($out)));
+		CommonTypes::writeOptional($out, $this->containerInfos, static fn($out, $list) => CommonTypes::writeList($out, $list, static fn($out, $v) => $v->write($out)));
 	}
 }

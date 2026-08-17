@@ -26,16 +26,17 @@ use Ramsey\Uuid\UuidInterface;
 final class DimensionData{
 
 	public function __construct(
-		private int $maxHeight,
-		private int $minHeight,
+		private int $minimumY,
+		private int $heightRange,
 		private int $generator,
 		private int $dimensionType,
-		private UuidInterface $packId
+		private UuidInterface $packId,
+		private string $defaultBiome
 	){}
 
-	public function getMaxHeight() : int{ return $this->maxHeight; }
+	public function getMinimumY() : int{ return $this->minimumY; }
 
-	public function getMinHeight() : int{ return $this->minHeight; }
+	public function getHeightRange() : int{ return $this->heightRange; }
 
 	public function getGenerator() : int{ return $this->generator; }
 
@@ -43,21 +44,25 @@ final class DimensionData{
 
 	public function getPackId() : UuidInterface{ return $this->packId; }
 
+	public function getDefaultBiome() : string{ return $this->defaultBiome; }
+
 	public static function read(ByteBufferReader $in) : self{
-		$maxHeight = VarInt::readSignedInt($in);
-		$minHeight = VarInt::readSignedInt($in);
+		$minimumY = VarInt::readSignedInt($in);
+		$heightRange = VarInt::readSignedInt($in);
 		$generator = VarInt::readSignedInt($in);
 		$dimensionType = VarInt::readSignedInt($in);
 		$packId = CommonTypes::getUUID($in);
+		$defaultBiome = CommonTypes::getString($in);
 
-		return new self($maxHeight, $minHeight, $generator, $dimensionType, $packId);
+		return new self($minimumY, $heightRange, $generator, $dimensionType, $packId, $defaultBiome);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		VarInt::writeSignedInt($out, $this->maxHeight);
-		VarInt::writeSignedInt($out, $this->minHeight);
+		VarInt::writeSignedInt($out, $this->minimumY);
+		VarInt::writeSignedInt($out, $this->heightRange);
 		VarInt::writeSignedInt($out, $this->generator);
 		VarInt::writeSignedInt($out, $this->dimensionType);
 		CommonTypes::putUUID($out, $this->packId);
+		CommonTypes::putString($out, $this->defaultBiome);
 	}
 }

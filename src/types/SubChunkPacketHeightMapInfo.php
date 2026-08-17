@@ -23,12 +23,15 @@ use function count;
 class SubChunkPacketHeightMapInfo{
 
 	/**
-	 * @param int[] $heights ZZZZXXXX key bit order
+	 * @param int[] $heights row-major, index = z * 17 + x (x: 0..16, z: 0..15)
 	 * @phpstan-param list<int> $heights
 	 */
+	public const HEIGHTMAP_LENGTH = 272;
+
+	/** @phpstan-param list<int> $heights */
 	public function __construct(private array $heights){
-		if(count($heights) !== 256){
-			throw new \InvalidArgumentException("Expected exactly 256 heightmap values");
+		if(count($heights) !== self::HEIGHTMAP_LENGTH){
+			throw new \InvalidArgumentException("Expected exactly " . self::HEIGHTMAP_LENGTH . " heightmap values");
 		}
 	}
 
@@ -36,29 +39,29 @@ class SubChunkPacketHeightMapInfo{
 	public function getHeights() : array{ return $this->heights; }
 
 	public function getHeight(int $x, int $z) : int{
-		return $this->heights[(($z & 0xf) << 4) | ($x & 0xf)];
+		return $this->heights[$z * 17 + $x];
 	}
 
 	public static function read(ByteBufferReader $in) : self{
 		$heights = [];
-		for($i = 0; $i < 256; ++$i){
+		for($i = 0; $i < self::HEIGHTMAP_LENGTH; ++$i){
 			$heights[] = Byte::readSigned($in);
 		}
 		return new self($heights);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		for($i = 0; $i < 256; ++$i){
+		for($i = 0; $i < self::HEIGHTMAP_LENGTH; ++$i){
 			Byte::writeSigned($out, $this->heights[$i]);
 		}
 	}
 
 	public static function allTooLow() : self{
-		return new self(array_fill(0, 256, -1));
+		return new self(array_fill(0, self::HEIGHTMAP_LENGTH, -1));
 	}
 
 	public static function allTooHigh() : self{
-		return new self(array_fill(0, 256, 16));
+		return new self(array_fill(0, self::HEIGHTMAP_LENGTH, 16));
 	}
 
 	public function isAllTooLow() : bool{

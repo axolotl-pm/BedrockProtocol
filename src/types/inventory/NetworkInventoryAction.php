@@ -76,8 +76,8 @@ class NetworkInventoryAction{
 	public function read(ByteBufferReader $in) : NetworkInventoryAction{
 		$this->sourceType = VarInt::readUnsignedInt($in);
 
-		$this->windowId = CommonTypes::readDoubleOptional($in, Byte::readSigned(...));
-		$this->sourceFlags = CommonTypes::readDoubleOptional($in, VarInt::readUnsignedInt(...));
+		$this->windowId = CommonTypes::readOptional($in, Byte::readSigned(...));
+		$this->sourceFlags = CommonTypes::readOptional($in, VarInt::readUnsignedInt(...));
 
 		$this->inventorySlot = VarInt::readUnsignedInt($in);
 		$this->oldItem = CommonTypes::getItemStackWrapper($in);
@@ -92,8 +92,8 @@ class NetworkInventoryAction{
 	public function write(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, $this->sourceType);
 
-		CommonTypes::writeDoubleOptional($out, $this->windowId, Byte::writeSigned(...));
-		CommonTypes::writeDoubleOptional($out, $this->sourceFlags, VarInt::writeUnsignedInt(...));
+		CommonTypes::writeOptional($out, $this->windowId, Byte::writeSigned(...));
+		CommonTypes::writeOptional($out, $this->sourceFlags, VarInt::writeUnsignedInt(...));
 
 		VarInt::writeUnsignedInt($out, $this->inventorySlot);
 		CommonTypes::putItemStackWrapper($out, $this->oldItem);

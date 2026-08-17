@@ -12,13 +12,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\furnace;
 
-enum PackSettingType : int{
+use pocketmine\network\mcpe\protocol\types\PacketIntEnumTrait;
+
+/**
+ * Spec name: FurnaceLeftTabIndex
+ */
+enum FurnaceLeftTab : int{
 	use PacketIntEnumTrait;
 
-	case FLOAT = 0;
-	case BOOL = 1;
-	case STRING = 2;
-	case STRING_ARRAY = 3;
+	case NONE = 0;
+	case RECIPE_FOOD = 1;
+	case RECIPE_ITEMS = 2;
+	case RECIPE_BLOCKS = 3;
+	case RECIPE_SEARCH = 4;
+	case INVENTORY = 5;
 }

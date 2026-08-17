@@ -67,9 +67,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 			return $result;
 		});
 
-		CommonTypes::readDummyOptional($in);
 		$transactionType = VarInt::readUnsignedInt($in);
-		CommonTypes::readDummyOptional($in);
 		$this->trData = match($transactionType) {
 			NormalTransactionData::ID => new NormalTransactionData(),
 			MismatchTransactionData::ID => new MismatchTransactionData(),
@@ -91,9 +89,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 			}
 		});
 
-		CommonTypes::writeDummyOptional($out);
 		VarInt::writeUnsignedInt($out, $this->trData->getTypeId());
-		CommonTypes::writeDummyOptional($out);
 		$this->trData->encode($out);
 	}
 

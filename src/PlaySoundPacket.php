@@ -31,7 +31,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	public float $volume;
 	public float $pitch;
 	public int $loopCount = 0;
+	public bool $bypassListenerRangeCheck = false;
 	public ?int $serverSoundHandle = null;
+	public ?float $playbackPositionSeconds = null;
 
 	/**
 	 * @generate-create-func
@@ -44,7 +46,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		float $volume,
 		float $pitch,
 		int $loopCount,
+		bool $bypassListenerRangeCheck,
 		?int $serverSoundHandle,
+		?float $playbackPositionSeconds,
 	) : self{
 		$result = new self;
 		$result->soundName = $soundName;
@@ -54,7 +58,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		$result->volume = $volume;
 		$result->pitch = $pitch;
 		$result->loopCount = $loopCount;
+		$result->bypassListenerRangeCheck = $bypassListenerRangeCheck;
 		$result->serverSoundHandle = $serverSoundHandle;
+		$result->playbackPositionSeconds = $playbackPositionSeconds;
 		return $result;
 	}
 
@@ -67,7 +73,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		$this->volume = LE::readFloat($in);
 		$this->pitch = LE::readFloat($in);
 		$this->loopCount = VarInt::readSignedInt($in);
+		$this->bypassListenerRangeCheck = CommonTypes::getBool($in);
 		$this->serverSoundHandle = CommonTypes::readOptional($in, LE::readUnsignedLong(...));
+		$this->playbackPositionSeconds = CommonTypes::readOptional($in, LE::readFloat(...));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -76,7 +84,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		LE::writeFloat($out, $this->volume);
 		LE::writeFloat($out, $this->pitch);
 		VarInt::writeSignedInt($out, $this->loopCount);
+		CommonTypes::putBool($out, $this->bypassListenerRangeCheck);
 		CommonTypes::writeOptional($out, $this->serverSoundHandle, LE::writeUnsignedLong(...));
+		CommonTypes::writeOptional($out, $this->playbackPositionSeconds, LE::writeFloat(...));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

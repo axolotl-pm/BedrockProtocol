@@ -12,13 +12,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\furnace;
 
-enum PackSettingType : int{
+use pocketmine\network\mcpe\protocol\types\PacketIntEnumTrait;
+
+enum FurnaceType : int{
 	use PacketIntEnumTrait;
 
-	case FLOAT = 0;
-	case BOOL = 1;
-	case STRING = 2;
-	case STRING_ARRAY = 3;
+	case NONE = 0;
+	case FURNACE = 1;
+	case BLAST_FURNACE = 2;
+	case SMOKER = 3;
 }
