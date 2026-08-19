@@ -25,25 +25,25 @@ use Ramsey\Uuid\UuidInterface;
 final class GatheringJoinInfo{
 
 	public function __construct(
-		private UuidInterface $experienceId,
-		private string $experienceName,
+		private ?UuidInterface $experienceId,
+		private ?string $experienceName,
 		private ?UuidInterface $experienceWorldId,
 		private ?string $experienceWorldName,
-		private string $creatorId,
+		private ?string $creatorId,
 		private ?UuidInterface $targetId,
 		private ?string $scenarioId,
 		private ?string $serverId,
 	){}
 
-	public function getExperienceId() : UuidInterface{ return $this->experienceId; }
+	public function getExperienceId() : ?UuidInterface{ return $this->experienceId; }
 
-	public function getExperienceName() : string{ return $this->experienceName; }
+	public function getExperienceName() : ?string{ return $this->experienceName; }
 
 	public function getExperienceWorldId() : ?UuidInterface{ return $this->experienceWorldId; }
 
 	public function getExperienceWorldName() : ?string{ return $this->experienceWorldName; }
 
-	public function getCreatorId() : string{ return $this->creatorId; }
+	public function getCreatorId() : ?string{ return $this->creatorId; }
 
 	public function getTargetId() : ?UuidInterface{ return $this->targetId; }
 
@@ -52,11 +52,11 @@ final class GatheringJoinInfo{
 	public function getServerId() : ?string{ return $this->serverId; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$experienceId = CommonTypes::getUUID($in);
-		$experienceName = CommonTypes::getString($in);
+		$experienceId = CommonTypes::readOptional($in, CommonTypes::getUUID(...));
+		$experienceName = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$experienceWorldId = CommonTypes::readOptional($in, CommonTypes::getUUID(...));
 		$experienceWorldName = CommonTypes::readOptional($in, CommonTypes::getString(...));
-		$creatorId = CommonTypes::getString($in);
+		$creatorId = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$targetId = CommonTypes::readOptional($in, CommonTypes::getUUID(...));
 		$scenarioId = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$serverId = CommonTypes::readOptional($in, CommonTypes::getString(...));
@@ -74,11 +74,11 @@ final class GatheringJoinInfo{
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		CommonTypes::putUUID($out, $this->experienceId);
-		CommonTypes::putString($out, $this->experienceName);
+		CommonTypes::writeOptional($out, $this->experienceId, CommonTypes::putUUID(...));
+		CommonTypes::writeOptional($out, $this->experienceName, CommonTypes::putString(...));
 		CommonTypes::writeOptional($out, $this->experienceWorldId, CommonTypes::putUUID(...));
 		CommonTypes::writeOptional($out, $this->experienceWorldName, CommonTypes::putString(...));
-		CommonTypes::putString($out, $this->creatorId);
+		CommonTypes::writeOptional($out, $this->creatorId, CommonTypes::putString(...));
 		CommonTypes::writeOptional($out, $this->targetId, CommonTypes::putUUID(...));
 		CommonTypes::writeOptional($out, $this->scenarioId, CommonTypes::putString(...));
 		CommonTypes::writeOptional($out, $this->serverId, CommonTypes::putString(...));
