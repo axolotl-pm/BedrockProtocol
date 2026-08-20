@@ -16,7 +16,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 class ScorePacketEntry{
 	public int $scoreboardId;
-	public string $objectiveName;
+	/** @var string|null (optional for remove action) */
+	public ?string $objectiveName;
 	public int $score;
 	public ScorePacketEntryAction $action;
 	/** @var int|null (if action entity or player) */
