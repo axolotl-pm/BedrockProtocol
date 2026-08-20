@@ -63,7 +63,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 			$entry->scoreboardId = VarInt::readSignedLong($in);
 
 			if($action === ScorePacketEntryAction::REMOVE){
-				$entry->objectiveName = CommonTypes::readDoubleOptional($in, CommonTypes::getString(...));
+				$entry->objectiveName = CommonTypes::getString($in);
 			}elseif($action === ScorePacketEntryAction::CHANGE_PLAYER || $action === ScorePacketEntryAction::CHANGE_ENTITY){
 				$entry->objectiveName = CommonTypes::getString($in);
 				$entry->score = LE::readSignedInt($in);
@@ -88,7 +88,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 			VarInt::writeSignedLong($out, $entry->scoreboardId);
 
 			if($entry->action === ScorePacketEntryAction::REMOVE){
-				CommonTypes::writeDoubleOptional($out, $entry->objectiveName, CommonTypes::putString(...));
+				CommonTypes::putString($out, $entry->objectiveName);
 			}elseif($entry->action === ScorePacketEntryAction::CHANGE_PLAYER || $entry->action === ScorePacketEntryAction::CHANGE_ENTITY){
 				CommonTypes::putString($out, $entry->objectiveName);
 				LE::writeSignedInt($out, $entry->score);
