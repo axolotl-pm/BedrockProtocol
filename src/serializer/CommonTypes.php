@@ -860,27 +860,6 @@ final class CommonTypes{
 	/**
 	 * @phpstan-template T
 	 * @phpstan-param \Closure(ByteBufferReader) : T $reader
-	 * @phpstan-return T|null
-	 * @throws DataDecodeException
-	 */
-	public static function readDoubleOptional(ByteBufferReader $in, \Closure $reader) : mixed{
-		self::readDummyOptional($in);
-		return self::readOptional($in, $reader);
-	}
-
-	/**
-	 * @phpstan-template T
-	 * @phpstan-param T|null $value
-	 * @phpstan-param \Closure(ByteBufferWriter, T) : void $writer
-	 */
-	public static function writeDoubleOptional(ByteBufferWriter $out, mixed $value, \Closure $writer) : void{
-		self::writeDummyOptional($out);
-		self::writeOptional($out, $value, $writer);
-	}
-
-	/**
-	 * @phpstan-template T
-	 * @phpstan-param \Closure(ByteBufferReader) : T $reader
 	 * @phpstan-return list<T>
 	 * @throws DataDecodeException
 	 */
