@@ -19,7 +19,6 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
-use function array_fill;
 use function count;
 
 class SubChunkPacketHeightMapInfo{
