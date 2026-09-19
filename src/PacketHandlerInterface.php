@@ -479,4 +479,12 @@ interface PacketHandlerInterface{
 	public function handleSetPlayerFurnaceOptions(SetPlayerFurnaceOptionsPacket $packet) : bool;
 
 	public function handleRecordStarted(RecordStartedPacket $packet) : bool;
+
+	public function handleClientboundMatchmakingState(ClientboundMatchmakingStatePacket $packet) : bool;
+
+	public function handleServerboundStonecutterSetRecipe(ServerboundStonecutterSetRecipePacket $packet) : bool;
+
+	public function handleClientboundStonecutterSetRecipe(ClientboundStonecutterSetRecipePacket $packet) : bool;
+
+	public function handleServerboundMatchmakingCancel(ServerboundMatchmakingCancelPacket $packet) : bool;
 }

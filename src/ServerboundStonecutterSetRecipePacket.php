@@ -14,36 +14,42 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\PlayerPartyInfo;
+use pmmp\encoding\VarInt;
 
-class PartyChangedPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::PARTY_CHANGED_PACKET;
+class ServerboundStonecutterSetRecipePacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::SERVERBOUND_STONECUTTER_SET_RECIPE_PACKET;
 
-	private ?PlayerPartyInfo $partyInfo;
+	private int $containerId;
+	private int $recipeIndex;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(?PlayerPartyInfo $partyInfo) : self{
+	public static function create(int $containerId, int $recipeIndex) : self{
 		$result = new self;
-		$result->partyInfo = $partyInfo;
+		$result->containerId = $containerId;
+		$result->recipeIndex = $recipeIndex;
 		return $result;
 	}
 
-	public function getPartyInfo() : ?PlayerPartyInfo{ return $this->partyInfo; }
+	public function getContainerId() : int{ return $this->containerId; }
+
+	public function getRecipeIndex() : int{ return $this->recipeIndex; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->partyInfo = CommonTypes::readOptional($in, PlayerPartyInfo::read(...));
+		$this->containerId = Byte::readUnsigned($in);
+		$this->recipeIndex = VarInt::readSignedInt($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		CommonTypes::writeOptional($out, $this->partyInfo, fn(ByteBufferWriter $out, PlayerPartyInfo $info) => $info->write($out));
+		Byte::writeUnsigned($out, $this->containerId);
+		VarInt::writeSignedInt($out, $this->recipeIndex);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handlePartyChanged($this);
+		return $handler->handleServerboundStonecutterSetRecipe($this);
 	}
 }

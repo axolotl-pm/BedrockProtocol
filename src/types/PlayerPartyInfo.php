@@ -14,37 +14,32 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 /**
- * @see AttributeEnvironmentNoiseTransitionSettings
+ * @see PartyChangedPacket
  */
-final class NoiseAlignment{
-
+final class PlayerPartyInfo{
 	public function __construct(
-		private NoiseAlignmentType $type,
-		private int $value
+		private string $partyId,
+		private bool $partyLeader
 	){}
 
-	public function getType() : NoiseAlignmentType{ return $this->type; }
+	public function getPartyId() : string{ return $this->partyId; }
 
-	public function getValue() : int{ return $this->value; }
+	public function isPartyLeader() : bool{ return $this->partyLeader; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$type = NoiseAlignmentType::fromPacket(Byte::readUnsigned($in));
-		$value = VarInt::readUnsignedInt($in);
+		$partyId = CommonTypes::getString($in);
+		$partyLeader = CommonTypes::getBool($in);
 
-		return new self(
-			$type,
-			$value
-		);
+		return new self($partyId, $partyLeader);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		Byte::writeUnsigned($out, $this->type->value);
-		VarInt::writeUnsignedInt($out, $this->value);
+		CommonTypes::putString($out, $this->partyId);
+		CommonTypes::putBool($out, $this->partyLeader);
 	}
 }

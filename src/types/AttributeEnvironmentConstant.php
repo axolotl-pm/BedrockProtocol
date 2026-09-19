@@ -14,37 +14,34 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 
 /**
- * @see AttributeEnvironmentNoiseTransitionSettings
+ * @see AttributeEnvironment
  */
-final class NoiseAlignment{
+final class AttributeEnvironmentConstant extends AttributeEnvironmentPayload{
+	public const ID = AttributeEnvironmentPayloadType::CONSTANT;
 
 	public function __construct(
-		private NoiseAlignmentType $type,
-		private int $value
+		private AttributeValue $attribute
 	){}
 
-	public function getType() : NoiseAlignmentType{ return $this->type; }
+	public function getTypeId() : int{
+		return self::ID;
+	}
 
-	public function getValue() : int{ return $this->value; }
+	public function getAttribute() : AttributeValue{ return $this->attribute; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$type = NoiseAlignmentType::fromPacket(Byte::readUnsigned($in));
-		$value = VarInt::readUnsignedInt($in);
+		$attribute = AttributeValue::read($in);
 
-		return new self(
-			$type,
-			$value
-		);
+		return new self($attribute);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		Byte::writeUnsigned($out, $this->type->value);
-		VarInt::writeUnsignedInt($out, $this->value);
+		VarInt::writeUnsignedInt($out, $this->attribute->getTypeId());
+		$this->attribute->write($out);
 	}
 }

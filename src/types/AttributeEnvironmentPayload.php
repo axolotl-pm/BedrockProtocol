@@ -14,37 +14,26 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 
 /**
- * @see AttributeEnvironmentNoiseTransitionSettings
+ * @see AttributeEnvironment
  */
-final class NoiseAlignment{
+abstract class AttributeEnvironmentPayload{
 
-	public function __construct(
-		private NoiseAlignmentType $type,
-		private int $value
-	){}
+	abstract public function getTypeId() : int;
 
-	public function getType() : NoiseAlignmentType{ return $this->type; }
-
-	public function getValue() : int{ return $this->value; }
+	abstract public function write(ByteBufferWriter $out) : void;
 
 	public static function read(ByteBufferReader $in) : self{
-		$type = NoiseAlignmentType::fromPacket(Byte::readUnsigned($in));
-		$value = VarInt::readUnsignedInt($in);
-
-		return new self(
-			$type,
-			$value
-		);
-	}
-
-	public function write(ByteBufferWriter $out) : void{
-		Byte::writeUnsigned($out, $this->type->value);
-		VarInt::writeUnsignedInt($out, $this->value);
+		return match(VarInt::readUnsignedInt($in)){
+			AttributeEnvironmentConstant::ID => AttributeEnvironmentConstant::read($in),
+			AttributeEnvironmentTransition::ID => AttributeEnvironmentTransition::read($in),
+			AttributeEnvironmentNoiseTransition::ID => AttributeEnvironmentNoiseTransition::read($in),
+			default => throw new PacketDecodeException("Unknown AttributeEnvironmentPayload type"),
+		};
 	}
 }

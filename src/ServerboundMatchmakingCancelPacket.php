@@ -16,34 +16,26 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\PlayerPartyInfo;
 
-class PartyChangedPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::PARTY_CHANGED_PACKET;
-
-	private ?PlayerPartyInfo $partyInfo;
+class ServerboundMatchmakingCancelPacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::SERVERBOUND_MATCHMAKING_CANCEL_PACKET;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(?PlayerPartyInfo $partyInfo) : self{
-		$result = new self;
-		$result->partyInfo = $partyInfo;
-		return $result;
+	public static function create() : self{
+		return new self;
 	}
 
-	public function getPartyInfo() : ?PlayerPartyInfo{ return $this->partyInfo; }
-
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->partyInfo = CommonTypes::readOptional($in, PlayerPartyInfo::read(...));
+		//No payload
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		CommonTypes::writeOptional($out, $this->partyInfo, fn(ByteBufferWriter $out, PlayerPartyInfo $info) => $info->write($out));
+		//No payload
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handlePartyChanged($this);
+		return $handler->handleServerboundMatchmakingCancel($this);
 	}
 }
