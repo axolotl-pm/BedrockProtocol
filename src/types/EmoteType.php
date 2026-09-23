@@ -14,19 +14,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-/**
- * @see ClientboundMatchmakingStatePacket
- */
-enum MatchmakingState : string{
-	use PacketOrdinalEnumTrait;
+enum EmoteType : int{
+	use PacketIntEnumTrait;
 
-	case IDLE = "Idle";
-	case MATCHMAKING = "Matchmaking";
-	case MATCH_FOUND = "MatchFound";
-	case CANCELED = "Canceled";
-	case PLAYER_LEFT_PARTY = "PlayerLeftParty";
-	case PLAYER_LEFT_SERVER = "PlayerLeftServer";
-	case SERVER_SHUTDOWN = "ServerShutdown";
-	case TIMED_OUT = "TimedOut";
-	case REQUEUE_AS_PARTY = "RequeueAsParty";
+	case STANDING = 0;
+	case RIDING = 1;
+	case LAYING = 2;
 }

@@ -961,4 +961,8 @@ trait PacketHandlerDefaultImplTrait{
 	public function handleServerboundMatchmakingCancel(ServerboundMatchmakingCancelPacket $packet) : bool{
 		return false;
 	}
+
+	public function handleSetPassengerOfBlock(SetPassengerOfBlockPacket $packet) : bool{
+		return false;
+	}
 }

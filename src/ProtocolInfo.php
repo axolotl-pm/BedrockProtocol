@@ -32,7 +32,7 @@ final class ProtocolInfo{
 	 */
 
 	/** Actual Minecraft: PE protocol version */
-	public const CURRENT_PROTOCOL = 2211;
+	public const CURRENT_PROTOCOL = 2216;
 	/** Display version shown in the server logs. This should match the version on the game's home screen. */
 	public const MINECRAFT_VERSION = 'v26.60';
 	/** Version sent on the network for client side compatibility checks. This may differ from the display version. */
@@ -287,9 +287,11 @@ final class ProtocolInfo{
 	public const PARTY_DESTINATION_COOKIE_RESPONSE_PACKET = 0x15e;
 	public const SET_PLAYER_FURNACE_OPTIONS_PACKET = 0x15f;
 	public const RECORD_STARTED_PACKET = 0x160;
+
 	public const CLIENTBOUND_MATCHMAKING_STATE_PACKET = 0x161;
 	public const SERVERBOUND_STONECUTTER_SET_RECIPE_PACKET = 0x162;
 	public const CLIENTBOUND_STONECUTTER_SET_RECIPE_PACKET = 0x163;
 	public const SERVERBOUND_MATCHMAKING_CANCEL_PACKET = 0x164;
+	public const SET_PASSENGER_OF_BLOCK_PACKET = 0x165;
 
 }

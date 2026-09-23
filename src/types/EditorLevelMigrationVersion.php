@@ -14,19 +14,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-/**
- * @see ClientboundMatchmakingStatePacket
- */
-enum MatchmakingState : string{
-	use PacketOrdinalEnumTrait;
+final class EditorLevelMigrationVersion{
 
-	case IDLE = "Idle";
-	case MATCHMAKING = "Matchmaking";
-	case MATCH_FOUND = "MatchFound";
-	case CANCELED = "Canceled";
-	case PLAYER_LEFT_PARTY = "PlayerLeftParty";
-	case PLAYER_LEFT_SERVER = "PlayerLeftServer";
-	case SERVER_SHUTDOWN = "ServerShutdown";
-	case TIMED_OUT = "TimedOut";
-	case REQUEUE_AS_PARTY = "RequeueAsParty";
+	private function __construct(){
+		//NOOP
+	}
+
+	public const LEGACY = 0;
+	public const EDITOR_ACHIEVEMENTS = 1;
 }
