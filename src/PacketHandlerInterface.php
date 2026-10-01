@@ -489,4 +489,10 @@ interface PacketHandlerInterface{
 	public function handleServerboundMatchmakingCancel(ServerboundMatchmakingCancelPacket $packet) : bool;
 
 	public function handleSetPassengerOfBlock(SetPassengerOfBlockPacket $packet) : bool;
+
+	public function handleServerboundCursorItemDrag(ServerboundCursorItemDragPacket $packet) : bool;
+
+	public function handleClientboundPlayAudioContent(ClientboundPlayAudioContentPacket $packet) : bool;
+
+	public function handleServerboundRegisterAudioContent(ServerboundRegisterAudioContentPacket $packet) : bool;
 }

@@ -965,4 +965,16 @@ trait PacketHandlerDefaultImplTrait{
 	public function handleSetPassengerOfBlock(SetPassengerOfBlockPacket $packet) : bool{
 		return false;
 	}
+
+	public function handleServerboundCursorItemDrag(ServerboundCursorItemDragPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleClientboundPlayAudioContent(ClientboundPlayAudioContentPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleServerboundRegisterAudioContent(ServerboundRegisterAudioContentPacket $packet) : bool{
+		return false;
+	}
 }
