@@ -17,15 +17,11 @@ namespace pocketmine\network\mcpe\protocol\types;
 /**
  * Enum used by PlayerAuthInputPacket. Most of these names don't make any sense, but that isn't surprising.
  */
-final class PlayMode{
+enum PlayMode : int{
+	use PacketIntEnumTrait;
 
-	private function __construct(){
-		//NOOP
-	}
-
-	public const NORMAL = 0;
-	public const TEASER = 1;
-	public const SCREEN = 2;
-	public const EXIT_LEVEL = 7;
-
+	case NORMAL = 0;
+	case TEASER = 1;
+	case SCREEN = 2;
+	case EXIT_LEVEL = 7;
 }
