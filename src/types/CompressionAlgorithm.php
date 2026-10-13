@@ -22,5 +22,5 @@ enum CompressionAlgorithm : int{
 
 	case ZLIB = 0;
 	case SNAPPY = 1;
-	case NONE = 255;
+	case NONE = 65535;
 }

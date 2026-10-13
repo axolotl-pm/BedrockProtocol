@@ -17,7 +17,9 @@ namespace pocketmine\network\mcpe\protocol\types;
 enum InputMode : int{
 	use PacketIntEnumTrait;
 
+	case UNDEFINED = 0;
 	case MOUSE_KEYBOARD = 1;
 	case TOUCHSCREEN = 2;
 	case GAME_PAD = 3;
+	case MOTION_CONTROLLER = 4;
 }

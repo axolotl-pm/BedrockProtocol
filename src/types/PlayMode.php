@@ -23,5 +23,10 @@ enum PlayMode : int{
 	case NORMAL = 0;
 	case TEASER = 1;
 	case SCREEN = 2;
+	case VIEWER = 3;
+	case REALITY = 4;
+	case PLACEMENT = 5;
+	case LIVING_ROOM = 6;
 	case EXIT_LEVEL = 7;
+	case EXIT_LEVEL_LIVING_ROOM = 8;
 }

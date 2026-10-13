@@ -51,4 +51,5 @@ enum CameraSetInstructionEaseType : string{
 	case IN_ELASTIC = "in_elastic";
 	case OUT_ELASTIC = "out_elastic";
 	case IN_OUT_ELASTIC = "in_out_elastic";
+	case INVERSE_LERP = "inverse_lerp";
 }
