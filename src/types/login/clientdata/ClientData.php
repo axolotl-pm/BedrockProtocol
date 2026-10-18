@@ -17,7 +17,6 @@ namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\GraphicsMode;
 use pocketmine\network\mcpe\protocol\types\InputMode;
-use pocketmine\network\mcpe\protocol\types\LanguageCode;
 use pocketmine\network\mcpe\protocol\types\MemoryTier;
 use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
 use pocketmine\network\mcpe\protocol\types\UIProfile;
