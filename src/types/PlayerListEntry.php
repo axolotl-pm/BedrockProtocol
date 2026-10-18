@@ -49,7 +49,7 @@ class PlayerListEntry{
 		SkinData $skinData,
 		string $xboxUserId = "",
 		string $platformChatId = "",
-		int $buildPlatform = -1,
+		DeviceOS $buildPlatform = DeviceOS::UNKNOWN,
 		bool $isTeacher = false,
 		bool $isHost = false,
 		bool $isSubClient = false,

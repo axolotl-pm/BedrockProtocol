@@ -81,7 +81,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		AbilitiesData $abilities,
 		array $links,
 		string $deviceId,
-		int $buildPlatform,
+		DeviceOS $buildPlatform,
 	) : self{
 		$result = new self;
 		$result->uuid = $uuid;
@@ -127,7 +127,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->deviceId = CommonTypes::getString($in);
-		$this->buildPlatform = LE::readSignedInt($in);
+		$this->buildPlatform = DeviceOS::fromPacket(LE::readSignedInt($in));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -153,7 +153,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		CommonTypes::putString($out, $this->deviceId);
-		LE::writeSignedInt($out, $this->buildPlatform);
+		LE::writeSignedInt($out, $this->buildPlatform->value);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
