@@ -56,7 +56,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	/** @var EntityLink[] */
 	public array $links = [];
 	public string $deviceId = ""; //TODO: fill player's device ID (???)
-	public int $buildPlatform = DeviceOS::UNKNOWN;
+	public DeviceOS $buildPlatform = DeviceOS::UNKNOWN;
 
 	/**
 	 * @generate-create-func
