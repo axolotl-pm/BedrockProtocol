@@ -14,6 +14,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
+use pocketmine\network\mcpe\protocol\types\GraphicsMode;
+use pocketmine\network\mcpe\protocol\types\InputMode;
+
 /**
  * Model class for LoginPacket JSON data for JsonMapper
  */
@@ -56,10 +60,10 @@ final class ClientData{
 	public bool $CompatibleWithClientSideChunkGen;
 
 	/** @required */
-	public int $CurrentInputMode;
+	public InputMode $CurrentInputMode;
 
 	/** @required */
-	public int $DefaultInputMode;
+	public InputMode $DefaultInputMode;
 
 	/** @required */
 	public string $DeviceId;
@@ -68,7 +72,7 @@ final class ClientData{
 	public string $DeviceModel;
 
 	/** @required */
-	public int $DeviceOS;
+	public DeviceOS $DeviceOS;
 
 	/** @required */
 	public bool $FilterProfanity;
@@ -77,7 +81,7 @@ final class ClientData{
 	public string $GameVersion;
 
 	/** @required */
-	public int $GraphicsMode;
+	public GraphicsMode $GraphicsMode;
 
 	/** @required */
 	public int $GuiScale;
