@@ -72,7 +72,7 @@ final class ClientData{
 	public string $DeviceModel;
 
 	/** @required */
-	public DeviceOS $DeviceOS;
+	public int $DeviceOS;
 
 	/** @required */
 	public bool $FilterProfanity;
