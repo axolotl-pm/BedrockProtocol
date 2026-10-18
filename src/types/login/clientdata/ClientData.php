@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 
-use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\GraphicsMode;
 use pocketmine\network\mcpe\protocol\types\InputMode;
 
