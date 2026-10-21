@@ -19,7 +19,6 @@ use pocketmine\network\mcpe\protocol\types\skin\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPieceType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinAnimation;
-use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use Ramsey\Uuid\Uuid;
@@ -128,7 +127,7 @@ final class ClientDataToSkinDataHelper{
 			self::safeB64Decode($clientData->SkinAnimationData, "SkinAnimationData"),
 			$clientData->CapeId,
 			null,
-			SkinArmSizeType::fromPacket($clientData->ArmSize),
+			$clientData->ArmSize,
 			self::parseColorString($clientData->SkinColor),
 			array_values(array_map(self::parsePersonaSkinPiece(...), $clientData->PersonaPieces)),
 			array_values(array_map(self::parsePersonaPieceTintColor(...), $clientData->PieceTintColors)),

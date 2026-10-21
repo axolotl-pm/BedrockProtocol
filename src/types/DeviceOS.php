@@ -14,22 +14,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-final class DeviceOS{
+enum DeviceOS : int{
+	use PacketIntEnumTrait;
 
-	public const UNKNOWN = -1;
-	public const ANDROID = 1;
-	public const IOS = 2;
-	public const OSX = 3;
-	public const AMAZON = 4;
-	public const GEAR_VR = 5;
-	public const HOLOLENS = 6;
-	public const WINDOWS_10 = 7;
-	public const WIN32 = 8;
-	public const DEDICATED = 9;
-	public const TVOS = 10;
-	public const PLAYSTATION = 11;
-	public const NINTENDO = 12;
-	public const XBOX = 13;
-	public const WINDOWS_PHONE = 14;
-	public const LINUX = 15;
+	case UNKNOWN = -1;
+	case ANDROID = 1;
+	case IOS = 2;
+	case OSX = 3;
+	case AMAZON = 4;
+	case GEAR_VR = 5;
+	case HOLOLENS = 6;
+	case WINDOWS_10 = 7;
+	case WIN32 = 8;
+	case DEDICATED = 9;
+	case TVOS = 10;
+	case PLAYSTATION = 11;
+	case NINTENDO = 12;
+	case XBOX = 13;
+	case WINDOWS_PHONE = 14;
+	case LINUX = 15;
 }
