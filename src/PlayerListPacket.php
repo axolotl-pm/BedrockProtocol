@@ -21,6 +21,7 @@ use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\color\Color;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use function count;
 
@@ -72,7 +73,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				$entry->xboxUserId = CommonTypes::getString($in);
 				$entry->playFabId = CommonTypes::getString($in);
 				$entry->platformChatId = CommonTypes::getString($in);
-				$entry->buildPlatform = LE::readSignedInt($in);
+				$entry->buildPlatform = DeviceOS::fromPacket(LE::readSignedInt($in));
 				$entry->skinData = CommonTypes::getSkin($in);
 				$entry->isTeacher = CommonTypes::getBool($in);
 				$entry->isHost = CommonTypes::getBool($in);
@@ -100,7 +101,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				CommonTypes::putString($out, $entry->xboxUserId);
 				CommonTypes::putString($out, $entry->playFabId);
 				CommonTypes::putString($out, $entry->platformChatId);
-				LE::writeSignedInt($out, $entry->buildPlatform);
+				LE::writeSignedInt($out, $entry->buildPlatform->value);
 				CommonTypes::putSkin($out, $entry->skinData);
 				CommonTypes::putBool($out, $entry->isTeacher);
 				CommonTypes::putBool($out, $entry->isHost);

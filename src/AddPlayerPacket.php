@@ -58,7 +58,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public array $links = [];
 	public ?PassengerOfBlockData $passengerBlockData = null;
 	public string $deviceId = ""; //TODO: fill player's device ID (???)
-	public int $buildPlatform = DeviceOS::UNKNOWN;
+	public DeviceOS $buildPlatform = DeviceOS::UNKNOWN;
 
 	/**
 	 * @generate-create-func
@@ -84,7 +84,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		array $links,
 		?PassengerOfBlockData $passengerBlockData,
 		string $deviceId,
-		int $buildPlatform,
+		DeviceOS $buildPlatform,
 	) : self{
 		$result = new self;
 		$result->uuid = $uuid;
@@ -132,7 +132,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 
 		$this->passengerBlockData = CommonTypes::readOptional($in, PassengerOfBlockData::read(...));
 		$this->deviceId = CommonTypes::getString($in);
-		$this->buildPlatform = LE::readSignedInt($in);
+		$this->buildPlatform = DeviceOS::fromPacket(LE::readSignedInt($in));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -159,7 +159,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 
 		CommonTypes::writeOptional($out, $this->passengerBlockData, static fn(ByteBufferWriter $out, PassengerOfBlockData $data) => $data->write($out));
 		CommonTypes::putString($out, $this->deviceId);
-		LE::writeSignedInt($out, $this->buildPlatform);
+		LE::writeSignedInt($out, $this->buildPlatform->value);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

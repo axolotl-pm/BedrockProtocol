@@ -29,7 +29,7 @@ class PlayerListEntry{
 	public string $xboxUserId;
 	public string $playFabId = "";
 	public string $platformChatId = "";
-	public int $buildPlatform = DeviceOS::UNKNOWN;
+	public DeviceOS $buildPlatform = DeviceOS::UNKNOWN;
 	public bool $isTeacher = false;
 	public bool $isHost = false;
 	public bool $isSubClient = false;
@@ -51,7 +51,7 @@ class PlayerListEntry{
 		string $xboxUserId = "",
 		string $playFabId = "",
 		string $platformChatId = "",
-		int $buildPlatform = -1,
+		DeviceOS $buildPlatform = DeviceOS::UNKNOWN,
 		bool $isTeacher = false,
 		bool $isHost = false,
 		bool $isSubClient = false,
