@@ -17,11 +17,11 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
-use pocketmine\network\mcpe\protocol\types\AttributeLayerSyncPayload;
-use pocketmine\network\mcpe\protocol\types\AttributesRemoveEnvironment;
-use pocketmine\network\mcpe\protocol\types\AttributesUpdateEnvironment;
-use pocketmine\network\mcpe\protocol\types\AttributeUpdateLayers;
-use pocketmine\network\mcpe\protocol\types\AttributeUpdateLayerSettings;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributeLayerSyncPayload;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributesRemoveEnvironment;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributesUpdateEnvironment;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributeUpdateLayers;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributeUpdateLayerSettings;
 
 class ClientboundAttributeLayerSyncPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_ATTRIBUTE_LAYER_SYNC_PACKET;

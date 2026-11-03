@@ -618,14 +618,6 @@ trait PacketHandlerDefaultImplTrait{
 		return false;
 	}
 
-	public function handleAddVolumeEntity(AddVolumeEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleRemoveVolumeEntity(RemoveVolumeEntityPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleSimulationType(SimulationTypePacket $packet) : bool{
 		return false;
 	}
@@ -975,6 +967,18 @@ trait PacketHandlerDefaultImplTrait{
 	}
 
 	public function handleServerboundRegisterAudioContent(ServerboundRegisterAudioContentPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleChat(ChatPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleServerboundRequestOnlineMusicPlayback(ServerboundRequestOnlineMusicPlaybackPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleClientboundOnlineMusicPlaybackResponse(ClientboundOnlineMusicPlaybackResponsePacket $packet) : bool{
 		return false;
 	}
 }

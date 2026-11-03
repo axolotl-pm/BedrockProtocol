@@ -36,7 +36,7 @@ final class ItemStackRequestActionType{
 	public const CRAFTING_RECIPE_OPTIONAL = 13; //anvil/cartography table rename
 	public const CRAFTING_GRINDSTONE = 14;
 	public const CRAFTING_LOOM = 15;
-	public const CRAFTING_RESERVED = 16;
+	public const CRAFTING_DISC_PRESS = 16;
 	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 17;
 	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 18; //no idea what this is for
 
@@ -59,7 +59,7 @@ final class ItemStackRequestActionType{
 		self::CRAFTING_RECIPE_OPTIONAL => 15, //anvil/cartography table rename
 		self::CRAFTING_GRINDSTONE => 16,
 		self::CRAFTING_LOOM => 17,
-		self::CRAFTING_RESERVED => 18,
+		self::CRAFTING_DISC_PRESS => 18,
 		self::CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING => 19,
 		self::CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING => 20, //no idea what this is for
 	];

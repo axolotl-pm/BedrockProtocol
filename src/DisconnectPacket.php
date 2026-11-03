@@ -18,18 +18,19 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\types\DisconnectReason;
 
 class DisconnectPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
 
-	public int $reason; //TODO: add constants / enum
+	public DisconnectReason $reason;
 	public ?string $message;
 	public ?string $filteredMessage;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(int $reason, ?string $message, ?string $filteredMessage) : self{
+	public static function create(DisconnectReason $reason, ?string $message, ?string $filteredMessage) : self{
 		$result = new self;
 		$result->reason = $reason;
 		$result->message = $message;
@@ -42,14 +43,14 @@ class DisconnectPacket extends DataPacket implements ClientboundPacket, Serverbo
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->reason = VarInt::readSignedInt($in);
+		$this->reason = DisconnectReason::fromPacket(VarInt::readSignedInt($in));
 		$type = VarInt::readUnsignedInt($in);
 		$this->message = $type === 0 ? CommonTypes::getString($in) : null;
 		$this->filteredMessage = $type === 0 ? CommonTypes::getString($in) : null;
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
-		VarInt::writeSignedInt($out, $this->reason);
+		VarInt::writeSignedInt($out, $this->reason->value);
 		VarInt::writeUnsignedInt($out, ($skipMessage = $this->message === null && $this->filteredMessage === null) ? 1 : 0);
 		if(!$skipMessage){
 			CommonTypes::putString($out, $this->message ?? "");

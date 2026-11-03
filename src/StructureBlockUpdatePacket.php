@@ -27,16 +27,18 @@ class StructureBlockUpdatePacket extends DataPacket implements ServerboundPacket
 	public StructureEditorData $structureEditorData;
 	public bool $isPowered;
 	public bool $waterlogged;
+	public bool $keepStructureVoid;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(BlockPosition $blockPosition, StructureEditorData $structureEditorData, bool $isPowered, bool $waterlogged) : self{
+	public static function create(BlockPosition $blockPosition, StructureEditorData $structureEditorData, bool $isPowered, bool $waterlogged, bool $keepStructureVoid) : self{
 		$result = new self;
 		$result->blockPosition = $blockPosition;
 		$result->structureEditorData = $structureEditorData;
 		$result->isPowered = $isPowered;
 		$result->waterlogged = $waterlogged;
+		$result->keepStructureVoid = $keepStructureVoid;
 		return $result;
 	}
 
@@ -45,6 +47,7 @@ class StructureBlockUpdatePacket extends DataPacket implements ServerboundPacket
 		$this->structureEditorData = CommonTypes::getStructureEditorData($in);
 		$this->isPowered = CommonTypes::getBool($in);
 		$this->waterlogged = CommonTypes::getBool($in);
+		$this->keepStructureVoid = CommonTypes::getBool($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -52,6 +55,7 @@ class StructureBlockUpdatePacket extends DataPacket implements ServerboundPacket
 		CommonTypes::putStructureEditorData($out, $this->structureEditorData);
 		CommonTypes::putBool($out, $this->isPowered);
 		CommonTypes::putBool($out, $this->waterlogged);
+		CommonTypes::putBool($out, $this->keepStructureVoid);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

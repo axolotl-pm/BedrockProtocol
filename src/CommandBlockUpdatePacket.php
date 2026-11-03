@@ -40,6 +40,7 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public bool $shouldTrackOutput;
 	public int $tickDelay;
 	public bool $executeOnFirstTick;
+	public bool $lastOutputIsRawMessage;
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->isBlock = CommonTypes::getBool($in);
@@ -61,6 +62,7 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		$this->shouldTrackOutput = CommonTypes::getBool($in);
 		$this->tickDelay = LE::readUnsignedInt($in);
 		$this->executeOnFirstTick = CommonTypes::getBool($in);
+		$this->lastOutputIsRawMessage = CommonTypes::getBool($in);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -82,6 +84,7 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		CommonTypes::putBool($out, $this->shouldTrackOutput);
 		LE::writeUnsignedInt($out, $this->tickDelay);
 		CommonTypes::putBool($out, $this->executeOnFirstTick);
+		CommonTypes::putBool($out, $this->lastOutputIsRawMessage);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

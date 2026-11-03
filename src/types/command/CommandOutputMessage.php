@@ -21,4 +21,6 @@ class CommandOutputMessage{
 	/** @var string[] */
 	public array $parameters = [];
 
+	public ?string $rawMessage = null;
+
 }

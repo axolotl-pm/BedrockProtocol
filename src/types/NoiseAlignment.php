@@ -18,6 +18,7 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\types\attribute\AttributeEnvironmentNoiseTransitionSettings;
 
 /**
  * @see AttributeEnvironmentNoiseTransitionSettings

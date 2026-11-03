@@ -21,4 +21,5 @@ enum AudioContentPlaybackType : int{
 
 	case MUSIC = 0;
 	case SOUND = 1;
+	case CONCURRENT_MUSIC = 2;
 }

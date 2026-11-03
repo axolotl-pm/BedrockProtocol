@@ -184,8 +184,6 @@ class PacketPool{
 		$this->registerPacket(new ItemRegistryPacket());
 		$this->registerPacket(new ClientboundDebugRendererPacket());
 		$this->registerPacket(new SyncActorPropertyPacket());
-		$this->registerPacket(new AddVolumeEntityPacket());
-		$this->registerPacket(new RemoveVolumeEntityPacket());
 		$this->registerPacket(new SimulationTypePacket());
 		$this->registerPacket(new NpcDialoguePacket());
 		$this->registerPacket(new EduUriResourcePacket());
@@ -274,6 +272,9 @@ class PacketPool{
 		$this->registerPacket(new ServerboundCursorItemDragPacket());
 		$this->registerPacket(new ClientboundPlayAudioContentPacket());
 		$this->registerPacket(new ServerboundRegisterAudioContentPacket());
+		$this->registerPacket(new ChatPacket());
+		$this->registerPacket(new ServerboundRequestOnlineMusicPlaybackPacket());
+		$this->registerPacket(new ClientboundOnlineMusicPlaybackResponsePacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{

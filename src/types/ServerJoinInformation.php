@@ -24,6 +24,7 @@ final class ServerJoinInformation{
 		private ?GatheringJoinInfo $gatheringJoinInfo,
 		private ?StoreEntryPointInfo $storeEntryPointInfo,
 		private ?PresenceInfo $presenceInfo,
+		private ?ManagedChatJoinInfo $managedChatJoinInfo,
 	){}
 
 	public function getGatheringJoinInfo() : ?GatheringJoinInfo{ return $this->gatheringJoinInfo; }
@@ -32,15 +33,19 @@ final class ServerJoinInformation{
 
 	public function getPresenceInfo() : ?PresenceInfo{ return $this->presenceInfo; }
 
+	public function getManagedChatJoinInfo() : ?ManagedChatJoinInfo{ return $this->managedChatJoinInfo; }
+
 	public static function read(ByteBufferReader $in) : self{
 		$gatheringJoinInfo = CommonTypes::readOptional($in, GatheringJoinInfo::read(...));
 		$storeEntryPointInfo = CommonTypes::readOptional($in, StoreEntryPointInfo::read(...));
 		$presenceInfo = CommonTypes::readOptional($in, PresenceInfo::read(...));
+		$managedChatJoinInfo = CommonTypes::readOptional($in, ManagedChatJoinInfo::read(...));
 
 		return new self(
 			$gatheringJoinInfo,
 			$storeEntryPointInfo,
 			$presenceInfo,
+			$managedChatJoinInfo,
 		);
 	}
 
@@ -48,5 +53,6 @@ final class ServerJoinInformation{
 		CommonTypes::writeOptional($out, $this->gatheringJoinInfo, fn(ByteBufferWriter $out, GatheringJoinInfo $info) => $info->write($out));
 		CommonTypes::writeOptional($out, $this->storeEntryPointInfo, fn(ByteBufferWriter $out, StoreEntryPointInfo $info) => $info->write($out));
 		CommonTypes::writeOptional($out, $this->presenceInfo, fn(ByteBufferWriter $out, PresenceInfo $info) => $info->write($out));
+		CommonTypes::writeOptional($out, $this->managedChatJoinInfo, fn(ByteBufferWriter $out, ManagedChatJoinInfo $info) => $info->write($out));
 	}
 }
