@@ -48,7 +48,11 @@ class PlayerFogPacket extends DataPacket implements ClientboundPacket{
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->fogLayers = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+		$fogCount = VarInt::readUnsignedInt($in);
+		if($fogCount > 16){
+			throw new PacketDecodeException("Too many fog layers in PlayerFogPacket");
+		}
+		for($i = 0, $len = $fogCount; $i < $len; ++$i){
 			$this->fogLayers[] = CommonTypes::getString($in);
 		}
 	}

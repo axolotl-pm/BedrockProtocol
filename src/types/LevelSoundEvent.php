@@ -596,5 +596,11 @@ final class LevelSoundEvent{
 	public const MOUNT = "mount";
 	public const DISMOUNT = "dismount";
 	public const STRAW_BED_BREAK_LEAVE = "straw_bed.break_leave";
+	public const CONVERT_TO_FROSTBITE = "convert_to_frostbite";
+	public const CONVERT_TO_ZOMBIE = "convert_to_zombie";
+	public const CRACK = "crack";
+	public const ICE_BALL_THROW = "ice_ball.throw";
+	public const RECORD_FLURRY = "record.flurry";
+	public const IMITATE_FROSTBITE = "imitate.frostbite";
 
 }

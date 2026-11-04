@@ -14,7 +14,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-enum MusicPlaybackSource : string{
+enum MusicPlaybackState : string{
 	case LOCAL = "Local";
 	case ONLINE = "Online";
+	case NOT_FOUND = "NotFound";
+	case PENDING = "Pending";
 }

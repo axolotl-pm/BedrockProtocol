@@ -19,6 +19,7 @@ use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\GatheringJoinInfo;
+use pocketmine\network\mcpe\protocol\types\TransferPlayerUIOptions;
 
 class TransferPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::TRANSFER_PACKET;
@@ -27,16 +28,18 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 	public int $port = 19132;
 	public bool $reloadWorld;
 	public ?GatheringJoinInfo $gatheringsConfig = null;
+	public ?TransferPlayerUIOptions $serverTransferSettings = null;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(string $address, int $port, bool $reloadWorld, ?GatheringJoinInfo $gatheringsConfig) : self{
+	public static function create(string $address, int $port, bool $reloadWorld, ?GatheringJoinInfo $gatheringsConfig, ?TransferPlayerUIOptions $serverTransferSettings) : self{
 		$result = new self;
 		$result->address = $address;
 		$result->port = $port;
 		$result->reloadWorld = $reloadWorld;
 		$result->gatheringsConfig = $gatheringsConfig;
+		$result->serverTransferSettings = $serverTransferSettings;
 		return $result;
 	}
 
@@ -45,6 +48,7 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 		$this->port = LE::readUnsignedShort($in);
 		$this->reloadWorld = CommonTypes::getBool($in);
 		$this->gatheringsConfig = CommonTypes::readOptional($in, GatheringJoinInfo::read(...));
+		$this->serverTransferSettings = CommonTypes::readOptional($in, TransferPlayerUIOptions::read(...));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -52,6 +56,7 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 		LE::writeUnsignedShort($out, $this->port);
 		CommonTypes::putBool($out, $this->reloadWorld);
 		CommonTypes::writeOptional($out, $this->gatheringsConfig, static fn($out, $v) => $v->write($out));
+		CommonTypes::writeOptional($out, $this->serverTransferSettings, static fn($out, $v) => $v->write($out));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

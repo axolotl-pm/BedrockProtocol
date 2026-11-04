@@ -18,23 +18,23 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\MusicPlaybackSource;
+use pocketmine\network\mcpe\protocol\types\MusicPlaybackState;
 
 final class ClientboundOnlineMusicPlaybackResponsePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_ONLINE_MUSIC_PLAYBACK_RESPONSE_PACKET;
 
 	private int $requestId;
-	private MusicPlaybackSource $source;
+	private MusicPlaybackState $state;
 	private string $sharedMetadata; //compact JWT in spec
 	private string $playbackContent; //compact JWT in spec
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(int $requestId, MusicPlaybackSource $source, string $sharedMetadata, string $playbackContent) : self{
+	public static function create(int $requestId, MusicPlaybackState $state, string $sharedMetadata, string $playbackContent) : self{
 		$result = new self;
 		$result->requestId = $requestId;
-		$result->source = $source;
+		$result->state = $state;
 		$result->sharedMetadata = $sharedMetadata;
 		$result->playbackContent = $playbackContent;
 		return $result;
@@ -44,8 +44,8 @@ final class ClientboundOnlineMusicPlaybackResponsePacket extends DataPacket impl
 		return $this->requestId;
 	}
 
-	public function getSource() : MusicPlaybackSource{
-		return $this->source;
+	public function getState() : MusicPlaybackState{
+		return $this->state;
 	}
 
 	public function getSharedMetadata() : string{
@@ -58,14 +58,14 @@ final class ClientboundOnlineMusicPlaybackResponsePacket extends DataPacket impl
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		LE::writeUnsignedInt($out, $this->requestId);
-		CommonTypes::putString($out, $this->source->value);
+		CommonTypes::putString($out, $this->state->value);
 		CommonTypes::putString($out, $this->sharedMetadata);
 		CommonTypes::putString($out, $this->playbackContent);
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->requestId = LE::readUnsignedInt($in);
-		$this->source = MusicPlaybackSource::from(CommonTypes::getString($in));
+		$this->state = MusicPlaybackState::from(CommonTypes::getString($in));
 		$this->sharedMetadata = CommonTypes::getString($in);
 		$this->playbackContent = CommonTypes::getString($in);
 	}

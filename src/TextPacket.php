@@ -47,6 +47,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	public string $message;
 	/** @var string[] */
 	public array $parameters = [];
+	public bool $queue = false;
 	public string $xboxUserId = "";
 	public string $platformChatId = "";
 	public ?string $filteredMessage = null;
@@ -143,6 +144,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 				for($i = 0; $i < $count; ++$i){
 					$this->parameters[] = CommonTypes::getString($in);
 				}
+				$this->queue = CommonTypes::getBool($in);
 				break;
 		}
 
@@ -198,6 +200,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 				foreach($this->parameters as $p){
 					CommonTypes::putString($out, $p);
 				}
+				CommonTypes::putBool($out, $this->queue);
 				break;
 		}
 
