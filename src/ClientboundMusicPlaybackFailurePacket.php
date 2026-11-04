@@ -54,7 +54,7 @@ final class ClientboundMusicPlaybackFailurePacket extends DataPacket implements 
 		if($failureCount > 28){
 			throw new PacketDecodeException("Too many failures in ClientboundMusicPlaybackFailurePacket");
 		}
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+		for($i = 0, $len = $failureCount; $i < $len; ++$i){
 			$this->failures[] = MusicPlaybackFailureEntry::read($in);
 		}
 	}
