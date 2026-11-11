@@ -501,4 +501,8 @@ interface PacketHandlerInterface{
 	public function handlePlayerToggleArmorVisibilityRequest(PlayerToggleArmorVisibilityRequestPacket $packet) : bool;
 
 	public function handleClientboundMusicPlaybackFailure(ClientboundMusicPlaybackFailurePacket $packet) : bool;
+
+	public function handleVirtualContainerOpen(VirtualContainerOpenPacket $packet) : bool;
+
+	public function handleVirtualContainerClose(VirtualContainerClosePacket $packet) : bool;
 }

@@ -91,4 +91,5 @@ final class ContainerUIIds{
 	public const DISC_PRESS_DYE_CONTAINER = 68;
 	public const DISC_PRESS_DISC_CONTAINER = 69;
 	public const DISC_PRESS_RESULT_PREVIEW_CONTAINER = 70;
+	public const VIRTUAL_CONTAINER = 71;
 }

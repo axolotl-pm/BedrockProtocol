@@ -277,6 +277,8 @@ class PacketPool{
 		$this->registerPacket(new ClientboundOnlineMusicPlaybackResponsePacket());
 		$this->registerPacket(new PlayerToggleArmorVisibilityRequestPacket());
 		$this->registerPacket(new ClientboundMusicPlaybackFailurePacket());
+		$this->registerPacket(new VirtualContainerOpenPacket());
+		$this->registerPacket(new VirtualContainerClosePacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{

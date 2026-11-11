@@ -24,30 +24,38 @@ final class ChatPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public const NETWORK_ID = ProtocolInfo::CHAT_PACKET;
 
 	private SignedChat $signedChat;
+	private ?string $roomId = null;
 	private ?ChatFormatting $formatting = null;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(SignedChat $signedChat, ?ChatFormatting $formatting = null) : self{
+	public static function create(SignedChat $signedChat, ?string $roomId = null, ?ChatFormatting $formatting = null) : self{
 		$result = new self;
 		$result->signedChat = $signedChat;
+		$result->roomId = $roomId;
 		$result->formatting = $formatting;
 		return $result;
 	}
 
 	public function encodePayload(ByteBufferWriter $out) : void{
 		$this->signedChat->write($out);
+		CommonTypes::writeOptional($out, $this->roomId, CommonTypes::putString(...));
 		CommonTypes::writeOptional($out, $this->formatting, static fn(ByteBufferWriter $out, ChatFormatting $formatting) => $formatting->write($out));
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->signedChat = SignedChat::read($in);
+		$this->roomId = CommonTypes::readOptional($in, CommonTypes::getString(...));
 		$this->formatting = CommonTypes::readOptional($in, static fn(ByteBufferReader $in) => ChatFormatting::read($in));
 	}
 
 	public function getSignedChat() : SignedChat{
 		return $this->signedChat;
+	}
+
+	public function getRoomId() : ?string{
+		return $this->roomId;
 	}
 
 	public function getFormatting() : ?ChatFormatting{

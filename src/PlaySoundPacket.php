@@ -20,6 +20,7 @@ use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\sound\SoundAttachOptions;
 
 class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAY_SOUND_PACKET;
@@ -36,6 +37,8 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	public ?float $playbackPositionSeconds = null;
 	public ?float $startDelaySeconds = null;
 
+	public ?SoundAttachOptions $soundAttachOptions = null;
+
 	/**
 	 * @generate-create-func
 	 */
@@ -51,6 +54,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		?int $serverSoundHandle,
 		?float $playbackPositionSeconds,
 		?float $startDelaySeconds,
+		?SoundAttachOptions $soundAttachOptions
 	) : self{
 		$result = new self;
 		$result->soundName = $soundName;
@@ -64,6 +68,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		$result->serverSoundHandle = $serverSoundHandle;
 		$result->playbackPositionSeconds = $playbackPositionSeconds;
 		$result->startDelaySeconds = $startDelaySeconds;
+		$result->soundAttachOptions = $soundAttachOptions;
 		return $result;
 	}
 
@@ -80,6 +85,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		$this->serverSoundHandle = CommonTypes::readOptional($in, LE::readUnsignedLong(...));
 		$this->playbackPositionSeconds = CommonTypes::readOptional($in, LE::readFloat(...));
 		$this->startDelaySeconds = CommonTypes::readOptional($in, LE::readFloat(...));
+		$this->soundAttachOptions = CommonTypes::readOptional($in, SoundAttachOptions::read(...));
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
@@ -92,6 +98,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		CommonTypes::writeOptional($out, $this->serverSoundHandle, LE::writeUnsignedLong(...));
 		CommonTypes::writeOptional($out, $this->playbackPositionSeconds, LE::writeFloat(...));
 		CommonTypes::writeOptional($out, $this->startDelaySeconds, LE::writeFloat(...));
+		CommonTypes::writeOptional($out, $this->soundAttachOptions, static fn(ByteBufferWriter $out, SoundAttachOptions $options) => $options->write($out));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
