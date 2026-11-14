@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
@@ -54,10 +55,7 @@ final class AttributesUpdateEnvironment extends AttributeLayerSyncPayload{
 		$name = CommonTypes::getString($in);
 		$dimension = VarInt::readSignedInt($in);
 
-		$attributes = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$attributes[] = AttributeEnvironment::read($in);
-		}
+		$attributes = CommonTypes::readList($in, AttributeEnvironment::read(...), ListSizeLimits::ATTRIBUTE_UPDATE_ENVIRONMENT_ATTRIBUTES);
 
 		return new self(
 			$name,

@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use function count;
 
@@ -40,10 +41,7 @@ class ItemStackRequestPacket extends DataPacket implements ServerboundPacket{
 	public function getRequests() : array{ return $this->requests; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->requests = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->requests[] = ItemStackRequest::read($in);
-		}
+		$this->requests = CommonTypes::readList($in, ItemStackRequest::read(...), ListSizeLimits::ITEM_STACK_REQUEST_PACKET_REQUESTS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

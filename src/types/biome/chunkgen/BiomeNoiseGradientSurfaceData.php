@@ -18,6 +18,7 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
@@ -69,10 +70,7 @@ final class BiomeNoiseGradientSurfaceData{
 		$noiseSeed = CommonTypes::getString($in);
 		$firstOctave = LE::readUnsignedInt($in);
 
-		$amplitudes = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; ++$i){
-			$amplitudes[] = LE::readFloat($in);
-		}
+		$amplitudes = CommonTypes::readList($in, LE::readFloat(...), ListSizeLimits::NOISE_GRADIENT_AMPLITUDES);
 
 		return new self(
 			$nonReplaceableBlocks,

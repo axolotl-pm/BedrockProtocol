@@ -64,7 +64,7 @@ class SubChunkPacket extends DataPacket implements ClientboundPacket{
 		$this->dimension = VarInt::readSignedInt($in);
 		$this->baseSubChunkPosition = SubChunkPosition::read($in);
 
-		$this->entries = CommonTypes::readList($in, SubChunkPacketEntry::read(...));
+		$this->entries = CommonTypes::readList($in, SubChunkPacketEntry::read(...), ListSizeLimits::SUB_CHUNK_ENTRIES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

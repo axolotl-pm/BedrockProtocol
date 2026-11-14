@@ -280,7 +280,7 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		$this->itemInteractionData = CommonTypes::readOptional($in, ItemInteractionData::read(...));
 		$this->itemStackRequest = CommonTypes::readOptional($in, ItemStackRequest::read(...));
 
-		$this->blockActions = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, PlayerBlockAction::read(...)));
+		$this->blockActions = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, PlayerBlockAction::read(...), ListSizeLimits::PLAYER_AUTH_INPUT_BLOCK_ACTIONS));
 		$vehicleRotation = CommonTypes::readOptional($in, CommonTypes::getVector2(...));
 		$vehicleActorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
 		if($vehicleRotation !== null && $vehicleActorUniqueId !== null){

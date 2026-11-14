@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\SubChunkPosition;
 use pocketmine\network\mcpe\protocol\types\SubChunkPositionOffset;
 use function count;
@@ -58,10 +59,7 @@ class SubChunkRequestPacket extends DataPacket implements ServerboundPacket{
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->dimension = VarInt::readSignedInt($in);
 
-		$this->entries = [];
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; $i++){
-			$this->entries[] = SubChunkPositionOffset::read($in);
-		}
+		$this->entries = CommonTypes::readList($in, SubChunkPositionOffset::read(...), ListSizeLimits::SUB_CHUNK_REQUEST_ENTRIES);
 
 		$this->basePosition = SubChunkPosition::read($in);
 	}

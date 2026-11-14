@@ -18,6 +18,8 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 final class SerializableVoxelShape{
@@ -60,20 +62,9 @@ final class SerializableVoxelShape{
 	public static function read(ByteBufferReader $in) : self{
 		$cells = SerializableVoxelCells::read($in);
 
-		$xCoordinates = [];
-		for($i = 0, $xCoordinatesCount = VarInt::readUnsignedInt($in); $i < $xCoordinatesCount; ++$i){
-			$xCoordinates[] = LE::readFloat($in);
-		}
-
-		$yCoordinates = [];
-		for($i = 0, $yCoordinatesCount = VarInt::readUnsignedInt($in); $i < $yCoordinatesCount; ++$i){
-			$yCoordinates[] = LE::readFloat($in);
-		}
-
-		$zCoordinates = [];
-		for($i = 0, $zCoordinatesCount = VarInt::readUnsignedInt($in); $i < $zCoordinatesCount; ++$i){
-			$zCoordinates[] = LE::readFloat($in);
-		}
+		$xCoordinates = CommonTypes::readList($in, LE::readFloat(...), ListSizeLimits::VOXEL_SHAPE_X_COORDINATES);
+		$yCoordinates = CommonTypes::readList($in, LE::readFloat(...), ListSizeLimits::VOXEL_SHAPE_Y_COORDINATES);
+		$zCoordinates = CommonTypes::readList($in, LE::readFloat(...), ListSizeLimits::VOXEL_SHAPE_Z_COORDINATES);
 
 		return new self(
 			$cells,

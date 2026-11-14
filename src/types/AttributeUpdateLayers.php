@@ -17,6 +17,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 /**
@@ -44,10 +46,7 @@ final class AttributeUpdateLayers extends AttributeLayerSyncPayload{
 	public function getLayers() : array{ return $this->layers; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$layers = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$layers[] = AttributeLayer::read($in);
-		}
+		$layers = CommonTypes::readList($in, AttributeLayer::read(...), ListSizeLimits::ATTRIBUTE_UPDATE_LAYERS);
 
 		return new self(
 			$layers,

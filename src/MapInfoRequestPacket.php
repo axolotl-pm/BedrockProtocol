@@ -18,7 +18,6 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
-use pocketmine\network\mcpe\protocol\types\MapImage;
 use pocketmine\network\mcpe\protocol\types\MapInfoRequestPacketClientPixel;
 use function count;
 
@@ -45,7 +44,7 @@ class MapInfoRequestPacket extends DataPacket implements ServerboundPacket{
 
 		$this->clientPixels = [];
 		$count = LE::readUnsignedInt($in);
-		if($count > MapImage::MAX_HEIGHT * MapImage::MAX_WIDTH){
+		if($count > ListSizeLimits::MAP_INFO_REQUEST_CLIENT_PIXELS){
 			throw new PacketDecodeException("Too many pixels");
 		}
 		for($i = 0; $i < $count; $i++){

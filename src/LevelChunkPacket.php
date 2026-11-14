@@ -27,7 +27,7 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_CHUNK_PACKET;
 
 	//this appears large enough for a world height of 1024 blocks - it may need to be increased in the future
-	private const MAX_BLOB_HASHES = 64;
+	private const MAX_BLOB_HASHES = ListSizeLimits::LEVEL_CHUNK_BLOB_HASHES;
 
 	private ChunkPosition $chunkPosition;
 	/** @phpstan-var DimensionIds::* */
@@ -105,14 +105,7 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		$this->subChunkRequestLimit = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
 
 		$this->cacheEnabled = CommonTypes::getBool($in);
-		$this->usedBlobHashes = [];
-		$count = VarInt::readUnsignedInt($in);
-		if($count > self::MAX_BLOB_HASHES){
-			throw new PacketDecodeException("Expected at most " . self::MAX_BLOB_HASHES . " blob hashes, got " . $count);
-		}
-		for($i = 0; $i < $count; ++$i){
-			$this->usedBlobHashes[] = LE::readUnsignedLong($in);
-		}
+		$this->usedBlobHashes = CommonTypes::readList($in, LE::readUnsignedLong(...), self::MAX_BLOB_HASHES);
 
 		$this->extraPayload = CommonTypes::getString($in);
 		$this->clientBiomeUpdate = CommonTypes::getBool($in);

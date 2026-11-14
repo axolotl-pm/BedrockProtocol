@@ -31,7 +31,7 @@ class NetworkChunkPublisherUpdatePacket extends DataPacket implements Clientboun
 	/** @var ChunkPosition[] */
 	public array $savedChunks = [];
 
-	public const MAX_SAVED_CHUNKS = 9216;
+	public const MAX_SAVED_CHUNKS = ListSizeLimits::NETWORK_CHUNK_PUBLISHER_SAVED_CHUNKS;
 
 	/**
 	 * @generate-create-func

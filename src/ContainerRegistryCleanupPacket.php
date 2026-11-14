@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use function count;
 
@@ -42,10 +43,7 @@ class ContainerRegistryCleanupPacket extends DataPacket implements ClientboundPa
 	public function getRemovedContainers() : array{ return $this->removedContainers; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->removedContainers = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->removedContainers[] = FullContainerName::read($in);
-		}
+		$this->removedContainers = CommonTypes::readList($in, FullContainerName::read(...), ListSizeLimits::CONTAINER_REGISTRY_CLEANUP_CONTAINERS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

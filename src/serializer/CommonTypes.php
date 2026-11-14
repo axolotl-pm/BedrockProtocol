@@ -873,8 +873,11 @@ final class CommonTypes{
 	 * @phpstan-return list<T>
 	 * @throws DataDecodeException
 	 */
-	public static function readList(ByteBufferReader $in, \Closure $reader) : array{
+	public static function readList(ByteBufferReader $in, \Closure $reader, ?int $maxCount = null) : array{
 		$count = VarInt::readUnsignedInt($in);
+		if($maxCount !== null && $count > $maxCount){
+			throw new PacketDecodeException("List count $count exceeds maximum $maxCount");
+		}
 		$result = [];
 		for($i = 0; $i < $count; ++$i){
 			$result[] = $reader($in);

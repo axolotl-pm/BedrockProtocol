@@ -37,10 +37,7 @@ class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$count = VarInt::readUnsignedInt($in);
-		for($i = 0; $i < $count; ++$i){
-			$this->entries[] = CommonTypes::getString($in);
-		}
+		$this->entries = CommonTypes::readList($in, CommonTypes::getString(...), ListSizeLimits::PURCHASE_RECEIPT_ENTRIES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

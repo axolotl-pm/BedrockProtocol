@@ -54,8 +54,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	public function getEntries() : array{ return $this->entries; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$count = VarInt::readUnsignedInt($in);
-		for($i = 0; $i < $count; ++$i){
+		$this->entries = CommonTypes::readList($in, static function(ByteBufferReader $in) : PlayerListEntry{
 			$entry = new PlayerListEntry();
 
 			$entry->type = VarInt::readUnsignedInt($in);
@@ -83,8 +82,8 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 			}else{
 				throw new PacketDecodeException("Unknown player list entry type $entry->type");
 			}
-			$this->entries[] = $entry;
-		}
+			return $entry;
+		}, ListSizeLimits::PLAYER_LIST_ENTRIES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

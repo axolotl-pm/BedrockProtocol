@@ -18,6 +18,7 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
@@ -68,15 +69,9 @@ final class CommandRawData{
 		$permission = CommonTypes::getString($in);
 		$aliasEnumIndex = LE::readSignedInt($in); //may be -1 for not set
 
-		$chainedSubCommandDataIndexes = [];
-		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){
-			$chainedSubCommandDataIndexes[] = LE::readUnsignedInt($in);
-		}
+		$chainedSubCommandDataIndexes = CommonTypes::readList($in, LE::readUnsignedInt(...), ListSizeLimits::COMMAND_CHAINED_SUBCOMMAND_INDEXES);
 
-		$overloads = [];
-		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){
-			$overloads[] = CommandOverloadRawData::read($in);
-		}
+		$overloads = CommonTypes::readList($in, CommandOverloadRawData::read(...), ListSizeLimits::COMMAND_OVERLOADS);
 
 		return new self(
 			name: $name,

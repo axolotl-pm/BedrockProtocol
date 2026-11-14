@@ -18,6 +18,8 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 final class SerializableVoxelCells{
@@ -50,10 +52,7 @@ final class SerializableVoxelCells{
 		$ySize = Byte::readUnsigned($in);
 		$zSize = Byte::readUnsigned($in);
 
-		$storage = [];
-		for($i = 0, $storageCount = VarInt::readUnsignedInt($in); $i < $storageCount; ++$i){
-			$storage[] = Byte::readUnsigned($in);
-		}
+		$storage = CommonTypes::readList($in, Byte::readUnsigned(...), ListSizeLimits::VOXEL_CELLS_STORAGE);
 
 		return new self(
 			$xSize,

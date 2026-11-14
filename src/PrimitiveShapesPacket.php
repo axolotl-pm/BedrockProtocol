@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\shape\PacketShapeData;
 use function count;
 
@@ -47,10 +48,7 @@ class PrimitiveShapesPacket extends DataPacket implements ClientboundPacket{
 	public function getShapes() : array{ return $this->shapes; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->shapes = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->shapes[] = PacketShapeData::read($in);
-		}
+		$this->shapes = CommonTypes::readList($in, PacketShapeData::read(...), ListSizeLimits::PRIMITIVE_SHAPES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

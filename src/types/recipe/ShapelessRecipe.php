@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use Ramsey\Uuid\UuidInterface;
@@ -80,10 +81,7 @@ final class ShapelessRecipe{
 
 	public static function decode(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::getString($in);
-		$input = [];
-		for($j = 0, $ingredientCount = VarInt::readUnsignedInt($in); $j < $ingredientCount; ++$j){
-			$input[] = CommonTypes::getRecipeIngredient($in);
-		}
+		$input = CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...), ListSizeLimits::SHAPELESS_RECIPE_INGREDIENTS);
 		$output = [];
 		for($k = 0, $resultCount = VarInt::readUnsignedInt($in); $k < $resultCount; ++$k){
 			$output[] = CommonTypes::getItemStackWithoutStackId($in);

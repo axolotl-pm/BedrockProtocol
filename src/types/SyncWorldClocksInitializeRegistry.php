@@ -17,6 +17,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 /**
@@ -44,10 +46,7 @@ final class SyncWorldClocksInitializeRegistry extends SyncWorldClocksPayload{
 	public function getClockData() : array{ return $this->clockData; }
 
 	public static function read(ByteBufferReader $in) : self{
-		$clockData = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$clockData[] = SyncWorldClockData::read($in);
-		}
+		$clockData = CommonTypes::readList($in, SyncWorldClockData::read(...), ListSizeLimits::WORLD_CLOCK_INITIALIZE_REGISTRY_CLOCKS);
 
 		return new self(
 			$clockData,

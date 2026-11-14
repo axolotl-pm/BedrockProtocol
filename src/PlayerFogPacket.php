@@ -47,10 +47,7 @@ class PlayerFogPacket extends DataPacket implements ClientboundPacket{
 	public function getFogLayers() : array{ return $this->fogLayers; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->fogLayers = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->fogLayers[] = CommonTypes::getString($in);
-		}
+		$this->fogLayers = CommonTypes::readList($in, CommonTypes::getString(...), ListSizeLimits::PLAYER_FOG_LAYERS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

@@ -192,10 +192,7 @@ final class AvailableCommandsPacket extends DataPacket implements ClientboundPac
 			$this->enums[] = CommandEnumRawData::read($in);
 		}
 
-		$this->chainedSubCommandData = [];
-		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){
-			$this->chainedSubCommandData[] = ChainedSubCommandRawData::read($in);
-		}
+		$this->chainedSubCommandData = CommonTypes::readList($in, ChainedSubCommandRawData::read(...), ListSizeLimits::AVAILABLE_COMMANDS_CHAINED_SUBCOMMAND_DATA);
 
 		$this->commandData = [];
 		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){

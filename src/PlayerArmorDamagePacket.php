@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\ArmorSlotAndDamagePair;
 use function count;
 
@@ -49,9 +50,7 @@ class PlayerArmorDamagePacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; ++$i){
-			$this->armorSlotAndDamagePairs[] = ArmorSlotAndDamagePair::read($in);
-		}
+		$this->armorSlotAndDamagePairs = CommonTypes::readList($in, ArmorSlotAndDamagePair::read(...), ListSizeLimits::PLAYER_ARMOR_DAMAGE_PAIRS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

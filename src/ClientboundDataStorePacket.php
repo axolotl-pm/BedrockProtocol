@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\ddui\DataStoreChange;
 use pocketmine\network\mcpe\protocol\types\ddui\DataStoreOperation;
 use pocketmine\network\mcpe\protocol\types\ddui\DataStoreOperationType;
@@ -45,15 +46,12 @@ class ClientboundDataStorePacket extends DataPacket implements ClientboundPacket
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->values = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->values[] = match(VarInt::readUnsignedInt($in)){
-				DataStoreOperationType::UPDATE => DataStoreUpdate::read($in),
-				DataStoreOperationType::CHANGE => DataStoreChange::read($in),
-				DataStoreOperationType::REMOVAL => DataStoreRemoval::read($in),
-				default => throw new PacketDecodeException("Unknown DataStore type"),
-			};
-		}
+		$this->values = CommonTypes::readList($in, static fn(ByteBufferReader $in) : DataStoreOperation => match(VarInt::readUnsignedInt($in)){
+			DataStoreOperationType::UPDATE => DataStoreUpdate::read($in),
+			DataStoreOperationType::CHANGE => DataStoreChange::read($in),
+			DataStoreOperationType::REMOVAL => DataStoreRemoval::read($in),
+			default => throw new PacketDecodeException("Unknown DataStore type"),
+		}, ListSizeLimits::DATA_STORE_UPDATES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

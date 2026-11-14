@@ -139,10 +139,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 					throw new PacketDecodeException("Decoded TextPacket has invalid structure: type {$this->type} requires category CATEGORY_MESSAGE_WITH_PARAMETERS");
 				}
 				$this->message = CommonTypes::getString($in);
-				$count = VarInt::readUnsignedInt($in);
-				for($i = 0; $i < $count; ++$i){
-					$this->parameters[] = CommonTypes::getString($in);
-				}
+				$this->parameters = CommonTypes::readList($in, CommonTypes::getString(...), ListSizeLimits::TEXT_PARAMETERS);
 				break;
 		}
 

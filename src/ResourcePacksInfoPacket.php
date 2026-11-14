@@ -77,7 +77,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->worldTemplateId = CommonTypes::getUUID($in);
 		$this->worldTemplateVersion = CommonTypes::getString($in);
 
-		$this->resourcePackEntries = CommonTypes::readList($in, static fn(ByteBufferReader $in) => ResourcePackInfoEntry::read($in));
+		$this->resourcePackEntries = CommonTypes::readList($in, static fn(ByteBufferReader $in) => ResourcePackInfoEntry::read($in), ListSizeLimits::RESOURCE_PACKS_INFO_ENTRIES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\LocatorBarWaypointPayload;
 use function count;
 
@@ -47,10 +48,7 @@ class LocatorBarPacket extends DataPacket implements ClientboundPacket{
 	public function getWaypoints() : array{ return $this->waypoints; }
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$this->waypoints = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->waypoints[] = LocatorBarWaypointPayload::read($in);
-		}
+		$this->waypoints = CommonTypes::readList($in, LocatorBarWaypointPayload::read(...), ListSizeLimits::LOCATOR_BAR_WAYPOINTS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

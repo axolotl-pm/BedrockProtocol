@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
@@ -47,7 +48,7 @@ final class RecipeUnlockingRequirement{
 		//I don't know what the point of this structure is. It could easily have been a list<RecipeIngredient> instead.
 		//It's basically just an optional list, which could have been done by an empty list wherever it's not needed.
 		$unlockingContext = RecipeUnlockingContext::fromPacket(VarInt::readSignedInt($in));
-		$unlockingIngredients = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...)));
+		$unlockingIngredients = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getRecipeIngredient(...), ListSizeLimits::RECIPE_UNLOCKING_INGREDIENTS));
 		if($unlockingContext !== RecipeUnlockingContext::NONE && $unlockingIngredients !== null){
 			//this is a runtime error, make sure the correct exception type is thrown
 			throw new PacketDecodeException("Unlocking ingredients should only be set when context is CONTEXT_NONE");

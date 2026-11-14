@@ -49,10 +49,7 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->mustAccept = CommonTypes::getBool($in);
 
-		$resourcePackCount = VarInt::readUnsignedInt($in);
-		while($resourcePackCount-- > 0){
-			$this->resourcePackStack[] = ResourcePackStackEntry::read($in);
-		}
+		$this->resourcePackStack = CommonTypes::readList($in, ResourcePackStackEntry::read(...), ListSizeLimits::RESOURCE_PACK_STACK_ENTRIES);
 
 		$this->baseGameVersion = CommonTypes::getString($in);
 		$this->experiments = Experiments::read($in);

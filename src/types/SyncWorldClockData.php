@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
@@ -57,10 +58,7 @@ final class SyncWorldClockData{
 		$time = VarInt::readSignedInt($in);
 		$paused = CommonTypes::getBool($in);
 
-		$markers = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$markers[] = SyncWorldClockMarkerData::read($in);
-		}
+		$markers = CommonTypes::readList($in, SyncWorldClockMarkerData::read(...), ListSizeLimits::WORLD_CLOCK_TIME_MARKERS);
 
 		return new self(
 			$id,

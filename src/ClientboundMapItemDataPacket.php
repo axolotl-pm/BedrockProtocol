@@ -62,7 +62,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		$this->isLocked = CommonTypes::getBool($in);
 		$this->origin = CommonTypes::getBlockPosition($in);
 
-		$this->parentMapIds = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getActorUniqueId(...)));
+		$this->parentMapIds = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, CommonTypes::getActorUniqueId(...), ListSizeLimits::CLIENTBOUND_MAP_PARENT_MAP_IDS));
 
 		$this->scale = CommonTypes::readOptional($in, Byte::readUnsigned(...));
 
@@ -72,7 +72,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			$object->actorUniqueId = CommonTypes::readOptional($in, CommonTypes::getActorUniqueId(...));
 			$object->blockPosition = CommonTypes::readOptional($in, CommonTypes::getBlockPosition(...));
 			return $object;
-		}));
+		}, ListSizeLimits::CLIENTBOUND_MAP_TRACKED_ENTITIES));
 
 		$this->decorations = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, static function($in){
 			$icon = Byte::readUnsigned($in);
@@ -82,7 +82,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			$label = CommonTypes::getString($in);
 			$color = CommonTypes::readColor($in);
 			return new MapDecoration($icon, $rotation, $xOffset, $yOffset, $label, $color);
-		}));
+		}, ListSizeLimits::CLIENTBOUND_MAP_DECORATIONS));
 
 		$width = CommonTypes::readOptional($in, VarInt::readSignedInt(...));
 		$height = CommonTypes::readOptional($in, VarInt::readSignedInt(...));

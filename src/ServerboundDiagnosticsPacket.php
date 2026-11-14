@@ -168,11 +168,11 @@ class ServerboundDiagnosticsPacket extends DataPacket implements ServerboundPack
 		$this->avgRemainderTimePercent = LE::readFloat($in);
 		$this->avgUnaccountedTimePercent = LE::readFloat($in);
 
-		$this->memoryCategoryValues = CommonTypes::readList($in, MemoryCategoryCounter::read(...));
+		$this->memoryCategoryValues = CommonTypes::readList($in, MemoryCategoryCounter::read(...), ListSizeLimits::DIAGNOSTICS_MEMORY_CATEGORY_VALUES);
 		$this->entityDiagnostics = CommonTypes::readList($in, EntityDiagnosticTimingInfo::read(...));
 		$this->systemDiagnostics = CommonTypes::readList($in, SystemDiagnosticTimingInfo::read(...));
 		$this->systemCategories = CommonTypes::readOptional($in, static fn(ByteBufferReader $in) => CommonTypes::readList($in, SystemCategory::read(...)));
-		$this->whiskerScopes = CommonTypes::readList($in, WhiskerScopeDataSummary::read(...));
+		$this->whiskerScopes = CommonTypes::readList($in, WhiskerScopeDataSummary::read(...), ListSizeLimits::DIAGNOSTICS_WHISKER_SCOPES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

@@ -19,6 +19,8 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 final class CommandEnumConstraintRawData{
@@ -47,10 +49,7 @@ final class CommandEnumConstraintRawData{
 		$affectedValueIndex = LE::readUnsignedInt($in);
 		$enumIndex = LE::readUnsignedInt($in);
 
-		$constraints = [];
-		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){
-			$constraints[] = Byte::readUnsigned($in);
-		}
+		$constraints = CommonTypes::readList($in, Byte::readUnsigned(...), ListSizeLimits::COMMAND_ENUM_CONSTRAINTS);
 
 		return new self(
 			affectedValueIndex: $affectedValueIndex,

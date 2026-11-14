@@ -18,6 +18,7 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
 class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacket{
@@ -55,14 +56,8 @@ class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacke
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		$missCount = VarInt::readUnsignedInt($in);
-		for($i = 0; $i < $missCount; ++$i){
-			$this->missHashes[] = LE::readUnsignedLong($in);
-		}
-		$hitCount = VarInt::readUnsignedInt($in);
-		for($i = 0; $i < $hitCount; ++$i){
-			$this->hitHashes[] = LE::readUnsignedLong($in);
-		}
+		$this->missHashes = CommonTypes::readList($in, LE::readUnsignedLong(...), ListSizeLimits::CLIENT_CACHE_MISS_HASHES);
+		$this->hitHashes = CommonTypes::readList($in, LE::readUnsignedLong(...), ListSizeLimits::CLIENT_CACHE_HIT_HASHES);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

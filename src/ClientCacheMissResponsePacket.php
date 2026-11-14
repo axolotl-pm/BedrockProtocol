@@ -46,11 +46,11 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 	}
 
 	protected function decodePayload(ByteBufferReader $in) : void{
-		for($i = 0, $count = VarInt::readUnsignedInt($in); $i < $count; ++$i){
+		$this->blobs = CommonTypes::readList($in, static function(ByteBufferReader $in) : ChunkCacheBlob{
 			$hash = LE::readUnsignedLong($in);
 			$payload = CommonTypes::getString($in);
-			$this->blobs[] = new ChunkCacheBlob($hash, $payload);
-		}
+			return new ChunkCacheBlob($hash, $payload);
+		}, ListSizeLimits::CLIENT_CACHE_MISS_RESPONSE_BLOBS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

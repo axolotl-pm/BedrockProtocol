@@ -46,10 +46,7 @@ class EmoteListPacket extends DataPacket implements ClientboundPacket, Serverbou
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->playerActorRuntimeId = CommonTypes::getActorRuntimeId($in);
-		$this->emoteIds = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
-			$this->emoteIds[] = CommonTypes::getUUID($in);
-		}
+		$this->emoteIds = CommonTypes::readList($in, CommonTypes::getUUID(...), ListSizeLimits::EMOTE_LIST_EMOTE_IDS);
 	}
 
 	protected function encodePayload(ByteBufferWriter $out) : void{

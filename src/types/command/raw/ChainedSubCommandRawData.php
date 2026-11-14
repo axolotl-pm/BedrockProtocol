@@ -17,6 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types\command\raw;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\ListSizeLimits;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use function count;
 
@@ -42,10 +43,7 @@ final class ChainedSubCommandRawData{
 	public static function read(ByteBufferReader $in) : self{
 		$name = CommonTypes::getString($in);
 
-		$valueData = [];
-		for($i = 0, $size = VarInt::readUnsignedInt($in); $i < $size; $i++){
-			$valueData[] = ChainedSubCommandValueRawData::read($in);
-		}
+		$valueData = CommonTypes::readList($in, ChainedSubCommandValueRawData::read(...), ListSizeLimits::COMMAND_CHAINED_SUBCOMMAND_VALUES);
 
 		return new self($name, $valueData);
 	}
