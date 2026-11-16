@@ -14,6 +14,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\login\clientdata;
 
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
+use pocketmine\network\mcpe\protocol\types\GraphicsMode;
+use pocketmine\network\mcpe\protocol\types\InputMode;
+use pocketmine\network\mcpe\protocol\types\MemoryTier;
+use pocketmine\network\mcpe\protocol\types\skin\SkinArmSizeType;
+use pocketmine\network\mcpe\protocol\types\UIProfile;
+
 /**
  * Model class for LoginPacket JSON data for JsonMapper
  */
@@ -26,7 +33,7 @@ final class ClientData{
 	public array $AnimatedImageData;
 
 	/** @required */
-	public string $ArmSize;
+	public SkinArmSizeType $ArmSize;
 
 	/** @required */
 	public string $CapeData;
@@ -56,10 +63,10 @@ final class ClientData{
 	public bool $CompatibleWithClientSideChunkGen;
 
 	/** @required */
-	public int $CurrentInputMode;
+	public InputMode $CurrentInputMode;
 
 	/** @required */
-	public int $DefaultInputMode;
+	public InputMode $DefaultInputMode;
 
 	/** @required */
 	public string $DeviceId;
@@ -68,7 +75,7 @@ final class ClientData{
 	public string $DeviceModel;
 
 	/** @required */
-	public int $DeviceOS;
+	public DeviceOS $DeviceOS;
 
 	/** @required */
 	public bool $FilterProfanity;
@@ -77,7 +84,7 @@ final class ClientData{
 	public string $GameVersion;
 
 	/** @required */
-	public int $GraphicsMode;
+	public GraphicsMode $GraphicsMode;
 
 	/** @required */
 	public int $GuiScale;
@@ -89,7 +96,7 @@ final class ClientData{
 	public int $MaxViewDistance;
 
 	/** @required */
-	public int $MemoryTier;
+	public MemoryTier $MemoryTier;
 
 	public string $Nonce; //sometimes the client doesn't send it, apparently
 
@@ -170,5 +177,5 @@ final class ClientData{
 	public bool $TrustedSkin;
 
 	/** @required */
-	public int $UIProfile;
+	public UIProfile $UIProfile;
 }

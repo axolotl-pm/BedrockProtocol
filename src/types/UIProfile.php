@@ -14,12 +14,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-final class UIProfile{
+enum UIProfile : int{
 
-	private function __construct(){
-		//NOOP
-	}
-
-	public const CLASSIC = 0;
-	public const POCKET = 1;
+	case CLASSIC = 0;
+	case POCKET = 1;
 }
