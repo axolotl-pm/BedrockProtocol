@@ -34,7 +34,7 @@ final class MusicPlaybackFailureEntry{
 	}
 
 	public static function read(ByteBufferReader $in) : self{
-		$state = MusicPlaybackState::from(CommonTypes::getString($in));
+		$state = MusicPlaybackState::fromPacket(CommonTypes::getString($in));
 		$description = CommonTypes::getString($in);
 		return new self($state, $description);
 	}

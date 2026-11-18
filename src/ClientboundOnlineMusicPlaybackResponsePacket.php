@@ -65,7 +65,7 @@ final class ClientboundOnlineMusicPlaybackResponsePacket extends DataPacket impl
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->requestId = LE::readUnsignedInt($in);
-		$this->state = MusicPlaybackState::from(CommonTypes::getString($in));
+		$this->state = MusicPlaybackState::fromPacket(CommonTypes::getString($in));
 		$this->sharedMetadata = CommonTypes::getString($in);
 		$this->playbackContent = CommonTypes::getString($in);
 	}

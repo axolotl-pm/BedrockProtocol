@@ -14,12 +14,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\sound;
 
-use pocketmine\network\mcpe\protocol\types\PacketIntEnumTrait;
+use pocketmine\network\mcpe\protocol\types\PacketOrdinalEnumTrait;
 
-enum AudioContentPlaybackType : int{
-	use PacketIntEnumTrait;
+enum AudioContentPlaybackType : string{
+	use PacketOrdinalEnumTrait;
 
-	case MUSIC = 0;
-	case SOUND = 1;
-	case CONCURRENT_MUSIC = 2;
+	case MUSIC = "music";
+	case SOUND = "sound";
+	case CONCURRENT_MUSIC = "concurrentmusic";
 }

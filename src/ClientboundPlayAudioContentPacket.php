@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
@@ -59,7 +58,7 @@ final class ClientboundPlayAudioContentPacket extends DataPacket implements Clie
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->sharedMetadata = CommonTypes::getString($in);
 		$this->playbackContent = CommonTypes::getString($in);
-		$this->playbackType = AudioContentPlaybackType::fromPacket(Byte::readUnsigned($in));
+		$this->playbackType = AudioContentPlaybackType::fromPacket(CommonTypes::getString($in));
 		$this->playSound = new PlaySoundPacket();
 		$this->playSound->decodePayload($in);
 	}
@@ -67,7 +66,7 @@ final class ClientboundPlayAudioContentPacket extends DataPacket implements Clie
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		CommonTypes::putString($out, $this->sharedMetadata);
 		CommonTypes::putString($out, $this->playbackContent);
-		Byte::writeUnsigned($out, $this->playbackType->value);
+		CommonTypes::putString($out, $this->playbackType->value);
 		$this->playSound->encodePayload($out);
 	}
 
